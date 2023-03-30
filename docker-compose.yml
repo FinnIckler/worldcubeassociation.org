@@ -68,6 +68,18 @@ services:
     networks:
       - wca-main
 
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=wca_db
+    networks:
+      - wca-main
+    volumes:
+      - ./docker/config.user.inc.php:/etc/phpmyadmin/config.user.inc.php
+      - ./docker/signon-script.php:/etc/phpmyadmin/signon-script.php
+
 volumes:
   wca_db_volume:
     driver: local
