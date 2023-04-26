@@ -104,7 +104,5 @@ Rails.application.configure do
   # config.action_cable.disable_request_forgery_protection = true
 
   # Whitelist any IPs when we're in Docker (meaning local dev environment)
-  if File.file?('/proc/1/cgroup') && File.read('/proc/1/cgroup').include?('docker')
-    config.web_console.whitelisted_ips = %w(0.0.0.0/0 ::/0)
-  end
+  config.web_console.whitelisted_ips = %w(0.0.0.0/0 ::/0)
 end

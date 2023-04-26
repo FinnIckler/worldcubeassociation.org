@@ -1,13 +1,16 @@
-version: "3"
+version: "3.8"
 services:
   wca_on_rails:
     build:
       context: WcaOnRails
+      target: "base"
     ports:
       - "3000:3000"
     environment:
       DATABASE_HOST: wca_db
       WEBPACKER_DEV_SERVER_HOST: wca_webpacker
+      VAULT_ADDR: "http://wca_vault:8200"
+      VAULT_DEV_ROOT_TOKEN_ID: aDGdUASDGIUASGDKI
     working_dir: /app/WcaOnRails
     volumes:
       - .:/app
@@ -40,6 +43,8 @@ services:
     environment:
       DATABASE_HOST: wca_db
       WEBPACKER_DEV_SERVER_HOST: 0.0.0.0
+      VAULT_ADDR: "http://wca_vault:8200"
+      VAULT_DEV_ROOT_TOKEN_ID: aDGdUASDGIUASGDKI
     working_dir: /app/WcaOnRails
     volumes:
       - .:/app
@@ -68,6 +73,19 @@ services:
     networks:
       - wca-main
 
+  wca_vault:
+    image: hashicorp/vault
+    environment:
+      - VAULT_DEV_ROOT_TOKEN_ID=aDGdUASDGIUASGDKI
+    volumes:
+      - ./docker/vault/config:/vault/config
+      - ./docker/vault/file:/vault/file
+      - ./docker/vault/logs:/vault/logs
+      - ./docker/vault/plugins:/vault/plugins
+    ports:
+      - "8200:8200"
+    networks:
+      - wca-main
 volumes:
   wca_db_volume:
     driver: local
