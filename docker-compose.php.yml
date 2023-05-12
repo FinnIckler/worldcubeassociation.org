@@ -3,7 +3,7 @@ services:
   nginx:
     image: nginx
     ports:
-      - "8080:8080"
+      - "8000:8080"
     volumes:
       - ./webroot:/webroot #PHP stuff
       - ./WcaOnRails/app/views/regulations:/regulations #static regulations files
@@ -29,3 +29,14 @@ services:
       - MYSQL_USER=root
       - MYSQL_PASSWORD=
       - MYSQL_DB=wca_development
+
+  phpmyadmin:
+    image: phpmyadmin
+    ports:
+      - "8080:80"
+    environment:
+      - PMA_HOST=wca_db
+      - PMA_USER=root
+      - PMA_PASSWORD=
+    networks:
+      - wca-main

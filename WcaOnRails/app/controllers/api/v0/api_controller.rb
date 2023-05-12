@@ -20,17 +20,13 @@ class Api::V0::ApiController < ApplicationController
   end
 
   def auth_results
-    # unless current_user
-    #   return render status: :unauthorized, json: { error: "Please log in" }
-    # end
-    # unless current_user.can_admin_results?
-    #   return render status: :forbidden, json: { error: "Cannot adminster results" }
-    # end
-    session['PMA_single_signon_user'] = "root"
-    session['PMA_single_signon_password'] = ""
-    session['PMA_single_signon_HMAC_secret'] = Digest::SHA1.hexdigest(Time.now.to_s)
-    redirect_to 'http://localhost:8080' # Redirect to phpMyAdmin (use absolute URL here)
-    # render json: { status: "ok" }
+    unless current_user
+      return render status: :unauthorized, json: { error: "Please log in" }
+    end
+    unless current_user.can_admin_results?
+      return render status: :forbidden, json: { error: "Cannot adminster results" }
+    end
+    render json: { status: "ok" }
   end
 
   def scramble_program
