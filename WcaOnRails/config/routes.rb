@@ -52,7 +52,7 @@ Rails.application.routes.draw do
   # post 'competitions/unbookmark' => 'competitions#unbookmark', as: :unbookmark
 
   resources :competitions, only: [:index, :show] do
-
+    get '*path' => 'competitions#show'
     # get 'results/podiums' => 'competitions#show_podiums'
     # get 'results/all' => 'competitions#show_all_results'
     # get 'results/by_person' => 'competitions#show_results_by_person'
