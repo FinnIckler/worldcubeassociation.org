@@ -36,7 +36,7 @@
 
   <% if current_user.wca_id %>
     <p>
-      <%= link_to t('layouts.navigation.my_results'), person_path(current_user.wca_id) %>
+      My Results
     </p>
     <% if current_user.senior_delegate? %>
       <p><%= link_to "Upcoming competitions for your subordinate Delegates", competitions_for_senior_path %></p>

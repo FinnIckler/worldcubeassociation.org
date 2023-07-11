@@ -67,12 +67,6 @@
               <% if show_delegates %>
                 <%= competition.delegates.map(&:name).join(", ") %>
               <% else %>
-                <% if current_user.can_view_delegate_report?(competition.delegate_report) %>
-                  <%= link_to ui_icon('file alt'), delegate_report_path(competition), title: t('.report'), data: { 'toggle': 'tooltip', 'container': 'body' } %>
-                <% end %>
-                <% if current_user.can_edit_delegate_report?(competition.delegate_report) %>
-                  <%= link_to ui_icon('edit'), delegate_report_edit_path(competition), title: t('.edit_report'), data: { 'toggle': 'tooltip', 'container': 'body' } %>
-                <% end %>
                 <% if competition.user_should_post_delegate_report?(current_user) %>
                   <%= ui_icon('warning', title: t('.missing_report'), data: { 'toggle': 'tooltip', 'container': 'body' }) %>
                 <% end %>
