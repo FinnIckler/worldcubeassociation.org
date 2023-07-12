@@ -29,7 +29,7 @@ services:
     command: >
       bash -c 'bundle install && yarn install &&
       if ! [[ "`mysqlshow --user=root --host=wca_db wca_development`" =~ "Tables" ]] ;
-        then echo "Populating development db, this will take a while" && bin/rake db:reset ;
+        then echo "Populating development db, this will take a while" && bin/rake db:load:development ;
       fi &&
       bin/rails server -b 0.0.0.0'
     depends_on:
