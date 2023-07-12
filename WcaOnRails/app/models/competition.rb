@@ -1876,11 +1876,15 @@ class Competition < ApplicationRecord
   DEFAULT_SERIALIZE_OPTIONS = {
     only: ["id", "name", "website", "start_date", "registration_open",
            "registration_close", "announced_at", "cancelled_at", "end_date",
-           "competitor_limit"],
+           "competitor_limit","extra_registration_requirements","enable_donations",
+           "on_the_spot_registration","on_the_spot_entry_fee_lowest_denomination","allow_registration_edits",
+           "allow_registration_self_delete_after_acceptance","allow_registration_without_qualification","refund_policy_percent",
+           "use_wca_registration","guests_per_registration_limit",
+           "guests_entry_fee_lowest_denomination","guest_entry_status"],
     methods: ["url", "website", "short_name", "city", "venue_address",
               "venue_details", "latitude_degrees", "longitude_degrees",
-              "country_iso2", "event_ids"],
-    include: ["delegates", "organizers"],
+              "country_iso2", "event_ids","registration_opened?","main_event_id"],
+    include: ["delegates", "organizers","tabs"],
   }.freeze
 
   def serializable_hash(options = nil)

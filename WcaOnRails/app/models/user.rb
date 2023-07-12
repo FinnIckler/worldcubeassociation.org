@@ -81,7 +81,7 @@ class User < ApplicationRecord
   devise :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 
   def jwt_payload
-    { 'wca_id' => wca_id, 'user_id' => id }
+    { 'user_id' => id }
   end
 
   # Backup OTP are stored as a string array in the db
@@ -1079,7 +1079,7 @@ class User < ApplicationRecord
 
   def url
     if wca_id
-      Rails.application.routes.url_helpers.person_url(wca_id, host: EnvVars.ROOT_URL)
+      ""
     else
       ""
     end

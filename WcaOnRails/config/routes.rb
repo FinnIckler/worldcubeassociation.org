@@ -273,6 +273,9 @@ Rails.application.routes.draw do
     # These are all the new routes I am introducing as part of the integration
     namespace :v10 do
       get '/auth/jwt' => 'api#jwt'
+      get '/users/me' => 'users#me'
+      get '/users/me/permissions' => 'users#permissions'
+      get '/competitions/:competition_id/' => 'competitions#show'
     end
     namespace :v0 do
       get '/' => 'api#help'
