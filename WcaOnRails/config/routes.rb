@@ -270,11 +270,14 @@ Rails.application.routes.draw do
 
   namespace :api do
     get '/', to: redirect('/api/v0', status: 302)
+    # These are all the new routes I am introducing as part of the integration
+    namespace :v10 do
+      get '/auth/jwt' => 'api#jwt'
+    end
     namespace :v0 do
       get '/' => 'api#help'
       get '/me' => 'api#me'
       get '/auth/results' => 'api#auth_results'
-      get '/auth/jwt' => 'api#jwt'
       get '/export/public' => 'api#export_public'
       get '/scramble-program' => 'api#scramble_program'
       get '/search' => 'api#omni_search'
