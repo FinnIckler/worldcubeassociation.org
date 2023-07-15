@@ -81,7 +81,7 @@ class User < ApplicationRecord
   devise :jwt_authenticatable, jwt_revocation_strategy: JwtDenylist
 
   def jwt_payload
-    { 'user_id' => id }
+    { 'data' => { 'user_id' => id.to_s } }
   end
 
   # Backup OTP are stored as a string array in the db
