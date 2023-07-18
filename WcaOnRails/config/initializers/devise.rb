@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+require_relative '../../app/helpers/jwt_options'
 # Use this hook to configure devise mailer, warden hooks and so forth.
 # Many of these configuration options can be set straight in your model.
 Devise.setup do |config|
@@ -238,11 +239,11 @@ Devise.setup do |config|
   config.sign_out_via = :delete
 
   config.jwt do |jwt|
-    jwt.secret = ENV.fetch("DEVISE_JWT_SECRET_KEY")
+    jwt.secret = JwtOptions.secret
     jwt.dispatch_requests = [
       ['GET', %r{^/api/v10/auth/jwt$}],
     ]
-    jwt.expiration_time = 30.minutes.to_i
+    jwt.expiration_time = JwtOptions.expiry
   end
 
   # ==> OmniAuth

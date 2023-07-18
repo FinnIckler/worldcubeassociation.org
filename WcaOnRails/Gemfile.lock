@@ -803,6 +803,7 @@ DEPENDENCIES
   irb
   jbuilder
   json-schema
+  jwt
   kaminari
   kaminari-i18n
   launchy

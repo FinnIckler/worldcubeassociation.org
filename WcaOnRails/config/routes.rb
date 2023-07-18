@@ -276,6 +276,7 @@ Rails.application.routes.draw do
       get '/users/me' => 'users#me'
       get '/users/me/permissions' => 'users#permissions'
       get '/competitions/:competition_id/' => 'competitions#show'
+      get '/internal/users/:user_id/permissions' => 'internal#permissions'
     end
     namespace :v0 do
       get '/' => 'api#help'
