@@ -381,7 +381,7 @@ class Competition < ApplicationRecord
   end
 
   def number_of_bookmarks
-    competition.bookmarked_users.length
+    bookmarked_users.length
   end
 
   def continent
