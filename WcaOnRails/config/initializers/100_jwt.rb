@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# This needs to be run before the devise.rb initializer
 require_relative '../../app/helpers/jwt_options'
 
 JwtOptions.secret = EnvVars.DEVISE_JWT_SECRET_KEY
