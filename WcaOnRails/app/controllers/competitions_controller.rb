@@ -326,7 +326,7 @@ class CompetitionsController < ApplicationController
     client = create_stripe_oauth_client
     oauth_params = {
       scope: 'read_write',
-      redirect_uri: EnvVars.ROOT_URL + competitions_stripe_connect_path,
+      redirect_uri: 'https://test-registration.worldcubeassociation.org/' + competitions_stripe_connect_path,
       state: @competition.id,
     }
     @authorize_url = client.auth_code.authorize_url(oauth_params)
