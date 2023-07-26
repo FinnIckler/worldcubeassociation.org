@@ -95,7 +95,7 @@ Rails.application.routes.draw do
   # patch 'competitions/:competition_id/report' => 'delegate_reports#update'
 
   # get 'competitions/:id/edit/admin' => 'competitions#admin_edit', as: :admin_edit_competition
-  get 'competitions/:id/payment_setup' => 'competitions#payment_setup', as: :competitions_payment_setup
+  get 'test/:id/payment_setup' => 'competitions#payment_setup', as: :competitions_payment_setup
   # get 'stripe-connect' => 'competitions#stripe_connect', as: :competitions_stripe_connect
   # get 'competitions/:id/events/edit' => 'competitions#edit_events', as: :edit_events
   # get 'competitions/:id/schedule/edit' => 'competitions#edit_schedule', as: :edit_schedule
