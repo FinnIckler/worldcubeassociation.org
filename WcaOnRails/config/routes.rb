@@ -95,7 +95,7 @@ Rails.application.routes.draw do
   # patch 'competitions/:competition_id/report' => 'delegate_reports#update'
 
   # get 'competitions/:id/edit/admin' => 'competitions#admin_edit', as: :admin_edit_competition
-  # get 'competitions/:id/payment_setup' => 'competitions#payment_setup', as: :competitions_payment_setup
+  get 'competitions/:id/payment_setup' => 'competitions#payment_setup', as: :competitions_payment_setup
   # get 'stripe-connect' => 'competitions#stripe_connect', as: :competitions_stripe_connect
   # get 'competitions/:id/events/edit' => 'competitions#edit_events', as: :edit_events
   # get 'competitions/:id/schedule/edit' => 'competitions#edit_schedule', as: :edit_schedule
@@ -277,6 +277,8 @@ Rails.application.routes.draw do
       get '/users/me/permissions' => 'users#permissions'
       get '/competitions/:competition_id/' => 'competitions#show'
       get '/internal/users/:user_id/permissions' => 'internal#permissions'
+      get '/internal/payment/init' => 'internal#payment_init'
+      get '/internal/payment/finish' => 'internal#payment_finish'
     end
     namespace :v0 do
       get '/' => 'api#help'
