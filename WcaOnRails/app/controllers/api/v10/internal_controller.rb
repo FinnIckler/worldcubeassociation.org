@@ -4,7 +4,7 @@ require_relative '../../../helpers/jwt_options'
 require_relative '../../../helpers/error_codes'
 class Api::V10::InternalController < Api::V10::ApiController
   prepend_before_action :validate_token
-  skip_before_action :validate_token, only: [:payment_finish]
+  skip_before_action :validate_token, only: [:payment_init, :payment_finish]
   # TODO: Switch this to Vault Identity Tokens
   def validate_token
     auth_header = request.headers["Authorization"]
