@@ -1882,7 +1882,7 @@ class Competition < ApplicationRecord
     methods: ["url", "website", "short_name", "city", "venue_address",
               "venue_details", "latitude_degrees", "longitude_degrees","competition_events",
               "country_iso2", "event_ids","registration_opened?","main_event_id","number_of_bookmarks", "using_stripe_payments?"],
-    include: ["delegates", "organizers","tabs", "rounds", "events"],
+    include: ["delegates", "organizers","tabs", "rounds", "events", "competition_venues"],
   }.freeze
 
   def serializable_hash(options = nil)
