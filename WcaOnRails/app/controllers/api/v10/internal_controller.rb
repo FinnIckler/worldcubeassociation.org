@@ -45,6 +45,7 @@ class Api::V10::InternalController < Api::V10::ApiController
     amount = params["amount"].to_i
 
     competition = Competition.find(competition_id)
+    user = User.find(user_id)
     account_id = competition.connected_stripe_account_id
 
     registration_metadata = {
