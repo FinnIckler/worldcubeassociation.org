@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class StripePaymentIntent < ApplicationRecord
-  belongs_to :holder, polymorphic: true
+  attribute :holder, :string
   belongs_to :stripe_transaction
   belongs_to :user
   belongs_to :confirmed_by, polymorphic: true, optional: true
