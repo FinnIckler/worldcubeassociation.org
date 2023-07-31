@@ -92,7 +92,7 @@ class Api::V10::InternalController < Api::V10::ApiController
       user: user,
       )
 
-    render json: { client_secret: intent.client_secret }
+    render json: { client_secret: intent.client_secret, connected_account_id: account_id }
   end
 
   def payment_finish
