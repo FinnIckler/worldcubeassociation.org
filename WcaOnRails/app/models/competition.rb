@@ -1880,7 +1880,7 @@ class Competition < ApplicationRecord
   DEFAULT_SERIALIZE_OPTIONS = {
     only: %w[id name website start_date registration_open registration_close announced_at cancelled_at end_date competition_venues competitor_limit extra_registration_requirements enable_donations refund_policy_limit_date event_change_deadline_date waiting_list_deadline_date on_the_spot_registration on_the_spot_entry_fee_lowest_denomination qualification_results event_restrictions base_entry_fee_lowest_denomination currency_code allow_registration_edits allow_registration_self_delete_after_acceptance allow_registration_without_qualification refund_policy_percent use_wca_registration guests_per_registration_limit venue contact force_comment_in_registration use_wca_registration external_registration_page guests_entry_fee_lowest_denomination guest_entry_status information],
     methods: %w[url website short_name city venue_address venue_details latitude_degrees longitude_degrees competition_events country_iso2 event_ids registration_opened? main_event_id number_of_bookmarks using_stripe_payments? uses_qualification?],
-    include: %w[delegates organizers tabs competition_events.rounds],
+    include: ['delegates', 'organizers', 'tabs', { rounds: [:competition_event] }],
   }.freeze
 
   def serializable_hash(options = nil)
