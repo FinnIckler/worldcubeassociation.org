@@ -1657,6 +1657,7 @@ class Competition < ApplicationRecord
     competition_events
       .includes(includes_associations)
       .sort_by { |ce| ce.event.rank }
+      .map(&:to_wcif)
   end
 
   def schedule_wcif
