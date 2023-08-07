@@ -1,10 +1,10 @@
 class Api::V10::PaymentController < Api::V10::ApiController
-  def config
+  def payment_config
     competition = Competition.find(params[:competition_id])
     render json: { stripe_publishable_key: EnvVars.STRIPE_PUBLISHABLE_KEY, connected_account_id: competition.connected_stripe_account_id }
   end
 
-  def init
+  def payment_init
     competition_id, user_id = params["attendee_id"].split("-")
 
     amount = params["amount"].to_i
@@ -60,7 +60,7 @@ class Api::V10::PaymentController < Api::V10::ApiController
     render json: { client_secret: intent.client_secret, connected_account_id: account_id }
   end
 
-  def finish
+  def payment_finish
     @competition = Competition.find(params[:competition_id])
 
     # Provided by Stripe upon redirect when the "PaymentElement" workflow is completed
