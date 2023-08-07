@@ -277,8 +277,9 @@ Rails.application.routes.draw do
       get '/users/me/permissions' => 'users#permissions'
       get '/competitions/:competition_id/' => 'competitions#show'
       get '/internal/users/:user_id/permissions' => 'internal#permissions'
-      post '/internal/payment/init' => 'internal#payment_init'
-      get '/internal/payment/finish' => 'internal#payment_finish'
+      post '/payment/init' => 'payment#init'
+      get '/payment/:competition_id/config' => 'payment#config'
+      get '/payment/:competition_id/finish' => 'payment#finish'
     end
     namespace :v0 do
       get '/' => 'api#help'
