@@ -1,9 +1,7 @@
 class Api::V10::PaymentController < Api::V10::ApiController
   def config
     competition = Competition.find(params[:competition_id])
-    if stale?(competition, public: true)
-      render json: { stripe_publishable_key: EnvVars.STRIPE_PUBLISHABLE_KEY, connected_account_id: competition.connected_stripe_account_id}
-    end
+    render json: { stripe_publishable_key: EnvVars.STRIPE_PUBLISHABLE_KEY, connected_account_id: competition.connected_stripe_account_id }
   end
 
   def init
