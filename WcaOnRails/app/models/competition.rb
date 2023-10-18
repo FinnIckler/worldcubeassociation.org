@@ -665,7 +665,8 @@ class Competition < ApplicationRecord
   end
 
   def uses_new_registration_service?
-    self.uses_v2_registrations
+    # self.uses_v2_registrations
+    true
   end
 
   before_validation :unpack_delegate_organizer_ids
