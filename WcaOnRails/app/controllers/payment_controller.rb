@@ -3,7 +3,7 @@
 
 class PaymentController < ApplicationController
   def payment_config
-    return json: { error: "Please Log in" }, status: :unauthorized unless current_user.present?
+    return render json: { error: "Please Log in" }, status: :unauthorized unless current_user.present?
     payment_id = params.require(:payment_id)
     competition_id = params.require(:competition_id)
 
