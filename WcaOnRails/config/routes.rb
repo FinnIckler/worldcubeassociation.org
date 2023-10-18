@@ -67,7 +67,7 @@ Rails.application.routes.draw do
   #   end
   # end
 
-  get 'competitions/v2/:id/*' => 'competitions_v2#show'
+  get 'competitions/v2/:id/*all' => 'competitions_v2#show'
 
   resources :competitions, only: [:index, :show, :edit, :update, :new, :create] do
     get 'results/podiums' => 'competitions#show_podiums'
