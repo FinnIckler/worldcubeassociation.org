@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module MicroServices
+module Microservices
   module Registrations
     # Because these routes don't live in the monolith anymore we need some helper functions
     def competition_register_path(competition_id, stripe_status = nil)

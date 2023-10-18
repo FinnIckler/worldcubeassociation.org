@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-module MicroServices
+module Microservices
   module Auth
     MICROSERVICE_AUTH_HEADER = 'X-WCA-Service-Token'
     def get_wca_token
