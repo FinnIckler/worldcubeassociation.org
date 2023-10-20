@@ -4,7 +4,7 @@ Doorkeeper::OpenidConnect.configure do
     resource_owner.id
   end
   signing_key = AppSecrets.JWT_KEY
-  # This is an asymmetric enccryption, meaning the clients validating the JWT Token use the Public key instead
+  # This is an asymmetric encryption, meaning the clients validating the JWT Token use the Public key instead
   signing_algorithm = :rs256
 
   resource_owner_from_access_token do |access_token|

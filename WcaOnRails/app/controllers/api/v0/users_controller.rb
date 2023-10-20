@@ -12,6 +12,14 @@ class Api::V0::UsersController < Api::V0::ApiController
     end
   end
 
+  def token
+    if current_user
+      render json: { status: "ok" }
+    else
+      render status: :unauthorized, json: { error: "Please log in" }
+    end
+  end
+
   def show_user_by_id
     user = User.find_by_id(params[:id])
     show_user(user)
