@@ -4,6 +4,7 @@ require 'sidekiq/web'
 require 'sidekiq/cron/web'
 
 Rails.application.routes.draw do
+  use_doorkeeper_openid_connect
   use_doorkeeper do
     controllers applications: 'oauth/applications'
   end
