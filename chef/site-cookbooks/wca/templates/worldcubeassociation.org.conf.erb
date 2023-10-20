@@ -28,11 +28,6 @@ server {
   # SSL is handled by the AWS Load Balancer and is only reachable through it
   listen 80;
 
-  # Deny access to dotfiles and dotfolders.
-  location ~ /\. {
-    deny all;
-  }
-
   # Redirect 401 to log in page
   # Unfortunately, I don't think there's any way to redirect back after the
   # user logs in.
