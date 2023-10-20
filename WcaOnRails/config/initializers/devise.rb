@@ -240,7 +240,7 @@ Devise.setup do |config|
   config.jwt do |jwt|
     jwt.secret = "jwt-test-secret"
     jwt.dispatch_requests = [
-      ['GET', %r{^/api/v0/user/jwt$}],
+      ['GET', %r{^/api/v0/users/token$}],
     ]
     jwt.expiration_time = 30.minutes.to_i
   end
