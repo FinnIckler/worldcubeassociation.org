@@ -293,7 +293,7 @@ Rails.application.routes.draw do
     get '/', to: redirect('/api/v0', status: 302)
     namespace :internal do
       namespace :v1 do
-        get "/users/[:id]/permissions" => "permissions#index"
+        get "/users/:id/permissions" => "permissions#index"
         get '/payment/init' => "payment#init"
       end
     end
