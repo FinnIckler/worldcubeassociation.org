@@ -27,15 +27,11 @@ class Api::Internal::V1::ApiController < ApplicationController
     end
     if response.success?
       result = JSON.parse(response.body)
-      puts 'Introspection Result:'
-      puts result
-      unless result.data.present? && result.data[:active]
+      unless result["active"]
         render json: { error: "Authentication Expired or Token Invalid" }, status: :forbidden
       end
     else
-      puts 'Introspection failed with the following error:'
-      puts response.status
-      puts response.body
+      raise "Introspection failed with the following error: #{response.status}, #{response.body}"
     end
   end
 end
