@@ -11,6 +11,7 @@ class Api::Internal::V1::ApiController < ApplicationController
     response = Vault.with_retries(Vault::HTTPConnectionError) do
       Vault.logical.write("identity/oidc/introspect", data: { token: service_token })
     end
+    puts response.data
     unless response.data.present? && response.data[:active]
       render json: { error: "Authentication Expired or Token Invalid" }, status: :forbidden
     end
