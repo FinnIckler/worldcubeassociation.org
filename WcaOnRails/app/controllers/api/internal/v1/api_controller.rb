@@ -12,7 +12,7 @@ class Api::Internal::V1::ApiController < ApplicationController
     # we need to request it instead see https://github.com/hashicorp/vault/issues/9080
 
     vault_token_data = Vault.auth_token.lookup_self.data
-    # Renew our token if it has expired or is closed to expiring
+    # Renew our token if it has expired or is close to expiring
     if vault_token_data[:ttl] < 300
       Vault.auth_token.renew_self
     end
