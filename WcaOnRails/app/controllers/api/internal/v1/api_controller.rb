@@ -11,19 +11,18 @@ class Api::Internal::V1::ApiController < ApplicationController
     # The Vault CLI can't parse the response from identity/oidc/introspect so
     # we need to request it instead see https://github.com/hashicorp/vault/issues/9080
 
-    # Request new access token as wrapped response where the TTL of the temporary
-    # token is "5s".
-    wrapped = Vault.auth_token.create(wrap_ttl: "5s")
-
-    # Unwrap wrapped response for final token using the initial temporary token.
-    vault_token = Vault.logical.unwrap_token(wrapped)
+    vault_token_data = Vault.auth_token.lookup_self.data
+    # Renew our token if it has expired or is closed to expiring
+    if vault_token_data[:ttl] < 300
+      Vault.auth_token.renew_self
+    end
 
     client = Faraday.new(url: EnvConfig.VAULT_ADDR)
 
     # Make the POST request to the introspect endpoint
     response = client.post do |req|
       req.url '/v1/identity/oidc/introspect'
-      req.headers['X-Vault-Token'] = vault_token
+      req.headers['X-Vault-Token'] = vault_token_data[:id]
       req.body = { token: service_token }.to_json
     end
     if response.success?
