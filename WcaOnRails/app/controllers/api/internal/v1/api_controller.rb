@@ -8,12 +8,35 @@ class Api::Internal::V1::ApiController < ApplicationController
     unless service_token.present?
       return render json: { error: "Missing Authentication" }, status: :forbidden
     end
-    response = Vault.with_retries(Vault::HTTPConnectionError) do
-      Vault.logical.write("identity/oidc/introspect", data: { token: service_token })
+    # The Vault CLI can't parse the response from identity/oidc/introspect so
+    # we need to request it instead see https://github.com/hashicorp/vault/issues/9080
+
+    # Request new access token as wrapped response where the TTL of the temporary
+    # token is "5s".
+    wrapped = Vault.auth_token.create(wrap_ttl: "5s")
+
+    # Unwrap wrapped response for final token using the initial temporary token.
+    vault_token = Vault.logical.unwrap_token(wrapped)
+
+    client = Faraday.new(url: EnvConfig.VAULT_ADDR)
+
+    # Make the POST request to the introspect endpoint
+    response = client.post do |req|
+      req.url '/v1/identity/oidc/introspect'
+      req.headers['X-Vault-Token'] = vault_token
+      req.body = { token: service_token }.to_json
     end
-    puts response.data
-    unless response.data.present? && response.data[:active]
-      render json: { error: "Authentication Expired or Token Invalid" }, status: :forbidden
+    if response.success?
+      result = JSON.parse(response.body)
+      puts 'Introspection Result:'
+      puts result
+      unless result.data.present? && result.data[:active]
+        render json: { error: "Authentication Expired or Token Invalid" }, status: :forbidden
+      end
+    else
+      puts 'Introspection failed with the following error:'
+      puts response.status
+      puts response.body
     end
   end
 end
