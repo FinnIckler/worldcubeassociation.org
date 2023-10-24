@@ -294,7 +294,7 @@ Rails.application.routes.draw do
     namespace :internal do
       namespace :v1 do
         get "/users/:id/permissions" => "permissions#index"
-        get '/payment/init' => "payment#init"
+        post '/payment/init' => "payment#init"
       end
     end
     namespace :v0 do
