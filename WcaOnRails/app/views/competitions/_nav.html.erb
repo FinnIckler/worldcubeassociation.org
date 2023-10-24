@@ -121,10 +121,10 @@
           icon: "align left",
         }
       end
-      if current_user&.can_manage_competition?(@competition)
+      if current_user&.can_manage_competition?(@competition) && !@competition.registration_opened?
         nav_items << {
           text: t('.menu.enable_v2'),
-          path: competitions_v2_enable_path(@competition),
+          path: enable_v2_path(@competition),
           icon: "lightbulb",
         }
       end

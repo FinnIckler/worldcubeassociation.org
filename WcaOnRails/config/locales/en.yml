@@ -1773,6 +1773,7 @@ en:
         delegate_report: "Delegate report"
         registration: "Registration"
         import_registrations: "Import registrations"
+        enable_v2: "Enable the New Registration Service"
         register: "Register"
         competitors: "Competitors"
         scrambles: "Scrambles"
