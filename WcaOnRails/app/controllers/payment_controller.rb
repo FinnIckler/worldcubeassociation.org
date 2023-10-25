@@ -2,7 +2,7 @@
 
 
 class PaymentController < ApplicationController
-  def payment_config
+  def config
     return render json: { error: "Please Log in" }, status: :unauthorized unless current_user.present?
     payment_id = params.require(:payment_id)
     competition_id = params.require(:competition_id)
@@ -13,9 +13,10 @@ class PaymentController < ApplicationController
     render json: { stripe_publishable_key: EnvConfig.STRIPE_PUBLISHABLE_KEY, connected_account_id: competition.connected_stripe_account_id, client_secret: stripe_transaction.client_secret }
   end
 
-  def payment_finish
+  def finish
     attendee_id = params.require(:attendee_id)
     payment_request = AttendeePaymentRequest.find_by(attendee_id: attendee_id)
+    return redirect_to competition_register_path(competition, "not_found") unless payment_request.present?
     competition_id = payment_request.competition_and_user_id
     competition = Competition.find(competition_id)
 
@@ -52,7 +53,7 @@ class PaymentController < ApplicationController
     render json: { charges: transactions.pluck(:id) }, status: :ok
   end
 
-  def payment_refund
+  def refund
     payment_id = params.require(:payment_id)
     attendee_id = params.require(:attendee_id)
 

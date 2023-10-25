@@ -65,6 +65,11 @@ Rails.application.routes.draw do
   get 'competitions/v2/:id' => 'competitions_v2#show', as: :competitions_v2
   get 'competitions/v2/:id/*all' => 'competitions_v2#show'
 
+  post 'payment/config' => 'payment#config'
+  get 'payment/:attendee_id/finish' => 'payment#finish'
+  get 'payment/:attendee_id/refunds' => 'payment#available_refunds'
+  get 'payment/refund' => 'payment#refund'
+
   resources :competitions, only: [:index, :show, :edit, :update, :new, :create] do
     get 'results/podiums' => 'competitions#show_podiums'
     get 'results/all' => 'competitions#show_all_results'

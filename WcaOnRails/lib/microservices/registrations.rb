@@ -4,11 +4,11 @@ module Microservices
   module Registrations
     # Because these routes don't live in the monolith anymore we need some helper functions
     def competition_register_path(competition_id, stripe_status = nil)
-      "https://#{EnvConfig.ROOT_URL}/competitions/#{competition_id}/register&stripe_status=#{stripe_status}"
+      "https://#{EnvConfig.ROOT_URL}/competitions/v2/#{competition_id}/register&stripe_status=#{stripe_status}"
     end
 
     def edit_registration_path(competition_id, user_id, stripe_error = nil)
-      "https://#{EnvConfig.ROOT_URL}/competitions/#{competition_id}/#{user_id}/edit&stripe_error=#{stripe_error}"
+      "https://#{EnvConfig.ROOT_URL}/competitions/v2/#{competition_id}/#{user_id}/edit&stripe_error=#{stripe_error}"
     end
 
     def update_payment_status_path
