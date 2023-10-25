@@ -94,7 +94,9 @@ class PaymentController < ApplicationController
 
     begin
       update_registration_payment(attendee_id, refund_receipt.id, refund_amount, currency_iso, "refund")
-    rescue Faraday::Error
+    rescue Faraday::Error => e
+      puts e.message
+      puts e.backtrace
       return redirect_to edit_registration_path(competition_id, user_id, "registration_down")
     end
 
