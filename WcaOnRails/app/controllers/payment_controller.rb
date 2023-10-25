@@ -37,7 +37,7 @@ class PaymentController < ApplicationController
     return redirect_to competition_register_path(competition, "not_found") unless stripe_intent.present?
 
     stored_intent.update_status_and_charges(stripe_intent, current_user) do |charge|
-      ruby_money = charge_transaction.money_amount
+      ruby_money = charge.money_amount
       update_registration_payment(attendee_id, charge.id, ruby_money.cents, ruby_money.currency.iso_code, stripe_intent.status)
     rescue Faraday::Error
       return redirect_to competition_register_path(competition_id, "registration_down")
