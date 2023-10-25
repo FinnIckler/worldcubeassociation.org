@@ -15,7 +15,7 @@ class PaymentController < ApplicationController
                    client_secret: secret }
   end
 
-  def finish
+  def payment_finish
     attendee_id = params.require(:attendee_id)
     payment_request = AttendeePaymentRequest.find_by(attendee_id: attendee_id)
     return redirect_to competition_register_path(competition, "not_found") unless payment_request.present?
@@ -53,7 +53,7 @@ class PaymentController < ApplicationController
     render json: { charges: transactions.pluck(:id) }, status: :ok
   end
 
-  def refund
+  def payment_refund
     payment_id = params.require(:payment_id)
     attendee_id = params.require(:attendee_id)
 

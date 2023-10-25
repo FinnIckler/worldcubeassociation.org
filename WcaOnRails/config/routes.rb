@@ -66,9 +66,9 @@ Rails.application.routes.draw do
   get 'competitions/v2/:id/*all' => 'competitions_v2#show'
 
   post 'payment/config' => 'payment#payment_config'
-  get 'payment/finish' => 'payment#finish'
+  get 'payment/finish' => 'payment#payment_finish'
   get 'payment/refunds' => 'payment#available_refunds'
-  get 'payment/refund' => 'payment#refund'
+  get 'payment/refund' => 'payment#payment_refund'
 
   resources :competitions, only: [:index, :show, :edit, :update, :new, :create] do
     get 'results/podiums' => 'competitions#show_podiums'
