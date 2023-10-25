@@ -12,7 +12,7 @@ module Microservices
     end
 
     def self.update_payment_status_path
-      "https://#{EnvConfig.WCA_REGISTRATION_URL}/api/internal/v1/update_payment"
+      "#{EnvConfig.WCA_REGISTRATION_URL}/api/internal/v1/update_payment"
     end
 
     def self.update_registration_payment(attendee_id, payment_id, iso_amount, currency_iso, status)
