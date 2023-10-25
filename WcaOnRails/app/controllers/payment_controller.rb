@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 
-
 class PaymentController < ApplicationController
   def config
     return render json: { error: "Please Log in" }, status: :unauthorized unless current_user.present?
@@ -9,8 +8,10 @@ class PaymentController < ApplicationController
 
     competition = Competition.find(competition_id)
     stripe_transaction = StripeTransaction.find(payment_id)
-    stored_intent = stripe_transaction.stripe_payment_intent
-    render json: { stripe_publishable_key: AppSecrets.STRIPE_PUBLISHABLE_KEY, connected_account_id: competition.connected_stripe_account_id, client_secret: stored_intent.client_secret }
+    secret = stripe_transaction.stripe_payment_intent.client_secret
+    render json: { stripe_publishable_key: AppSecrets.STRIPE_PUBLISHABLE_KEY,
+                   connected_account_id: competition.connected_stripe_account_id,
+                   client_secret: secret }
   end
 
   def finish
@@ -35,12 +36,10 @@ class PaymentController < ApplicationController
     return redirect_to competition_register_path(competition, "not_found") unless stripe_intent.present?
 
     stored_intent.update_status_and_charges(stripe_intent, current_user) do |charge|
-      begin
-        ruby_money = charge_transaction.money_amount
-        update_registration_payment(attendee_id, charge.id, ruby_money.cents, ruby_money.currency.iso_code, stripe_intent.status)
-      rescue Faraday::Error
-        return redirect_to competition_register_path(competition_id, "registration_down")
-      end
+      ruby_money = charge_transaction.money_amount
+      update_registration_payment(attendee_id, charge.id, ruby_money.cents, ruby_money.currency.iso_code, stripe_intent.status)
+    rescue Faraday::Error
+      return redirect_to competition_register_path(competition_id, "registration_down")
     end
 
     redirect_to competition_register_path(competition_id, stored_transaction.status)
