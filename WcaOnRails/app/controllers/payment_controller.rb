@@ -39,7 +39,9 @@ class PaymentController < ApplicationController
     stored_intent.update_status_and_charges(stripe_intent, current_user) do |charge|
       ruby_money = charge.money_amount
       Microservices::Registrations.update_registration_payment(attendee_id, charge.id, ruby_money.cents, ruby_money.currency.iso_code, stripe_intent.status)
-    rescue Faraday::Error
+    rescue Faraday::Error => e
+      puts e.message
+      puts e.backtrace
       return redirect_to Microservices::Registrations.competition_register_path(competition_id, "registration_down")
     end
 
