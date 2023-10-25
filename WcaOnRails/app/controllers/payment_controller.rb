@@ -19,7 +19,7 @@ class PaymentController < ApplicationController
     attendee_id = params.require(:attendee_id)
     payment_request = AttendeePaymentRequest.find_by(attendee_id: attendee_id)
     return redirect_to competition_register_path(competition, "not_found") unless payment_request.present?
-    competition_id = payment_request.competition_and_user_id
+    competition_id, = payment_request.competition_and_user_id
     competition = Competition.find(competition_id)
 
     # Provided by Stripe upon redirect when the "PaymentElement" workflow is completed
