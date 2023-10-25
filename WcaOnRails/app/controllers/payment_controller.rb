@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class PaymentController < ApplicationController
-  def config
+  def payment_config
     return render json: { error: "Please Log in" }, status: :unauthorized unless current_user.present?
     payment_id = params.require(:payment_id)
     competition_id = params.require(:competition_id)

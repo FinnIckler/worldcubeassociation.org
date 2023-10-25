@@ -65,7 +65,7 @@ Rails.application.routes.draw do
   get 'competitions/v2/:id' => 'competitions_v2#show', as: :competitions_v2
   get 'competitions/v2/:id/*all' => 'competitions_v2#show'
 
-  post 'payment/config' => 'payment#config'
+  post 'payment/config' => 'payment#payment_config'
   get 'payment/:attendee_id/finish' => 'payment#finish'
   get 'payment/:attendee_id/refunds' => 'payment#available_refunds'
   get 'payment/refund' => 'payment#refund'
