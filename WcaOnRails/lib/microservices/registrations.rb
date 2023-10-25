@@ -17,9 +17,9 @@ module Microservices
 
     def update_registration_payment(attendee_id, payment_id, iso_amount, currency_iso, status)
       conn = Faraday.new(
-        url: update_payment_status_path,
-        headers: { MICROSERVICE_AUTH_HEADER => get_wca_token },
-      ) do | builder |
+        url: self.update_payment_status_path,
+        headers: { 'X-WCA-Service-Token' => get_wca_token },
+      ) do |builder|
         # Sets headers and parses jsons automatically
         builder.request :json
         builder.response :json
@@ -31,7 +31,7 @@ module Microservices
       end
 
       conn.post('/') do |req|
-        req.body = { attendee_id: attendee_id, payment_id: payment_id, iso_amount: iso_amount, currency_iso: currency_iso, payment_status: status }
+        req.body = { attendee_id: attendee_id, payment_id: payment_id, iso_amount: iso_amount, currency_iso: currency_iso, payment_status: status }.to_json
       end
       # If we ever need the response body
       conn.body
