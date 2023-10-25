@@ -30,12 +30,11 @@ module Microservices
         builder.response :logger
       end
 
-      conn.post(self.update_payment_status_path) do |req|
+      response = conn.post(self.update_payment_status_path) do |req|
         req.body = { attendee_id: attendee_id, payment_id: payment_id, iso_amount: iso_amount, currency_iso: currency_iso, payment_status: status }.to_json
       end
       # If we ever need the response body
-      puts conn
-      conn.body
+      response.body
     end
   end
 end
