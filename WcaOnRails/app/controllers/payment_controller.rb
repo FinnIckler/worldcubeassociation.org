@@ -4,7 +4,7 @@ class PaymentController < ApplicationController
   # TODO: We currently don't have a CSRF Token, but we could protect this with a JWT?
   protect_from_forgery except: [:config]
   def payment_config
-    return render json: { error: "Please Log in" }, status: :unauthorized unless current_user.present?
+    return render json: { error: "Please Log in" }, status: :unauthorized unless current_user
     payment_id = params.require(:payment_id)
     competition_id = params.require(:competition_id)
 
