@@ -18,7 +18,7 @@ class PaymentController < ApplicationController
   def payment_finish
     attendee_id = params.require(:attendee_id)
     payment_request = AttendeePaymentRequest.find_by(attendee_id: attendee_id)
-    return redirect_to competition_register_path(competition, "not_found") unless payment_request.present?
+    return redirect_to Microservices::Registrations.competition_register_path(competition, "not_found") unless payment_request.present?
     competition_id, = payment_request.competition_and_user_id
     competition = Competition.find(competition_id)
 
@@ -29,21 +29,21 @@ class PaymentController < ApplicationController
     stored_transaction = StripeTransaction.find_by(stripe_id: intent_id)
     stored_intent = stored_transaction.stripe_payment_intent
 
-    return redirect_to competition_register_path(competition, "secret_invalid") unless stored_intent.client_secret == intent_secret
+    return redirect_to Microservices::Registrations.competition_register_path(competition, "secret_invalid") unless stored_intent.client_secret == intent_secret
 
     # No need to create a new intent here. We can just query the stored intent from Stripe directly.
     stripe_intent = stored_intent.retrieve_intent
 
-    return redirect_to competition_register_path(competition, "not_found") unless stripe_intent.present?
+    return redirect_to Microservices::Registrations.competition_register_path(competition, "not_found") unless stripe_intent.present?
 
     stored_intent.update_status_and_charges(stripe_intent, current_user) do |charge|
       ruby_money = charge.money_amount
-      update_registration_payment(attendee_id, charge.id, ruby_money.cents, ruby_money.currency.iso_code, stripe_intent.status)
+      Microservices::Registrations.update_registration_payment(attendee_id, charge.id, ruby_money.cents, ruby_money.currency.iso_code, stripe_intent.status)
     rescue Faraday::Error
-      return redirect_to competition_register_path(competition_id, "registration_down")
+      return redirect_to Microservices::Registrations.competition_register_path(competition_id, "registration_down")
     end
 
-    redirect_to competition_register_path(competition_id, stored_transaction.status)
+    redirect_to Microservices::Registrations.competition_register_path(competition_id, stored_transaction.status)
   end
 
   def available_refunds
