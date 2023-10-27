@@ -227,8 +227,8 @@
       <%= blocks.render :nav_list, nav_items %>
 
     </div>
-      <div id="competition-data" style="<%= @competition.uses_new_registration_service? ? "display:none" : ""  %>">
-        <h3>
+      <div id="competition-data">
+        <h3 style="<%= @competition.uses_new_registration_service? ? "display:none" : ""  %>">
           <% if current_user && @competition.upcoming? %>
           <span class="bookmark-icon" id="not-bookmarked" data-toggle="tooltip" data-placement="bottom" title="<%= I18n.t('competitions.competition_info.bookmark') %>" <% if current_user.is_bookmarked?(@competition) %>style="display: none;"<% end %>>
             <%= ui_icon('bookmark') %>
