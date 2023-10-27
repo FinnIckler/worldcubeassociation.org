@@ -227,24 +227,26 @@
       <%= blocks.render :nav_list, nav_items %>
 
     </div>
-    <div id="competition-data">
-      <h3>
-        <% if current_user && @competition.upcoming? %>
+    <% unless @competition.uses_new_registration_service? %>
+      <div id="competition-data">
+        <h3>
+          <% if current_user && @competition.upcoming? %>
           <span class="bookmark-icon" id="not-bookmarked" data-toggle="tooltip" data-placement="bottom" title="<%= I18n.t('competitions.competition_info.bookmark') %>" <% if current_user.is_bookmarked?(@competition) %>style="display: none;"<% end %>>
             <%= ui_icon('bookmark') %>
           </span>
-          <span class="bookmark-icon" id="bookmarked" data-toggle="tooltip" data-placement="bottom" title="<%= I18n.t('competitions.competition_info.is_bookmarked') %>" <% if !current_user.is_bookmarked?(@competition) %>style="display: none;"<% end %>>
+            <span class="bookmark-icon" id="bookmarked" data-toggle="tooltip" data-placement="bottom" title="<%= I18n.t('competitions.competition_info.is_bookmarked') %>" <% if !current_user.is_bookmarked?(@competition) %>style="display: none;"<% end %>>
             <%= ui_icon('bookmark') %>
           </span>
-        <% end %>
-        <% if @competition.championships.any? %>
+          <% end %>
+          <% if @competition.championships.any? %>
           <span class="championship-trophy" data-toggle="tooltip" data-placement="bottom" title="<%= @competition.championships.sort.map { |championship| championship.name }.join(", ") %>">
             <%= ui_icon('trophy') %>
           </span>
-        <% end %>
-        <%= @competition.display_name %>
-      </h3>
-      <hr />
+          <% end %>
+          <%= @competition.display_name %>
+        </h3>
+        <hr />
+    <% end %>
 
       <% if @competition.cancelled? %>
         <%= alert :danger, note: true do %>
