@@ -227,7 +227,7 @@
       <%= blocks.render :nav_list, nav_items %>
 
     </div>
-    <% unless @competition.uses_new_registration_service? %>
+    <% if !@competition.uses_new_registration_service? %>
       <div id="competition-data">
         <h3>
           <% if current_user && @competition.upcoming? %>
@@ -246,6 +246,8 @@
           <%= @competition.display_name %>
         </h3>
         <hr />
+      <% else %>
+      <div id="competition-data"></div>
     <% end %>
 
       <% if @competition.cancelled? %>
