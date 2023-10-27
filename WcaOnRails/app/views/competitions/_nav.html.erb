@@ -244,7 +244,7 @@
           <% end %>
           <%= @competition.display_name %>
         </h3>
-        <hr />
+        <hr style="<%= @competition.uses_new_registration_service? ? "display:none" : ""  %>" />
 
       <% if @competition.cancelled? %>
         <%= alert :danger, note: true do %>
