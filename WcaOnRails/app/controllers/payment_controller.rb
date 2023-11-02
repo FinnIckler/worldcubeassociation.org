@@ -77,7 +77,7 @@ class PaymentController < ApplicationController
     stripe_amount = StripeTransaction.amount_to_stripe(refund_amount, currency_iso)
 
     refund_args = {
-      charge: charge.stripe_payment_intent.stripe_id,
+      charge: charge.stripe_id,
       amount: stripe_amount,
     }
 
