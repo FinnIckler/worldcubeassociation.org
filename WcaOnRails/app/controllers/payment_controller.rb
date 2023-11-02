@@ -49,7 +49,7 @@ class PaymentController < ApplicationController
     attendee_id = params.require(:attendee_id)
     payment_request = AttendeePaymentRequest.find_by(attendee_id: attendee_id)
     transactions = StripePaymentIntent.where(holder: payment_request)
-    render json: { charges: transactions.map { |t| { payment_id: t.stripe_transaction.id, amount: t.parameters.amount } } }, status: :ok
+    render json: { charges: transactions.map { |t| { payment_id: t.stripe_transaction.id, amount: t.parameters["amount"] } } }, status: :ok
   end
 
   def payment_refund
