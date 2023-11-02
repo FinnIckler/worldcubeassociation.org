@@ -57,11 +57,11 @@ class PaymentController < ApplicationController
     attendee_id = params.require(:attendee_id)
 
     payment_request = AttendeePaymentRequest.find_by(attendee_id: attendee_id)
-    competition_id, user_id = payment_request.competition_and_user_id
+    competition_id, = payment_request.competition_and_user_id
     competition = Competition.find(competition_id)
 
     unless competition.using_stripe_payments?
-      return redirect_to edit_registration_path(competition_id, user_id, "no_stripe")
+      render json: { error: "no stripe" }
     end
 
     charge = StripeTransaction.find(payment_id)
@@ -70,7 +70,7 @@ class PaymentController < ApplicationController
     refund_amount = refund_amount_param.to_i
 
     if refund_amount < 0
-      return redirect_to edit_registration_path(competition_id, user_id, "refund_zero")
+      render json: { error: "refund zero" }
     end
 
     currency_iso = competition.currency_code
@@ -96,9 +96,9 @@ class PaymentController < ApplicationController
     rescue Faraday::Error => e
       puts e.message
       puts e.backtrace
-      return redirect_to edit_registration_path(competition_id, user_id, "registration_down")
+      render json: { error: "registration unavailable" }
     end
 
-    redirect_to edit_registration_path(competition_id, user_id)
+    render json: { status: "ok" }
   end
 end
