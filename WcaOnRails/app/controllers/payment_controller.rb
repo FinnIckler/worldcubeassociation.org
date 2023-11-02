@@ -48,7 +48,7 @@ class PaymentController < ApplicationController
   def available_refunds
     attendee_id = params.require(:attendee_id)
     payment_request = AttendeePaymentRequest.find_by(attendee_id: attendee_id)
-    transactions = StripeTransaction.where(stripe_id: payment_request.stripe_payment_intent.id)
+    transactions = StripeTransaction.where(holder: payment_request)
     render json: { charges: transactions.pluck(:id) }, status: :ok
   end
 
