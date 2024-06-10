@@ -72,7 +72,7 @@ module Microservices
     def self.competitor_count_by_competition(competition_id)
       response = self.registration_connection.get(self.get_competitor_count_path(competition_id))
 
-      response.body["count"]
+      response.body["count"].to_i
     end
 
     def self.registrations_by_competition(competition_id, status = nil, event_id = nil, cache: true)
