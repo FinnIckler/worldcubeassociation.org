@@ -3,6 +3,7 @@
   - default
   - wca_jobs
   - mailers
+  - wca_live_results
 development:
   :concurrency: 5
   :verbose: true
