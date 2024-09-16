@@ -61,6 +61,7 @@ Rails.application.routes.draw do
   get 'profile/claim_wca_id/select_nearby_delegate' => 'users#select_nearby_delegate'
 
   get '/live/:competition_id/:round_id/add' => 'live#admin'
+  get '/live/:competition_id/:round_id' => 'live#show'
   post '/live/:competition_id/:round_id/add' => 'live#add'
   post '/live/notify' => 'live#notify'
 

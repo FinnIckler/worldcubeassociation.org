@@ -21,6 +21,8 @@ class LiveController < ApplicationController
   end
 
   def show
+    @competition_id = params.require(:competition_id)
+    @round_id = params.require(:round_id)
   end
 
   def admin

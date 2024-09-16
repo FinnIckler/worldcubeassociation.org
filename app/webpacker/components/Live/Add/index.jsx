@@ -15,7 +15,7 @@ export default function AddResults({ competitionId, roundId }) {
   const [attempt5, setAttempt5] = useInputState(randomInt());
   const onSubmit = useCallback(async (event) => {
     event.preventDefault();
-    const { data } = await fetchWithAuthenticityToken(`/live/${competitionId}/${roundId}/add`, {
+    await fetchWithAuthenticityToken(`/live/${competitionId}/${roundId}/add`, {
       body:
         JSON.stringify({
           competitionId,
@@ -29,8 +29,12 @@ export default function AddResults({ competitionId, roundId }) {
       },
       method: 'POST',
     });
-    console.log(data);
-  }, [competitionId, roundId]);
+    setAttempt1(randomInt());
+    setAttempt2(randomInt());
+    setAttempt3(randomInt());
+    setAttempt4(randomInt());
+    setAttempt5(randomInt());
+  }, [attempt1, attempt2, attempt3, attempt4, attempt5, competitionId, roundId, setAttempt1, setAttempt2, setAttempt3, setAttempt4, setAttempt5]);
   return (
     <Segment>
       <Form onSubmit={onSubmit}>
