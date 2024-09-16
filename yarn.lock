@@ -2474,6 +2474,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rails/actioncable@npm:7.2.100":
+  version: 7.2.100
+  resolution: "@rails/actioncable@npm:7.2.100"
+  checksum: 10c0/dc24fcd1a9f153e5550c691ddff5ea7d3d7589a3be39cf14991d3fb6e77d1d952dbf9ab5f00c9781f85e750d94f7a80ade3231ab284b008d6de311ed33b21cb9
+  languageName: node
+  linkType: hard
+
 "@rails/ujs@npm:^7.1.400":
   version: 7.1.400
   resolution: "@rails/ujs@npm:7.1.400"
@@ -10157,6 +10164,7 @@ __metadata:
     "@fullcalendar/react": "npm:^6.1.15"
     "@fullcalendar/timegrid": "npm:^6.1.15"
     "@pmmmwh/react-refresh-webpack-plugin": "npm:^0.5.15"
+    "@rails/actioncable": "npm:7.2.100"
     "@rails/ujs": "npm:^7.1.400"
     "@stripe/react-stripe-js": "npm:^2.8.0"
     "@stripe/stripe-js": "npm:^4.4.0"
