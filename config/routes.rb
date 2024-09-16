@@ -60,6 +60,10 @@ Rails.application.routes.draw do
   get 'profile/claim_wca_id' => 'users#claim_wca_id'
   get 'profile/claim_wca_id/select_nearby_delegate' => 'users#select_nearby_delegate'
 
+  get '/live/:competition_id/:round_id/add' => 'live#admin'
+  post '/live/:competition_id/:round_id/add' => 'live#add'
+  post '/live/notify' => 'live#notify'
+
   get 'users/:id/edit/avatar_thumbnail' => 'users#edit_avatar_thumbnail', as: :users_avatar_thumbnail_edit
   get 'users/:id/edit/pending_avatar_thumbnail' => 'users#edit_pending_avatar_thumbnail', as: :users_pending_avatar_thumbnail_edit
   get 'admin/avatars' => 'admin/avatars#index'
