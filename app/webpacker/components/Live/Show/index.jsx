@@ -1,13 +1,16 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { Header, Segment, Table } from 'semantic-ui-react';
 import { createConsumer } from '@rails/actioncable';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 
-export default function ShowResults({ competitionId, roundId }) {
-  const [results, setResults] = useState([]);
+function ShowResults({ competitionId, roundId }) {
+  const { data: results, isLoading } = useQuery({
+    queryKey: `${competitionId}-${roundId}-results`,
+    queryFn: () => [],
+  });
 
-  const onWebHookReceive = useCallback((newResults) => {
-    setResults((prevState) => [...prevState, { ...newResults, id: `${Math.random()}` }]);
-  }, []);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const cable = createConsumer();
@@ -18,7 +21,7 @@ export default function ShowResults({ competitionId, roundId }) {
       {
         received: (data) => {
           const parsedResults = JSON.parse(data.results);
-          onWebHookReceive(parsedResults);
+          queryClient.setQueryData(`${competitionId}-${roundId}-results`, (oldData) => [...oldData, parsedResults]);
         },
       },
     );
@@ -27,7 +30,15 @@ export default function ShowResults({ competitionId, roundId }) {
     return () => {
       subscription.unsubscribe();
     };
-  }, [competitionId, roundId, onWebHookReceive]);
+  }, [competitionId, roundId, queryClient]);
+
+  if (isLoading) {
+    return (
+      <Segment>
+        Loading...
+      </Segment>
+    );
+  }
 
   return (
     <Segment>
@@ -59,5 +70,13 @@ export default function ShowResults({ competitionId, roundId }) {
         </Table.Body>
       </Table>
     </Segment>
+  );
+}
+
+export default function Wrapper({ competitionId, roundId }) {
+  return (
+    <WCAQueryClientProvider>
+      <ShowResults competitionId={competitionId} roundId={roundId} />
+    </WCAQueryClientProvider>
   );
 }
