@@ -8,16 +8,7 @@ class LiveController < ApplicationController
     round_id = params.require(:round_id)
     AddLiveResultJob.perform_later({ results: results, competition_id: competition_id, round_id: round_id })
 
-    render json: { "status": "ok" }
-  end
-
-  def notify
-    results = params.require(:results)
-    competition_id = params.require(:competition_id)
-    round_id = params.require(:round_id)
-    ActionCable.server.broadcast("results_#{competition_id}_#{round_id}}", { results: results })
-
-    render json: { "status": "ok" }
+    render json: { status: "ok" }
   end
 
   def show
