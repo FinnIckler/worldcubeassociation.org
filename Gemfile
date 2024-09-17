@@ -114,6 +114,8 @@ gem 'after_commit_everywhere'
 gem 'slack-ruby-client'
 gem 'puma'
 
+gem "anycable-rails", "~> 1.5"
+
 group :development, :test do
   gem 'spring'
   gem 'spring-commands-rspec'
