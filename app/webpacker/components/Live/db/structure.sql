@@ -19,7 +19,20 @@ CREATE TABLE public.access_tokens (
 
 --
 -- Name: activities; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database with schema
+-- create_table "schedule_activities", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.string "holder_type", null: false
+--     t.bigint "holder_id", null: false
+--     t.integer "wcif_id", null: false
+--     t.string "name", null: false
+--     t.string "activity_code", null: false
+--     t.datetime "start_time", precision: nil, null: false
+--     t.datetime "end_time", precision: nil, null: false
+--     t.integer "scramble_set_id"
+--     t.datetime "created_at", precision: nil, null: false
+--     t.datetime "updated_at", precision: nil, null: false
+-- no room_id, parent_activity_id and round_id but I think you get that through associations
+end
 --
 
 CREATE TABLE public.activities (
@@ -36,7 +49,15 @@ CREATE TABLE public.activities (
 
 --
 -- Name: assignments; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database with schema
+-- create_table "assignments", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.bigint "registration_id"
+--     t.string "registration_type"
+--     t.bigint "schedule_activity_id"
+--     t.integer "station_number"
+--     t.string "assignment_code", null: false
+-- end
+-- no person_id but I think you get that through associations
 --
 
 CREATE TABLE public.assignments (
@@ -49,7 +70,14 @@ CREATE TABLE public.assignments (
 
 --
 -- Name: competition_events; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database with schema
+-- create_table "competition_events", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.string "competition_id", null: false
+--     t.string "event_id", null: false
+--     t.integer "fee_lowest_denomination", default: 0, null: false
+--     t.text "qualification"
+-- end
+-- No Competitor Limit
 --
 
 CREATE TABLE public.competition_events (
@@ -62,7 +90,80 @@ CREATE TABLE public.competition_events (
 
 --
 -- Name: competitions; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database with schema:
+-- create_table "Competitions", id: { type: :string, limit: 32, default: "" }, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.string "name", limit: 50, default: "", null: false
+--     t.string "cityName", limit: 50, default: "", null: false
+--     t.string "countryId", limit: 50, default: "", null: false
+--     t.text "information", size: :medium
+--     t.string "venue", limit: 240, default: "", null: false
+--     t.string "venueAddress"
+--     t.string "venueDetails"
+--     t.string "external_website", limit: 200
+--     t.string "cellName", limit: 45, default: "", null: false
+--     t.boolean "showAtAll", default: false, null: false
+--     t.integer "latitude"
+--     t.integer "longitude"
+--     t.string "contact", limit: 255
+--     t.text "remarks"
+--     t.datetime "registration_open", precision: nil
+--     t.datetime "registration_close", precision: nil
+--     t.boolean "use_wca_registration", default: true, null: false
+--     t.boolean "guests_enabled", default: true, null: false
+--     t.datetime "results_posted_at", precision: nil
+--     t.datetime "results_nag_sent_at", precision: nil
+--     t.boolean "generate_website"
+--     t.datetime "announced_at", precision: nil
+--     t.integer "base_entry_fee_lowest_denomination"
+--     t.string "currency_code", limit: 255, default: "USD"
+--     t.string "connected_stripe_account_id", limit: 255
+--     t.date "start_date"
+--     t.date "end_date"
+--     t.boolean "enable_donations"
+--     t.boolean "competitor_limit_enabled"
+--     t.integer "competitor_limit"
+--     t.text "competitor_limit_reason"
+--     t.text "extra_registration_requirements"
+--     t.boolean "on_the_spot_registration"
+--     t.integer "on_the_spot_entry_fee_lowest_denomination"
+--     t.integer "refund_policy_percent"
+--     t.datetime "refund_policy_limit_date", precision: nil
+--     t.integer "guests_entry_fee_lowest_denomination"
+--     t.datetime "created_at", precision: nil
+--     t.datetime "updated_at", precision: nil
+--     t.datetime "results_submitted_at", precision: nil
+--     t.boolean "early_puzzle_submission"
+--     t.text "early_puzzle_submission_reason"
+--     t.boolean "qualification_results"
+--     t.text "qualification_results_reason"
+--     t.string "name_reason"
+--     t.string "external_registration_page", limit: 200
+--     t.datetime "confirmed_at", precision: nil
+--     t.boolean "event_restrictions"
+--     t.text "event_restrictions_reason"
+--     t.datetime "registration_reminder_sent_at", precision: nil
+--     t.integer "announced_by"
+--     t.integer "results_posted_by"
+--     t.string "main_event_id"
+--     t.datetime "cancelled_at", precision: nil
+--     t.integer "cancelled_by"
+--     t.datetime "waiting_list_deadline_date", precision: nil
+--     t.datetime "event_change_deadline_date", precision: nil
+--     t.integer "guest_entry_status", default: 0, null: false
+--     t.boolean "allow_registration_edits", default: false, null: false
+--     t.boolean "allow_registration_self_delete_after_acceptance", default: false, null: false
+--     t.integer "competition_series_id"
+--     t.boolean "use_wca_live_for_scoretaking", default: false, null: false
+--     t.boolean "allow_registration_without_qualification", default: false
+--     t.integer "guests_per_registration_limit"
+--     t.integer "events_per_registration_limit"
+--     t.boolean "force_comment_in_registration"
+--     t.integer "posting_by"
+--     t.boolean "uses_v2_registrations", default: false, null: false
+--     t.boolean "forbid_newcomers", default: false, null: false
+--     t.string "forbid_newcomers_reason"
+-- end
+-- Missing synchronized_at, imported_by_id, inserted_at, but that's not needed
 --
 
 CREATE TABLE public.competitions (
@@ -96,7 +197,19 @@ CREATE TABLE public.one_time_codes (
 
 --
 -- Name: people; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database with schema:
+-- create_table "Persons", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.string "wca_id", limit: 10, default: "", null: false
+--     t.integer "subId", limit: 1, default: 1, null: false
+--     t.string "name", limit: 80
+--     t.string "countryId", limit: 50, default: "", null: false
+--     t.string "gender", limit: 1, default: ""
+--     t.date "dob"
+--     t.string "comments", limit: 40, default: "", null: false
+--     t.integer "incorrect_wca_id_claim_count", default: 0, null: false
+-- end
+-- No wca_user_id, email, avatar_url, avatar_thumb_url, roles but those are handled through associations
+-- No competition_id
 --
 
 CREATE TABLE public.people (
@@ -117,7 +230,10 @@ CREATE TABLE public.people (
 
 --
 -- Name: personal_bests; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database but only as a method on the person model
+-- def personal_records
+--     [self.ranksAverage, self.ranksSingle].compact.flatten
+-- end
 --
 
 CREATE TABLE public.personal_bests (
@@ -134,6 +250,10 @@ CREATE TABLE public.personal_bests (
 --
 -- Name: registration_competition_events; Type: TABLE; Schema: public; Owner: -
 -- Already part of our database (for v1, but not easy to get this information from v2)
+-- create_table "registration_competition_events", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.integer "registration_id"
+--     t.integer "competition_event_id"
+-- end
 --
 
 CREATE TABLE public.registration_competition_events (
@@ -144,7 +264,7 @@ CREATE TABLE public.registration_competition_events (
 
 --
 -- Name: registrations; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database, different schema for v1 and v2, but we have all this data
 --
 
 CREATE TABLE public.registrations (
@@ -182,7 +302,16 @@ CREATE TABLE public.results (
 
 --
 -- Name: rooms; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database with schema:
+-- create_table "venue_rooms", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.bigint "competition_venue_id", null: false
+--     t.integer "wcif_id", null: false
+--     t.string "name", null: false
+--     t.datetime "created_at", precision: nil, null: false
+--     t.datetime "updated_at", precision: nil, null: false
+--     t.string "color", limit: 7, null: false
+-- end
+--
 --
 
 CREATE TABLE public.rooms (
@@ -196,6 +325,20 @@ CREATE TABLE public.rooms (
 --
 -- Name: rounds; Type: TABLE; Schema: public; Owner: -
 -- Already part of our database
+-- create_table "rounds", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.integer "competition_event_id", null: false
+--     t.string "format_id", limit: 255, null: false
+--     t.integer "number", null: false
+--     t.datetime "created_at", precision: nil, null: false
+--     t.datetime "updated_at", precision: nil, null: false
+--     t.text "time_limit"
+--     t.text "cutoff"
+--     t.text "advancement_condition"
+--     t.integer "scramble_set_count", default: 1, null: false
+--     t.text "round_results", size: :medium
+--     t.integer "total_number_of_rounds", null: false
+--     t.string "old_type", limit: 1
+-- end
 --
 
 CREATE TABLE public.rounds (
@@ -224,7 +367,7 @@ CREATE TABLE public.scoretaking_tokens (
 
 --
 -- Name: staff_members; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database as part of the UserRoles Model
 --
 
 CREATE TABLE public.staff_members (
@@ -260,7 +403,55 @@ CREATE TABLE public.user_tokens (
 
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database with schema
+-- create_table "users", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.string "email", default: "", null: false
+--     t.string "encrypted_password", limit: 255, default: "", null: false
+--     t.string "reset_password_token"
+--     t.datetime "reset_password_sent_at", precision: nil
+--     t.datetime "remember_created_at", precision: nil
+--     t.integer "sign_in_count", default: 0, null: false
+--     t.datetime "current_sign_in_at", precision: nil
+--     t.datetime "last_sign_in_at", precision: nil
+--     t.string "current_sign_in_ip", limit: 255
+--     t.string "last_sign_in_ip", limit: 255
+--     t.string "confirmation_token", limit: 255
+--     t.datetime "confirmed_at", precision: nil
+--     t.datetime "confirmation_sent_at", precision: nil
+--     t.string "unconfirmed_email", limit: 255
+--     t.datetime "created_at", precision: nil
+--     t.datetime "updated_at", precision: nil
+--     t.string "name", limit: 255
+--     t.string "wca_id"
+--     t.string "avatar", limit: 255
+--     t.string "pending_avatar", limit: 255
+--     t.integer "saved_avatar_crop_x"
+--     t.integer "saved_avatar_crop_y"
+--     t.integer "saved_avatar_crop_w"
+--     t.integer "saved_avatar_crop_h"
+--     t.integer "saved_pending_avatar_crop_x"
+--     t.integer "saved_pending_avatar_crop_y"
+--     t.integer "saved_pending_avatar_crop_w"
+--     t.integer "saved_pending_avatar_crop_h"
+--     t.string "unconfirmed_wca_id", limit: 255
+--     t.integer "delegate_id_to_handle_wca_id_claim"
+--     t.date "dob"
+--     t.string "gender", limit: 255
+--     t.string "country_iso2", limit: 255
+--     t.boolean "results_notifications_enabled", default: false
+--     t.string "preferred_locale", limit: 255
+--     t.boolean "competition_notifications_enabled"
+--     t.boolean "receive_delegate_reports", default: false, null: false
+--     t.boolean "dummy_account", default: false, null: false
+--     t.integer "consumed_timestep"
+--     t.boolean "otp_required_for_login", default: false
+--     t.text "otp_backup_codes"
+--     t.string "session_validity_token"
+--     t.boolean "cookies_acknowledged", default: false, null: false
+--     t.boolean "registration_notifications_enabled", default: false
+--     t.string "otp_secret"
+-- end
+-- no inserted_at, but doesn't matter
 --
 
 CREATE TABLE public.users (
@@ -279,7 +470,18 @@ CREATE TABLE public.users (
 
 --
 -- Name: venues; Type: TABLE; Schema: public; Owner: -
--- Already part of our database
+-- Already part of our database with schema
+-- create_table "competition_venues", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
+--     t.string "competition_id", null: false
+--     t.integer "wcif_id", null: false
+--     t.string "name", null: false
+--     t.integer "latitude_microdegrees", null: false
+--     t.integer "longitude_microdegrees", null: false
+--     t.string "timezone_id", null: false
+--     t.datetime "created_at", precision: nil, null: false
+--     t.datetime "updated_at", precision: nil, null: false
+--     t.string "country_iso2", null: false
+-- end
 --
 
 CREATE TABLE public.venues (
