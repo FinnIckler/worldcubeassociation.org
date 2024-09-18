@@ -1,27 +1,11 @@
 --
--- PostgreSQL database dump
+-- The WCA Live Schema
 --
 
--- Dumped from database version 12.4 (Debian 12.4-1.pgdg100+1)
--- Dumped by pg_dump version 13.16 (Debian 13.16-0+deb11u1)
-
-SET statement_timeout = 0;
-SET lock_timeout = 0;
-SET idle_in_transaction_session_timeout = 0;
-SET client_encoding = 'UTF8';
-SET standard_conforming_strings = on;
-SELECT pg_catalog.set_config('search_path', '', false);
-SET check_function_bodies = false;
-SET xmloption = content;
-SET client_min_messages = warning;
-SET row_security = off;
-
-SET default_tablespace = '';
-
-SET default_table_access_method = heap;
 
 --
 -- Name: access_tokens; Type: TABLE; Schema: public; Owner: -
+-- Not needed anymore
 --
 
 CREATE TABLE public.access_tokens (
@@ -34,26 +18,8 @@ CREATE TABLE public.access_tokens (
 
 
 --
--- Name: access_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.access_tokens_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: access_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.access_tokens_id_seq OWNED BY public.access_tokens.id;
-
-
---
 -- Name: activities; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.activities (
@@ -68,28 +34,9 @@ CREATE TABLE public.activities (
                                  round_id bigint
 );
 
-
---
--- Name: activities_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.activities_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: activities_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.activities_id_seq OWNED BY public.activities.id;
-
-
 --
 -- Name: assignments; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.assignments (
@@ -100,28 +47,9 @@ CREATE TABLE public.assignments (
                                   activity_id bigint NOT NULL
 );
 
-
---
--- Name: assignments_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.assignments_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: assignments_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.assignments_id_seq OWNED BY public.assignments.id;
-
-
 --
 -- Name: competition_events; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.competition_events (
@@ -132,28 +60,9 @@ CREATE TABLE public.competition_events (
                                          competition_id bigint NOT NULL
 );
 
-
---
--- Name: competition_events_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.competition_events_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: competition_events_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.competition_events_id_seq OWNED BY public.competition_events.id;
-
-
 --
 -- Name: competitions; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.competitions (
@@ -172,28 +81,9 @@ CREATE TABLE public.competitions (
                                    updated_at timestamp(0) without time zone NOT NULL
 );
 
-
---
--- Name: competitions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.competitions_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: competitions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.competitions_id_seq OWNED BY public.competitions.id;
-
-
 --
 -- Name: one_time_codes; Type: TABLE; Schema: public; Owner: -
+-- We probably don't need this? Not sure if we have something else already on the website
 --
 
 CREATE TABLE public.one_time_codes (
@@ -204,28 +94,9 @@ CREATE TABLE public.one_time_codes (
                                      inserted_at timestamp(0) without time zone NOT NULL
 );
 
-
---
--- Name: one_time_codes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.one_time_codes_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: one_time_codes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.one_time_codes_id_seq OWNED BY public.one_time_codes.id;
-
-
 --
 -- Name: people; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.people (
@@ -244,28 +115,9 @@ CREATE TABLE public.people (
                              competition_id bigint NOT NULL
 );
 
-
---
--- Name: people_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.people_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: people_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.people_id_seq OWNED BY public.people.id;
-
-
 --
 -- Name: personal_bests; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.personal_bests (
@@ -279,28 +131,9 @@ CREATE TABLE public.personal_bests (
                                      person_id bigint NOT NULL
 );
 
-
---
--- Name: personal_bests_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.personal_bests_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: personal_bests_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.personal_bests_id_seq OWNED BY public.personal_bests.id;
-
-
 --
 -- Name: registration_competition_events; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database (for v1, but not easy to get this information from v2)
 --
 
 CREATE TABLE public.registration_competition_events (
@@ -311,6 +144,7 @@ CREATE TABLE public.registration_competition_events (
 
 --
 -- Name: registrations; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.registrations (
@@ -324,26 +158,8 @@ CREATE TABLE public.registrations (
 
 
 --
--- Name: registrations_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.registrations_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: registrations_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.registrations_id_seq OWNED BY public.registrations.id;
-
-
---
 -- Name: results; Type: TABLE; Schema: public; Owner: -
+-- These are live results! So this is a new table
 --
 
 CREATE TABLE public.results (
@@ -364,28 +180,9 @@ CREATE TABLE public.results (
                               advancing_questionable boolean DEFAULT false NOT NULL
 );
 
-
---
--- Name: results_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.results_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: results_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.results_id_seq OWNED BY public.results.id;
-
-
 --
 -- Name: rooms; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.rooms (
@@ -396,28 +193,9 @@ CREATE TABLE public.rooms (
                             venue_id bigint NOT NULL
 );
 
-
---
--- Name: rooms_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.rooms_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: rooms_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.rooms_id_seq OWNED BY public.rooms.id;
-
-
 --
 -- Name: rounds; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.rounds (
@@ -431,38 +209,9 @@ CREATE TABLE public.rounds (
                              competition_event_id bigint NOT NULL
 );
 
-
---
--- Name: rounds_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.rounds_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: rounds_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.rounds_id_seq OWNED BY public.rounds.id;
-
-
---
--- Name: schema_migrations; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.schema_migrations (
-                                        version bigint NOT NULL,
-                                        inserted_at timestamp(0) without time zone
-);
-
-
 --
 -- Name: scoretaking_tokens; Type: TABLE; Schema: public; Owner: -
+-- Not sure what the difference is between this and one time tokens
 --
 
 CREATE TABLE public.scoretaking_tokens (
@@ -473,28 +222,9 @@ CREATE TABLE public.scoretaking_tokens (
                                          inserted_at timestamp(0) without time zone NOT NULL
 );
 
-
---
--- Name: scoretaking_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.scoretaking_tokens_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: scoretaking_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.scoretaking_tokens_id_seq OWNED BY public.scoretaking_tokens.id;
-
-
 --
 -- Name: staff_members; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.staff_members (
@@ -504,28 +234,9 @@ CREATE TABLE public.staff_members (
                                     competition_id bigint NOT NULL
 );
 
-
---
--- Name: staff_members_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.staff_members_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: staff_members_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.staff_members_id_seq OWNED BY public.staff_members.id;
-
-
 --
 -- Name: terms; Type: TABLE; Schema: public; Owner: -
+-- Don't know what this is yet
 --
 
 CREATE TABLE public.terms (
@@ -536,6 +247,7 @@ CREATE TABLE public.terms (
 
 --
 -- Name: user_tokens; Type: TABLE; Schema: public; Owner: -
+-- Not sure what the difference is between this and scoretaking tokens/one time tokens
 --
 
 CREATE TABLE public.user_tokens (
@@ -546,28 +258,9 @@ CREATE TABLE public.user_tokens (
                                   inserted_at timestamp(0) without time zone NOT NULL
 );
 
-
---
--- Name: user_tokens_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.user_tokens_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: user_tokens_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.user_tokens_id_seq OWNED BY public.user_tokens.id;
-
-
 --
 -- Name: users; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.users (
@@ -584,28 +277,9 @@ CREATE TABLE public.users (
                             updated_at timestamp(0) without time zone NOT NULL
 );
 
-
---
--- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.users_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
-
-
 --
 -- Name: venues; Type: TABLE; Schema: public; Owner: -
+-- Already part of our database
 --
 
 CREATE TABLE public.venues (
@@ -618,145 +292,6 @@ CREATE TABLE public.venues (
                              timezone character varying(255) NOT NULL,
                              competition_id bigint NOT NULL
 );
-
-
---
--- Name: venues_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.venues_id_seq
-  START WITH 1
-  INCREMENT BY 1
-  NO MINVALUE
-  NO MAXVALUE
-  CACHE 1;
-
-
---
--- Name: venues_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.venues_id_seq OWNED BY public.venues.id;
-
-
---
--- Name: access_tokens id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.access_tokens ALTER COLUMN id SET DEFAULT nextval('public.access_tokens_id_seq'::regclass);
-
-
---
--- Name: activities id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.activities ALTER COLUMN id SET DEFAULT nextval('public.activities_id_seq'::regclass);
-
-
---
--- Name: assignments id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.assignments ALTER COLUMN id SET DEFAULT nextval('public.assignments_id_seq'::regclass);
-
-
---
--- Name: competition_events id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.competition_events ALTER COLUMN id SET DEFAULT nextval('public.competition_events_id_seq'::regclass);
-
-
---
--- Name: competitions id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.competitions ALTER COLUMN id SET DEFAULT nextval('public.competitions_id_seq'::regclass);
-
-
---
--- Name: one_time_codes id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.one_time_codes ALTER COLUMN id SET DEFAULT nextval('public.one_time_codes_id_seq'::regclass);
-
-
---
--- Name: people id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.people ALTER COLUMN id SET DEFAULT nextval('public.people_id_seq'::regclass);
-
-
---
--- Name: personal_bests id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.personal_bests ALTER COLUMN id SET DEFAULT nextval('public.personal_bests_id_seq'::regclass);
-
-
---
--- Name: registrations id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.registrations ALTER COLUMN id SET DEFAULT nextval('public.registrations_id_seq'::regclass);
-
-
---
--- Name: results id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.results ALTER COLUMN id SET DEFAULT nextval('public.results_id_seq'::regclass);
-
-
---
--- Name: rooms id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.rooms ALTER COLUMN id SET DEFAULT nextval('public.rooms_id_seq'::regclass);
-
-
---
--- Name: rounds id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.rounds ALTER COLUMN id SET DEFAULT nextval('public.rounds_id_seq'::regclass);
-
-
---
--- Name: scoretaking_tokens id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.scoretaking_tokens ALTER COLUMN id SET DEFAULT nextval('public.scoretaking_tokens_id_seq'::regclass);
-
-
---
--- Name: staff_members id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.staff_members ALTER COLUMN id SET DEFAULT nextval('public.staff_members_id_seq'::regclass);
-
-
---
--- Name: user_tokens id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.user_tokens ALTER COLUMN id SET DEFAULT nextval('public.user_tokens_id_seq'::regclass);
-
-
---
--- Name: users id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_id_seq'::regclass);
-
-
---
--- Name: venues id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.venues ALTER COLUMN id SET DEFAULT nextval('public.venues_id_seq'::regclass);
-
 
 --
 -- Name: access_tokens access_tokens_pkey; Type: CONSTRAINT; Schema: public; Owner: -
@@ -1332,29 +867,3 @@ ALTER TABLE ONLY public.user_tokens
 
 ALTER TABLE ONLY public.venues
   ADD CONSTRAINT venues_competition_id_fkey FOREIGN KEY (competition_id) REFERENCES public.competitions(id) ON DELETE CASCADE;
-
-
---
--- PostgreSQL database dump complete
---
-
-INSERT INTO public."schema_migrations" (version) VALUES (20200702161510);
-INSERT INTO public."schema_migrations" (version) VALUES (20200702162823);
-INSERT INTO public."schema_migrations" (version) VALUES (20200703135005);
-INSERT INTO public."schema_migrations" (version) VALUES (20200703161125);
-INSERT INTO public."schema_migrations" (version) VALUES (20200703161746);
-INSERT INTO public."schema_migrations" (version) VALUES (20200703193245);
-INSERT INTO public."schema_migrations" (version) VALUES (20200704200959);
-INSERT INTO public."schema_migrations" (version) VALUES (20200704205906);
-INSERT INTO public."schema_migrations" (version) VALUES (20200704210540);
-INSERT INTO public."schema_migrations" (version) VALUES (20200704212229);
-INSERT INTO public."schema_migrations" (version) VALUES (20200704212339);
-INSERT INTO public."schema_migrations" (version) VALUES (20200704212804);
-INSERT INTO public."schema_migrations" (version) VALUES (20200704213210);
-INSERT INTO public."schema_migrations" (version) VALUES (20200713153510);
-INSERT INTO public."schema_migrations" (version) VALUES (20200715220238);
-INSERT INTO public."schema_migrations" (version) VALUES (20200822144750);
-INSERT INTO public."schema_migrations" (version) VALUES (20230701204010);
-INSERT INTO public."schema_migrations" (version) VALUES (20230730174034);
-INSERT INTO public."schema_migrations" (version) VALUES (20230924155518);
-INSERT INTO public."schema_migrations" (version) VALUES (20240802124914);
