@@ -2,6 +2,6 @@
 
 class LiveResultsChannel < ApplicationCable::Channel
   def subscribed
-    stream_from "results_#{params[:competition_id]}_#{params[:round_id]}}"
+    stream_from "results_#{params[:round_id]}}"
   end
 end

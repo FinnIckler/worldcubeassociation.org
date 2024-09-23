@@ -1,23 +1,35 @@
 # frozen_string_literal: true
 
 class LiveController < ApplicationController
-  protect_from_forgery except: [:notify]
   def add
     results = params.require(:results).permit(:attempt1, :attempt2, :attempt3, :attempt4, :attempt5)
-    competition_id = params.require(:competition_id)
     round_id = params.require(:round_id)
-    AddLiveResultJob.perform_later({ results: results, competition_id: competition_id, round_id: round_id })
+    live_result_params = {
+      best: 10,
+      average: 9,
+      advancing: false,
+      advancing_questionable: false,
+      person_id: 15_073,
+      entered_by: 15_073,
+      round_id: round_id,
+      attempts_attributes: [
+        { result: results[:attempt1], replaces: nil },
+        { result: results[:attempt2], replaces: nil },
+        { result: results[:attempt3], replaces: nil },
+        { result: results[:attempt4], replaces: nil },
+        { result: results[:attempt5], replaces: nil },
+      ],
+    }
+    AddLiveResultJob.perform_later(live_result_params)
 
     render json: { status: "ok" }
   end
 
   def show
-    @competition_id = params.require(:competition_id)
     @round_id = params.require(:round_id)
   end
 
   def admin
-    @competition_id = params.require(:competition_id)
     @round_id = params.require(:round_id)
   end
 end

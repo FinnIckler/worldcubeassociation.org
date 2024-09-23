@@ -6,6 +6,6 @@ class AddLiveResultJob < ApplicationJob
   queue_as QUEUE_NAME
 
   def perform(params)
-    ActionCable.server.broadcast("results_#{params[:competition_id]}_#{params[:round_id]}}", { results: params[:results].to_json })
+    LiveResult.create(params)
   end
 end

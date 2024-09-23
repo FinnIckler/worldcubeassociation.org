@@ -6,7 +6,7 @@ import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvide
 
 function ShowResults({ competitionId, roundId }) {
   const { data: results, isLoading } = useQuery({
-    queryKey: `${competitionId}-${roundId}-results`,
+    queryKey: `${roundId}-results`,
     queryFn: () => [],
   });
 
@@ -17,11 +17,11 @@ function ShowResults({ competitionId, roundId }) {
 
     // Create subscription to the channel with competition and round IDs
     const subscription = cable.subscriptions.create(
-      { channel: 'LiveResultsChannel', competition_id: competitionId, round_id: roundId },
+      { channel: 'LiveResultsChannel', round_id: roundId },
       {
         received: (data) => {
           const parsedResults = JSON.parse(data.results);
-          queryClient.setQueryData(`${competitionId}-${roundId}-results`, (oldData) => [...oldData, parsedResults]);
+          queryClient.setQueryData(`${roundId}-results`, (oldData) => [...oldData, parsedResults]);
         },
       },
     );
@@ -43,8 +43,6 @@ function ShowResults({ competitionId, roundId }) {
   return (
     <Segment>
       <Header>
-        {competitionId}
-        {' '}
         {roundId}
         {' '}
         Live results
