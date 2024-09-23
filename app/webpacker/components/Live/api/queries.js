@@ -1,3 +1,5 @@
+const gql = () => {};
+
 // New Table for live results needed
 const RECORD_LIST_RECORD_FRAGMENT = gql`
   fragment records on Record {
@@ -33,7 +35,7 @@ const RECORD_LIST_RECORD_FRAGMENT = gql`
 `;
 
 // Already have a v0 query for this
-const COMPETITIONS_QUERY = gql`
+let COMPETITIONS_QUERY = gql`
   query Competitions($from: Date!) {
     competitions(from: $from) {
       id
@@ -57,7 +59,7 @@ const COMPETITIONS_QUERY = gql`
 `;
 
 // Probably easier to load in Ruby, not sure
-const COMPETITION_QUERY = gql`
+COMPETITION_QUERY = gql`
   query Competition($id: ID!) {
     competition(id: $id) {
       id
@@ -103,7 +105,7 @@ const NEXT_QUALIFYING_QUERY = gql`
   }
 `;
 // Probably easier to load in Ruby, not sure
-const COMPETITION_QUERY = gql`
+COMPETITION_QUERY = gql`
   query Competition($id: ID!) {
     competition(id: $id) {
       id
@@ -119,7 +121,7 @@ const COMPETITION_QUERY = gql`
   }
 `;
 // Not needed, as importing won't exist
-const IMPORTABLE_COMPETITIONS_QUERY = gql`
+let IMPORTABLE_COMPETITIONS_QUERY = gql`
   query ImportableCompetitions {
     importableCompetitions {
       wcaId
@@ -131,7 +133,7 @@ const IMPORTABLE_COMPETITIONS_QUERY = gql`
 `;
 // New Table for live results needed
 // For world records we already have a v0 API
-const ROUND_QUERY = gql`
+ROUND_QUERY = gql`
   query Round($id: ID!) {
     round(id: $id) {
       id
@@ -178,7 +180,7 @@ const ROUND_QUERY = gql`
   }
 `;
 // Not needed anymore due to no sync
-const COMPETITION_QUERY = gql`
+COMPETITION_QUERY = gql`
   query Competition($id: ID!) {
     competition(id: $id) {
       id
@@ -188,7 +190,7 @@ const COMPETITION_QUERY = gql`
   }
 `;
 // Probably easier to load in Ruby, not sure
-const COMPETITION_QUERY = gql`
+COMPETITION_QUERY = gql`
   query Competition($id: ID!) {
     competition(id: $id) {
       id
@@ -284,7 +286,7 @@ const COMPETITION_EVENTS_QUERY = gql`
 `;
 // Needs new Table
 // For World Records we already have a v0 API
-const ROUND_QUERY = gql`
+let ROUND_QUERY = gql`
   query Round($id: ID!) {
     round(id: $id) {
       id
@@ -413,7 +415,7 @@ const CURRENT_USER_QUERY = gql`
 `;
 // Already have a v0 API
 // For recent records we will need a new table
-const COMPETITIONS_QUERY = gql`
+COMPETITIONS_QUERY = gql`
   query Competitions($from: Date!) {
     competitions(from: $from) {
       id
@@ -436,7 +438,7 @@ const COMPETITIONS_QUERY = gql`
   ${RECORD_LIST_RECORD_FRAGMENT}
 `;
 // Not needed anymore due to no import
-const IMPORTABLE_COMPETITIONS_QUERY = gql`
+IMPORTABLE_COMPETITIONS_QUERY = gql`
   query ImportableCompetitions {
     importableCompetitions {
       wcaId
@@ -447,7 +449,7 @@ const IMPORTABLE_COMPETITIONS_QUERY = gql`
   }
 `;
 // Already have v0 API
-const COMPETITIONS_QUERY = gql`
+COMPETITIONS_QUERY = gql`
   query Competitions {
     currentUser {
       id
@@ -556,7 +558,7 @@ const ROUND_RESULT_FRAGMENT = gql`
   }
 `;
 // Will need new Table
-const ROUND_QUERY = gql`
+ROUND_QUERY = gql`
   query Round($id: ID!) {
     round(id: $id) {
       id

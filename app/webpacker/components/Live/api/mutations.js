@@ -1,3 +1,5 @@
+const gql = () => {};
+
 // Not needed, this would be done on the competition page
 const UPDATE_COMPETITION_ACCESS_MUTATION = gql`
   mutation UpdateCompetitionAccess($input: UpdateCompetitionAccessInput!) {

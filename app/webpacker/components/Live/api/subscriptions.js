@@ -1,3 +1,5 @@
+const gql = () => {};
+
 // Will need new Table
 const ROUND_RESULT_FRAGMENT = gql`
   fragment roundResult on Result {
