@@ -25,7 +25,7 @@ async function getRoundResults(roundId, competitionId) {
 async function submitRoundResults({
   roundId, competitionId, userId, attempts,
 }) {
-  const { data } = await fetchJsonOrError(`/competitions/${competitionId}/rounds/${roundId}`, {
+  const { data } = await fetchJsonOrError(`/api/competitions/${competitionId}/rounds/${roundId}`, {
     headers: {
       'Content-Type': 'application/json',
     },
