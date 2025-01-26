@@ -18,4 +18,11 @@ class LiveResult < ApplicationRecord
     ActionCable.server.broadcast("results_#{round_id}",
                                  { attempts: live_attempts.as_json, user_id: person_id, result_id: id })
   end
+
+  def serializable_hash(options = nil)
+    {
+      attempts: live_attempts,
+      user_id: person_id,
+    }
+  end
 end

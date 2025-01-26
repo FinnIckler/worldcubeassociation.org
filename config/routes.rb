@@ -150,6 +150,7 @@ Rails.application.routes.draw do
   get 'competitions/edit/registration-collisions-json' => 'competitions#registration_collisions_json', as: :registration_collisions_json
   get 'competitions/edit/series-eligible-competitions-json' => 'competitions#series_eligible_competitions_json', as: :series_eligible_competitions_json
   get 'competitions/:competition_id/rounds/:round_id' => 'live#test_page'
+  get 'api/competitions/:competition_id/rounds/:round_id' => 'live#get_round_results'
   post 'competitions/:competition_id/rounds/:round_id' => 'live#add_result', as: :add_result
 
   get 'results/rankings', to: redirect('results/rankings/333/single', status: 302)

@@ -18,4 +18,10 @@ class LiveController < ApplicationController
 
     render json: { status: "ok" }
   end
+
+  def get_round_results
+    round_id = params.require(:round_id)
+
+    render json: Round.find(round_id).live_results
+  end
 end

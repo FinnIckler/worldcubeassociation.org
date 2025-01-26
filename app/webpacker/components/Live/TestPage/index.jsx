@@ -3,9 +3,9 @@ import {
   Form, Table, Grid, Button, Message, Header, Segment,
 } from 'semantic-ui-react';
 import { createConsumer } from '@rails/actioncable';
-import { useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { formatAttemptResult } from '../../../lib/wca-live/attempts';
-import { fetchWithAuthenticityToken } from '../../../lib/requests/fetchWithAuthenticityToken';
+import { fetchJsonOrError } from '../../../lib/requests/fetchWithAuthenticityToken';
 import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 
@@ -17,13 +17,56 @@ export default function Wrapper({ competitionId, roundId, eventId }) {
   );
 }
 
+async function getRoundResults(roundId, competitionId) {
+  const { data } = await fetchJsonOrError(`/api/competitions/${competitionId}/rounds/${roundId}`);
+  return data;
+}
+
+async function submitRoundResults({
+  roundId, competitionId, userId, attempts,
+}) {
+  const { data } = await fetchJsonOrError(`/competitions/${competitionId}/rounds/${roundId}`, {
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    method: 'POST',
+    body: JSON.stringify({
+      user_id: userId,
+      round_id: roundId,
+      attempts,
+    }),
+  });
+  return data;
+}
+
 function AddResults({ competitionId, roundId, eventId }) {
   const [userId, setUserId] = useState('');
   const [attempts, setAttempts] = useState(['', '', '', '', '']);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
-  const [results, setResults] = useState([]);
   const queryClient = useQueryClient();
+
+  const { data: results, isLoading } = useQuery({
+    queryKey: `${roundId}-results`,
+    queryFn: () => getRoundResults(roundId, competitionId),
+  });
+
+  const {
+    mutate, isPending,
+  } = useMutation({
+    mutationFn: submitRoundResults,
+    onSuccess: () => {
+      setSuccess('Results added successfully!');
+      setUserId('');
+      setAttempts(['', '', '', '', '']);
+      setError('');
+
+      setTimeout(() => setSuccess(''), 3000);
+    },
+    onError: () => {
+      setError('Failed to submit results. Please try again.');
+    },
+  });
 
   useEffect(() => {
     const cable = createConsumer();
@@ -32,8 +75,7 @@ function AddResults({ competitionId, roundId, eventId }) {
       { channel: 'LiveResultsChannel', round_id: roundId },
       {
         received: (data) => {
-          queryClient.setQueryData(`${roundId}-results`, (oldData = []) => [...oldData, data]);
-          setResults((prev) => [...prev, data]);
+          queryClient.setQueryData(`${roundId}-results`, (oldData) => [...oldData, data]);
         },
       },
     );
@@ -55,34 +97,15 @@ function AddResults({ competitionId, roundId, eventId }) {
       return;
     }
 
-    try {
-      await fetchWithAuthenticityToken(`/competitions/${competitionId}/rounds/${roundId}`, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          user_id: userId,
-          round_id: roundId,
-          attempts,
-        }),
-      });
-
-      setSuccess('Results added successfully!');
-      setUserId('');
-      setAttempts(['', '', '', '', '']);
-      setError('');
-
-      setTimeout(() => setSuccess(''), 3000);
-    } catch (err) {
-      setError('Failed to submit results. Please try again.');
-    }
+    mutate({
+      roundId, userId, competitionId, attempts,
+    });
   };
 
   const formatTime = (time) => formatAttemptResult(time, eventId);
 
   return (
-    <Segment>
+    <Segment loading={isLoading || isPending}>
       <Header>
         {competitionId}
         :
@@ -121,7 +144,7 @@ function AddResults({ competitionId, roundId, eventId }) {
         </Grid.Column>
 
         <Grid.Column width={8}>
-          <h2>Live Results</h2>
+          <Header>Live Results</Header>
           <Table celled>
             <Table.Header>
               <Table.Row>
@@ -136,7 +159,7 @@ function AddResults({ competitionId, roundId, eventId }) {
             </Table.Header>
 
             <Table.Body>
-              {results.map((result, index) => (
+              {(results ?? []).map((result, index) => (
                 <Table.Row key={`${result.user_id}-${index}`}>
                   <Table.Cell>{result.user_id}</Table.Cell>
                   {result.attempts.map((attempt, attemptIndex) => (
