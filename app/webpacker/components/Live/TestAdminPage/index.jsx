@@ -8,6 +8,7 @@ import { formatAttemptResult } from '../../../lib/wca-live/attempts';
 import { fetchJsonOrError } from '../../../lib/requests/fetchWithAuthenticityToken';
 import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
+import ResultsTable from '../components/ResultsTable';
 
 export default function Wrapper({ competitionId, roundId, eventId }) {
   return (
@@ -145,30 +146,7 @@ function AddResults({ competitionId, roundId, eventId }) {
 
         <Grid.Column width={8}>
           <Header>Live Results</Header>
-          <Table celled>
-            <Table.Header>
-              <Table.Row>
-                <Table.HeaderCell>User ID</Table.HeaderCell>
-                {[1, 2, 3, 4, 5].map((num) => (
-                  <Table.HeaderCell key={num}>
-                    Attempt
-                    {num}
-                  </Table.HeaderCell>
-                ))}
-              </Table.Row>
-            </Table.Header>
-
-            <Table.Body>
-              {(results ?? []).map((result, index) => (
-                <Table.Row key={`${result.user_id}-${index}`}>
-                  <Table.Cell>{result.user_id}</Table.Cell>
-                  {result.attempts.map((attempt, attemptIndex) => (
-                    <Table.Cell key={attemptIndex}>{formatTime(attempt)}</Table.Cell>
-                  ))}
-                </Table.Row>
-              ))}
-            </Table.Body>
-          </Table>
+          <ResultsTable results={results ?? []} eventId={eventId} />
         </Grid.Column>
       </Grid>
     </Segment>

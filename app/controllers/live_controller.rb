@@ -1,7 +1,13 @@
 # frozen_string_literal: true
 
 class LiveController < ApplicationController
-  def test_page
+  def test_admin
+    @competition_id = params[:competition_id]
+    @round_id = params[:round_id]
+    @event_id = Round.find(@round_id).event.id
+  end
+
+  def test_results
     @competition_id = params[:competition_id]
     @round_id = params[:round_id]
     @event_id = Round.find(@round_id).event.id
@@ -22,6 +28,6 @@ class LiveController < ApplicationController
   def get_round_results
     round_id = params.require(:round_id)
 
-    render json: Round.find(round_id).live_results
+    render json: Round.find(round_id).live_results.includes([:live_attempts])
   end
 end
