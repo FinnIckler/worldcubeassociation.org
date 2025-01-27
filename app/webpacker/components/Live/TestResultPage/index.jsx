@@ -9,10 +9,10 @@ import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 import ResultsTable from '../components/ResultsTable';
 
-export default function Wrapper({ competitionId, roundId, eventId }) {
+export default function Wrapper({ roundId, eventId, wcif }) {
   return (
     <WCAQueryClientProvider>
-      <ResultPage competitionId={competitionId} roundId={roundId} eventId={eventId} />
+      <ResultPage competitionId={wcif.id} roundId={roundId} eventId={eventId} wcif={wcif} />
     </WCAQueryClientProvider>
   );
 }
@@ -22,7 +22,9 @@ async function getRoundResults(roundId, competitionId) {
   return data;
 }
 
-function ResultPage({ competitionId, roundId, eventId }) {
+function ResultPage({
+  competitionId, roundId, eventId, wcif,
+}) {
   const queryClient = useQueryClient();
 
   const { data: results, isLoading } = useQuery({
@@ -59,7 +61,7 @@ function ResultPage({ competitionId, roundId, eventId }) {
       <Grid>
         <Grid.Column width={16}>
           <Header>Live Results</Header>
-          <ResultsTable results={results ?? []} eventId={eventId} />
+          <ResultsTable results={results ?? []} eventId={eventId} wcif={wcif} />
         </Grid.Column>
       </Grid>
     </Segment>

@@ -151,6 +151,7 @@ Rails.application.routes.draw do
   get 'competitions/edit/series-eligible-competitions-json' => 'competitions#series_eligible_competitions_json', as: :series_eligible_competitions_json
   get 'competitions/:competition_id/live/rounds/:round_id/admin' => 'live#test_admin'
   get 'competitions/:competition_id/live/rounds/:round_id' => 'live#test_results'
+  get 'competitions/:competition_id/live/competitors/:registration_id' => 'live#test_persons'
   get 'api/competitions/:competition_id/rounds/:round_id' => 'live#get_round_results'
   post 'api/competitions/:competition_id/rounds/:round_id' => 'live#add_result', as: :add_result
 

@@ -17,6 +17,8 @@ class LiveResult < ApplicationRecord
       attempts: live_attempts.as_json,
       registration_id: registration_id,
       user_id: registration.user.id,
+      round: round,
+      event_id: round.event.id,
       result_id: id,
       best: best,
       average: average,

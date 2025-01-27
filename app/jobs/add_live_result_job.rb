@@ -7,16 +7,24 @@ class AddLiveResultJob < ApplicationJob
   # params: { results, round_id, user_id, entered_by }
   def perform(params)
     attempts = params[:results].map { |r| LiveAttempt.build(result: r) }
-    round = Round.find(params[:round_id]).includes([:event, :format])
+    round = Round.find(params[:round_id])
     event = round.event
     # TODO calculate record tag
     format = round.format
-    best = min(attempts.select { |a| a > 0 })
-    worst = max(attempts)
+    best = attempts.select { |a| a.result > 0 }.min
+    worst = attempts.max
+    average = (attempts - [best] - [worst]).sum(&:result) / format.expected_solve_count
+    puts({registration_id: params[:registration_id],
+          round: round,
+          live_attempts: attempts,
+          entered_by: params[:entered_by],
+          best: best,
+          average: average})
     LiveResult.create!(registration_id: params[:registration_id],
+                       round: round,
                        live_attempts: attempts,
                        entered_by: params[:entered_by],
-                       best: best,
-                       average: (attempts - best - worst) / format.expected_solve_count)
+                       best: best.result,
+                       average: average)
   end
 end

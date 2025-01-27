@@ -9,10 +9,12 @@ import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 import ResultsTable from '../components/ResultsTable';
 
-export default function Wrapper({ competitionId, roundId, eventId }) {
+export default function Wrapper({
+  roundId, eventId, wcif,
+}) {
   return (
     <WCAQueryClientProvider>
-      <AddResults competitionId={competitionId} roundId={roundId} eventId={eventId} />
+      <AddResults competitionId={wcif.id} roundId={roundId} eventId={eventId} wcif={wcif} />
     </WCAQueryClientProvider>
   );
 }
@@ -23,7 +25,7 @@ async function getRoundResults(roundId, competitionId) {
 }
 
 async function submitRoundResults({
-  roundId, competitionId, userId, attempts,
+  roundId, competitionId, registrationId, attempts,
 }) {
   const { data } = await fetchJsonOrError(`/api/competitions/${competitionId}/rounds/${roundId}`, {
     headers: {
@@ -31,7 +33,7 @@ async function submitRoundResults({
     },
     method: 'POST',
     body: JSON.stringify({
-      user_id: userId,
+      registration_id: registrationId,
       round_id: roundId,
       attempts,
     }),
@@ -39,8 +41,10 @@ async function submitRoundResults({
   return data;
 }
 
-function AddResults({ competitionId, roundId, eventId }) {
-  const [userId, setUserId] = useState('');
+function AddResults({
+  competitionId, roundId, eventId, wcif,
+}) {
+  const [registrationId, setRegistrationId] = useState('');
   const [attempts, setAttempts] = useState(['', '', '', '', '']);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
@@ -57,7 +61,7 @@ function AddResults({ competitionId, roundId, eventId }) {
     mutationFn: submitRoundResults,
     onSuccess: () => {
       setSuccess('Results added successfully!');
-      setUserId('');
+      setRegistrationId('');
       setAttempts(['', '', '', '', '']);
       setError('');
 
@@ -92,13 +96,13 @@ function AddResults({ competitionId, roundId, eventId }) {
   };
 
   const handleSubmit = async () => {
-    if (!userId) {
+    if (!registrationId) {
       setError('Please enter a user ID');
       return;
     }
 
     mutate({
-      roundId, userId, competitionId, attempts,
+      roundId, registrationId, competitionId, attempts,
     });
   };
 
@@ -120,11 +124,16 @@ function AddResults({ competitionId, roundId, eventId }) {
             {error && <Message error content={error} />}
             {success && <Message success content={success} />}
 
-            <Form.Input
-              label="User ID"
+            <Form.Select
+              label="Competitor"
               placeholder="Enter user ID"
-              value={userId}
-              onChange={(e) => setUserId(e.target.value)}
+              value={registrationId}
+              onChange={(_, { value }) => setRegistrationId(value)}
+              options={wcif.persons.map((p) => ({
+                key: p.registration.wcaRegistrationId,
+                value: p.registration.wcaRegistrationId,
+                text: `${p.name} (${p.registrantId})`,
+              }))}
             />
 
             {attempts.map((attempt, index) => (
@@ -143,7 +152,7 @@ function AddResults({ competitionId, roundId, eventId }) {
 
         <Grid.Column width={8}>
           <Header>Live Results</Header>
-          <ResultsTable results={results ?? []} eventId={eventId} />
+          <ResultsTable results={results ?? []} eventId={eventId} wcif={wcif} />
         </Grid.Column>
       </Grid>
     </Segment>

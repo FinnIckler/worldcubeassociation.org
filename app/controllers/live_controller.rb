@@ -2,13 +2,13 @@
 
 class LiveController < ApplicationController
   def test_admin
-    @competition_id = params[:competition_id]
+    @competition = Competition.find(params[:competition_id])
     @round_id = params[:round_id]
     @event_id = Round.find(@round_id).event.id
   end
 
   def test_results
-    @competition_id = params[:competition_id]
+    @competition = Competition.find(params[:competition_id])
     @round_id = params[:round_id]
     @event_id = Round.find(@round_id).event.id
   end
@@ -29,5 +29,14 @@ class LiveController < ApplicationController
     round_id = params.require(:round_id)
 
     render json: Round.find(round_id).live_results.includes([:live_attempts])
+  end
+
+  def test_persons
+    registration_id = params.require(:registration_id)
+    registration = Registration.find(registration_id)
+
+    @competition_id = params[:competition_id]
+    @user = registration.user
+    @results = registration.live_results.includes([:live_attempts])
   end
 end

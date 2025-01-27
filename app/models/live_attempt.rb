@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 class LiveAttempt < ApplicationRecord
+  include Comparable
   # Associations
   belongs_to :live_result
 
@@ -10,5 +11,9 @@ class LiveAttempt < ApplicationRecord
 
   def serializable_hash(options = nil)
     result
+  end
+
+  def <=>(other)
+    result <=> other.result
   end
 end
