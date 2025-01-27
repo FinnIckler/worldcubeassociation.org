@@ -578,17 +578,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_24_154917) do
     t.index ["competition_id", "championship_type"], name: "index_championships_on_competition_id_and_championship_type", unique: true
   end
 
-  create_table "check_records_results", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.string "competition_id"
-    t.string "event_id"
-    t.datetime "run_start"
-    t.datetime "run_end"
-    t.json "results"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.index ["competition_id", "event_id"], name: "index_check_records_results_on_competition_id_and_event_id", unique: true
-  end
-
   create_table "competition_delegates", id: :integer, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "competition_id"
     t.integer "delegate_id"
@@ -806,11 +795,21 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_24_154917) do
   end
 
   create_table "live_results", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
-    t.integer "person_id", null: false
+    t.integer "registration_id", null: false
     t.integer "round_id", null: false
     t.integer "entered_by_id", null: false
+    t.integer "ranking"
+    t.integer "best", null: false
+    t.integer "average", null: false
+    t.string "single_record_tag", limit: 255
+    t.string "average_record_tag", limit: 255
+    t.boolean "advancing", default: false, null: false
+    t.boolean "advancing_questionable", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["registration_id", "round_id"], name: "index_live_results_on_registration_id_and_round_id", unique: true
+    t.index ["registration_id"], name: "index_live_results_on_registration_id"
+    t.index ["round_id"], name: "index_live_results_on_round_id"
   end
 
   create_table "locations", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
