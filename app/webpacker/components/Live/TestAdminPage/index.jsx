@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Form, Table, Grid, Button, Message, Header, Segment,
+  Form, Grid, Button, Message, Header, Segment,
 } from 'semantic-ui-react';
 import { createConsumer } from '@rails/actioncable';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { formatAttemptResult } from '../../../lib/wca-live/attempts';
 import { fetchJsonOrError } from '../../../lib/requests/fetchWithAuthenticityToken';
 import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
@@ -102,8 +101,6 @@ function AddResults({ competitionId, roundId, eventId }) {
       roundId, userId, competitionId, attempts,
     });
   };
-
-  const formatTime = (time) => formatAttemptResult(time, eventId);
 
   return (
     <Segment loading={isLoading || isPending}>

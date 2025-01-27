@@ -16,10 +16,10 @@ class LiveController < ApplicationController
   def add_result
     results = params.require(:attempts)
     round_id = params.require(:round_id)
-    user_id = params.require(:user_id)
+    registration_id = params.require(:registration_id)
     AddLiveResultJob.perform_now({ results: results,
                                    round_id: round_id,
-                                   user_id: user_id,
+                                   registration_id: registration_id,
                                    entered_by: current_user })
 
     render json: { status: "ok" }
