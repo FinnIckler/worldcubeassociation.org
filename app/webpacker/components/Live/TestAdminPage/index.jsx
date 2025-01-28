@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import {
   Form, Grid, Button, Message, Header, Segment,
 } from 'semantic-ui-react';
@@ -55,14 +55,15 @@ function AddResults({
     queryFn: () => getRoundResults(roundId, competitionId),
   });
 
-  useEffect(() => {
-    if (registrationId) {
-      const alreadyEnteredResults = results.find((r) => r.registration_id === registrationId);
-      if (alreadyEnteredResults) {
-        setAttempts(alreadyEnteredResults.attempts);
-      }
+  const handleRegistrationIdChange = useCallback((_, { value }) => {
+    setRegistrationId(value);
+    const alreadyEnteredResults = results.find((r) => r.registration_id === value);
+    if (alreadyEnteredResults) {
+      setAttempts(alreadyEnteredResults.attempts);
+    } else {
+      setAttempts(['', '', '', '', '']);
     }
-  }, [registrationId, results]);
+  }, [results]);
 
   const {
     mutate, isPending,
@@ -138,7 +139,7 @@ function AddResults({
               placeholder="Competitor"
               value={registrationId}
               search={(inputs, value) => inputs.filter((d, i) => d.text.toLowerCase().includes(value.toLowerCase()) || parseInt(value, 10) === i)}
-              onChange={(_, { value }) => setRegistrationId(value)}
+              onChange={handleRegistrationIdChange}
               options={competitors.toSorted((a, b) => a.id - b.id).map((p, i) => ({
                 key: p.id,
                 value: p.id,
