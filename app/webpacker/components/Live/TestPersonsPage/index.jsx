@@ -5,6 +5,7 @@ import {
 import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 import { formatAttemptResult } from '../../../lib/wca-live/attempts';
+import { liveUrls } from '../../../lib/requests/routes.js.erb';
 
 export default function Wrapper({
   results, user, competitionId,
@@ -48,7 +49,7 @@ function PersonResults({
                 return (
                   <Table.Row>
                     <Table.Cell>
-                      <a href={`/competitions/${competitionId}/live/rounds/${round.id}`}>
+                      <a href={liveUrls.roundResults(competitionId, round.id)}>
                         Round
                         {' '}
                         {round.number}

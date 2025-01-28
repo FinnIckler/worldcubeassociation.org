@@ -8,6 +8,7 @@ import { fetchJsonOrError } from '../../../lib/requests/fetchWithAuthenticityTok
 import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 import ResultsTable from '../components/ResultsTable';
+import { liveUrls } from '../../../lib/requests/routes.js.erb';
 
 export default function Wrapper({
   roundId, eventId, competitionId, competitors,
@@ -20,7 +21,7 @@ export default function Wrapper({
 }
 
 async function getRoundResults(roundId, competitionId) {
-  const { data } = await fetchJsonOrError(`/api/competitions/${competitionId}/rounds/${roundId}`);
+  const { data } = await fetchJsonOrError(liveUrls.api.getRoundResults(competitionId, roundId));
   return data;
 }
 

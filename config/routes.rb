@@ -149,11 +149,11 @@ Rails.application.routes.draw do
   get 'competitions/edit/nearby-competitions-json' => 'competitions#nearby_competitions_json', as: :nearby_competitions_json
   get 'competitions/edit/registration-collisions-json' => 'competitions#registration_collisions_json', as: :registration_collisions_json
   get 'competitions/edit/series-eligible-competitions-json' => 'competitions#series_eligible_competitions_json', as: :series_eligible_competitions_json
-  get 'competitions/:competition_id/live/rounds/:round_id/admin' => 'live#test_admin'
-  get 'competitions/:competition_id/live/rounds/:round_id' => 'live#test_results'
-  get 'competitions/:competition_id/live/competitors/:registration_id' => 'live#test_persons'
-  get 'api/competitions/:competition_id/rounds/:round_id' => 'live#get_round_results'
-  post 'api/competitions/:competition_id/rounds/:round_id' => 'live#add_result', as: :add_result
+  get 'competitions/:competition_id/live/rounds/:round_id/admin' => 'live#test_admin', as: :live_admin_round_results
+  get 'competitions/:competition_id/live/rounds/:round_id' => 'live#test_results', as: :live_round_results
+  get 'competitions/:competition_id/live/competitors/:registration_id' => 'live#test_persons', as: :live_person_results
+  get 'api/competitions/:competition_id/rounds/:round_id' => 'live#get_round_results', as: :live_round_results_api
+  post 'api/competitions/:competition_id/rounds/:round_id' => 'live#add_result', as: :add_live_result
 
   get 'results/rankings', to: redirect('results/rankings/333/single', status: 302)
   get 'results/rankings/333mbf/average',

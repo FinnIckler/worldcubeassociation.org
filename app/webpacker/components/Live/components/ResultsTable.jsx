@@ -3,6 +3,7 @@ import React, { useMemo } from 'react';
 import _ from 'lodash';
 import { formatAttemptResult } from '../../../lib/wca-live/attempts';
 import { events } from '../../../lib/wca-data.js.erb';
+import { liveUrls } from '../../../lib/requests/routes.js.erb';
 
 const customOrderBy = (competitor, resultsByRegistrationId, sortBy) => {
   const competitorResults = resultsByRegistrationId[competitor.id];
@@ -61,7 +62,7 @@ export default function ResultsTable({
               <Table.Cell>
                 {index + 1}
               </Table.Cell>
-              <Table.Cell><a href={`/competitions/${competitionId}/live/competitors/${competitor.id}`}>{competitor.user.name}</a></Table.Cell>
+              <Table.Cell><a href={liveUrls.personResults(competitionId, competitor.id)}>{competitor.user.name}</a></Table.Cell>
               {result && result[0].attempts.map((attempt, attemptIndex) => (
                 <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt, eventId)}</Table.Cell>
               ))}
