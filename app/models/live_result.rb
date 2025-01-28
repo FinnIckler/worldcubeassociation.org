@@ -3,6 +3,9 @@
 class LiveResult < ApplicationRecord
   has_many :live_attempts, dependent: :destroy
 
+  after_create :recompute_ranks
+  after_update :recompute_ranks
+
   after_create :notify_users
   after_update :notify_users
 
@@ -14,6 +17,7 @@ class LiveResult < ApplicationRecord
 
   def serializable_hash(options = nil)
     {
+      ranking: ranking,
       attempts: live_attempts.as_json,
       registration_id: registration_id,
       user_id: registration.user.id,
@@ -34,4 +38,18 @@ class LiveResult < ApplicationRecord
     def notify_users
       ActionCable.server.broadcast("results_#{round_id}", serializable_hash)
     end
+
+    def recompute_ranks
+      ActiveRecord::Base.connection.exec_query <<-SQL
+        UPDATE live_results r
+        JOIN (
+            SELECT id, RANK() OVER (ORDER BY #{round.format.sort_by == 'single' ? 'best' : 'average'} ASC) AS `rank`
+            FROM live_results
+            WHERE round_id = #{round.id}
+        ) ranked
+        ON r.id = ranked.id
+        SET r.ranking = ranked.rank;
+    SQL
+    end
+
 end

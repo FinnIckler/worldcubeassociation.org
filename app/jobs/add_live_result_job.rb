@@ -13,13 +13,7 @@ class AddLiveResultJob < ApplicationJob
     format = round.format
     best = attempts.select { |a| a.result > 0 }.min
     worst = attempts.max
-    average = (attempts - [best] - [worst]).sum(&:result) / format.expected_solve_count
-    puts({registration_id: params[:registration_id],
-          round: round,
-          live_attempts: attempts,
-          entered_by: params[:entered_by],
-          best: best,
-          average: average})
+    average = (attempts - [best] - [worst]).sum(&:result) / 3
     LiveResult.create!(registration_id: params[:registration_id],
                        round: round,
                        live_attempts: attempts,

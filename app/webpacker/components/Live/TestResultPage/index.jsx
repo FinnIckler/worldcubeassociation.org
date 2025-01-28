@@ -52,7 +52,7 @@ function ResultPage({
   return (
     <Segment loading={isLoading}>
       <Header>
-        Add Results for
+        Results for
         {competitionId}
         :
         {' '}
