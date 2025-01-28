@@ -10,11 +10,11 @@ import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvide
 import ResultsTable from '../components/ResultsTable';
 
 export default function Wrapper({
-  roundId, eventId, wcif,
+  roundId, eventId, competitionId, competitors,
 }) {
   return (
     <WCAQueryClientProvider>
-      <AddResults competitionId={wcif.id} roundId={roundId} eventId={eventId} wcif={wcif} />
+      <AddResults competitionId={competitionId} roundId={roundId} eventId={eventId} competitors={competitors} />
     </WCAQueryClientProvider>
   );
 }
@@ -42,7 +42,7 @@ async function submitRoundResults({
 }
 
 function AddResults({
-  competitionId, roundId, eventId, wcif,
+  competitionId, roundId, eventId, competitors,
 }) {
   const [registrationId, setRegistrationId] = useState('');
   const [attempts, setAttempts] = useState(['', '', '', '', '']);
@@ -51,9 +51,18 @@ function AddResults({
   const queryClient = useQueryClient();
 
   const { data: results, isLoading } = useQuery({
-    queryKey: `${roundId}-results`,
+    queryKey: [roundId, 'results'],
     queryFn: () => getRoundResults(roundId, competitionId),
   });
+
+  useEffect(() => {
+    if (registrationId) {
+      const alreadyEnteredResults = results.find((r) => r.registration_id === registrationId);
+      if (alreadyEnteredResults) {
+        setAttempts(alreadyEnteredResults.attempts);
+      }
+    }
+  }, [registrationId, results]);
 
   const {
     mutate, isPending,
@@ -79,7 +88,7 @@ function AddResults({
       { channel: 'LiveResultsChannel', round_id: roundId },
       {
         received: (data) => {
-          queryClient.setQueryData(`${roundId}-results`, (oldData) => [...oldData, data]);
+          queryClient.setQueryData([roundId, 'results'], (oldData) => [...oldData, data]);
         },
       },
     );
@@ -115,7 +124,7 @@ function AddResults({
         {events.byId[eventId].name}
       </Header>
       <Grid>
-        <Grid.Column width={8}>
+        <Grid.Column width={4}>
           <Form error={!!error} success={!!success}>
             <Header>
               Add New Result
@@ -126,13 +135,14 @@ function AddResults({
 
             <Form.Select
               label="Competitor"
-              placeholder="Enter user ID"
+              placeholder="Competitor"
               value={registrationId}
+              search={(inputs, value) => inputs.filter((d, i) => d.text.toLowerCase().includes(value.toLowerCase()) || parseInt(value, 10) === i)}
               onChange={(_, { value }) => setRegistrationId(value)}
-              options={wcif.persons.map((p) => ({
-                key: p.registration.wcaRegistrationId,
-                value: p.registration.wcaRegistrationId,
-                text: `${p.name} (${p.registrantId})`,
+              options={competitors.toSorted((a, b) => a.id - b.id).map((p, i) => ({
+                key: p.id,
+                value: p.id,
+                text: `${p.user.name} (${i + 1})`,
               }))}
             />
 
@@ -141,7 +151,7 @@ function AddResults({
                 key={index}
                 label={`Attempt ${index + 1}`}
                 placeholder="Time in milliseconds or DNF"
-                value={attempt === 'DNF' ? 'DNF' : attempt}
+                value={attempt === -1 ? 'DNF' : attempt}
                 onChange={(e) => handleAttemptChange(index, e.target.value)}
               />
             ))}
@@ -150,9 +160,9 @@ function AddResults({
           </Form>
         </Grid.Column>
 
-        <Grid.Column width={8}>
+        <Grid.Column width={12}>
           <Header>Live Results</Header>
-          <ResultsTable results={results ?? []} eventId={eventId} wcif={wcif} />
+          <ResultsTable results={results ?? []} eventId={eventId} competitors={competitors} />
         </Grid.Column>
       </Grid>
     </Segment>

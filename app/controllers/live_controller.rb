@@ -2,15 +2,37 @@
 
 class LiveController < ApplicationController
   def test_admin
-    @competition = Competition.find(params[:competition_id])
-    @round_id = params[:round_id]
-    @event_id = Round.find(@round_id).event.id
+    @competition_id = params[:competition_id]
+    @round = Round.find(params[:round_id])
+    @event_id = @round.event.id
+    round_number = @round.number
+    @competitors = if round_number == 1
+                     Registration.joins(:registration_competition_events)
+                                 .where(
+                                   competition_id: @competition_id,
+                                   registration_competition_events: { competition_event_id: @round.competition_event_id }
+                                 ).includes([:user])
+                   else
+                     previous_round = Round.find_by(competition_id: @competition_id, event_id: @event_id, number: round_number - 1)
+                     previous_round.live_results.includes(:registration).map(&:registration)
+                   end
   end
 
   def test_results
-    @competition = Competition.find(params[:competition_id])
-    @round_id = params[:round_id]
-    @event_id = Round.find(@round_id).event.id
+    @competition_id = params[:competition_id]
+    @round = Round.find(params[:round_id])
+    @event_id = @round.event.id
+    round_number = @round.number
+    @competitors = if round_number == 1
+                     Registration.joins(:registration_competition_events)
+                                 .where(
+                                   competition_id: @competition_id,
+                                   registration_competition_events: { competition_event_id: @round.competition_event_id }
+                                 ).includes([:user])
+                   else
+                     previous_round = Round.find_by(competition_id: @competition_id, event_id: @event_id, number: round_number - 1)
+                     previous_round.live_results.includes(:registration).map(&:registration)
+                   end
   end
 
   def add_result

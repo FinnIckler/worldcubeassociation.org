@@ -1,13 +1,43 @@
 import { Table } from 'semantic-ui-react';
-import React from 'react';
+import React, { useMemo } from 'react';
+import _ from 'lodash';
 import { formatAttemptResult } from '../../../lib/wca-live/attempts';
 import { events } from '../../../lib/wca-data.js.erb';
 
-export default function ResultsTable({ results, eventId, wcif }) {
+const customOrderBy = (competitor, resultsByRegistrationId, sortBy) => {
+  const competitorResults = resultsByRegistrationId[competitor.id];
+
+  if (!competitorResults) {
+    return competitor.id;
+  }
+
+  return competitorResults[0][sortBy];
+};
+
+export default function ResultsTable({
+  results, eventId, competitors, competitionId,
+}) {
   const event = events.byId[eventId];
+  const resultsByRegistrationId = _.groupBy(results, 'registration_id');
+
+  const sortedCompetitors = useMemo(() => {
+    if (results.length === 0) {
+      return [];
+    }
+
+    const { sortBy } = event.recommendedFormat();
+
+    return _.orderBy(
+      competitors,
+      [
+        (competitor) => customOrderBy(competitor, resultsByRegistrationId, sortBy === 'single' ? 'best' : 'average'),
+        (competitor) => customOrderBy(competitor, resultsByRegistrationId, sortBy === 'single' ? 'average' : 'best')],
+      ['asc', 'asc'],
+    );
+  }, [competitors, event, results.length, resultsByRegistrationId]);
 
   return (
-    <Table celled>
+    <Table celled compact="very">
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Rank</Table.HeaderCell>
@@ -23,22 +53,24 @@ export default function ResultsTable({ results, eventId, wcif }) {
       </Table.Header>
 
       <Table.Body>
-        {(results.toSorted((a, b) => {
-          if (event.recommendedFormat().sortBy === 'single') {
-            return a.best - b.best;
-          }
-          return a.average - b.average;
-        })).map((result, index) => {
-          const competitor = wcif.persons.find((p) => p.wcaUserId === result.user_id);
+        {sortedCompetitors.map((competitor, index) => {
+          const result = resultsByRegistrationId[competitor.id];
+
           return (
-            <Table.Row key={competitor.wcaId}>
-              <Table.Cell>{index + 1}</Table.Cell>
-              <Table.Cell><a href={`/competitions/${wcif.id}/live/competitors/${competitor.registration.wcaRegistrationId}`}>{competitor.name}</a></Table.Cell>
-              {result.attempts.map((attempt, attemptIndex) => (
+            <Table.Row key={competitor.user_id}>
+              <Table.Cell>
+                {index + 1}
+              </Table.Cell>
+              <Table.Cell><a href={`/competitions/${competitionId}/live/competitors/${competitor.id}`}>{competitor.user.name}</a></Table.Cell>
+              {result && result[0].attempts.map((attempt, attemptIndex) => (
                 <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt, eventId)}</Table.Cell>
               ))}
-              <Table.Cell>{formatAttemptResult(result.average, event.id)}</Table.Cell>
-              <Table.Cell>{formatAttemptResult(result.best, event.id)}</Table.Cell>
+              {result && (
+              <>
+                <Table.Cell>{formatAttemptResult(result[0].average, event.id)}</Table.Cell>
+                <Table.Cell>{formatAttemptResult(result[0].best, event.id)}</Table.Cell>
+              </>
+              )}
             </Table.Row>
           );
         })}
