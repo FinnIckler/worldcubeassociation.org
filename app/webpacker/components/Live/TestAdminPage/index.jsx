@@ -174,7 +174,13 @@ function AddResults({
 
         <Grid.Column width={12}>
           <Header>Live Results</Header>
-          <ResultsTable results={results ?? []} eventId={eventId} competitors={competitors} competitionId={competitionId} isAdmin />
+          <ResultsTable
+            results={results ?? []}
+            eventId={eventId}
+            competitors={competitors}
+            competitionId={competitionId}
+            isAdmin
+          />
         </Grid.Column>
       </Grid>
     </Segment>

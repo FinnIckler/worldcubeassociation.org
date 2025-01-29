@@ -3,7 +3,7 @@ import React, { useMemo } from 'react';
 import _ from 'lodash';
 import { formatAttemptResult } from '../../../lib/wca-live/attempts';
 import { events } from '../../../lib/wca-data.js.erb';
-import { liveUrls } from '../../../lib/requests/routes.js.erb';
+import { editRegistrationUrl, liveUrls } from '../../../lib/requests/routes.js.erb';
 
 const customOrderBy = (competitor, resultsByRegistrationId, sortBy) => {
   const competitorResults = resultsByRegistrationId[competitor.id];
@@ -72,7 +72,7 @@ export default function ResultsTable({
               </Table.Cell>
               )}
               <Table.Cell>
-                <a href={liveUrls.personResults(competitionId, competitor.id)}>
+                <a href={isAdmin ? editRegistrationUrl(competitor.user_id, competitionId) : liveUrls.personResults(competitionId, competitor.id)}>
                   {competitor.user.name}
                 </a>
               </Table.Cell>
