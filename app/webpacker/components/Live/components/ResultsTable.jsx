@@ -16,7 +16,7 @@ const customOrderBy = (competitor, resultsByRegistrationId, sortBy) => {
 };
 
 export default function ResultsTable({
-  results, eventId, competitors, competitionId,
+  results, eventId, competitors, competitionId, isAdmin = false,
 }) {
   const event = events.byId[eventId];
   const resultsByRegistrationId = _.groupBy(results, 'registration_id');
@@ -42,6 +42,7 @@ export default function ResultsTable({
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell>Rank</Table.HeaderCell>
+          { isAdmin && <Table.HeaderCell>Id</Table.HeaderCell> }
           <Table.HeaderCell>Competitor</Table.HeaderCell>
           {[...Array(event.recommendedFormat().expectedSolveCount).keys()].map((num) => (
             <Table.HeaderCell key={num}>
@@ -65,7 +66,16 @@ export default function ResultsTable({
               <Table.Cell>
                 {index + 1}
               </Table.Cell>
-              <Table.Cell><a href={liveUrls.personResults(competitionId, competitor.id)}>{competitor.user.name}</a></Table.Cell>
+              {isAdmin && (
+              <Table.Cell>
+                {competitor.registration_id}
+              </Table.Cell>
+              )}
+              <Table.Cell>
+                <a href={liveUrls.personResults(competitionId, competitor.id)}>
+                  {competitor.user.name}
+                </a>
+              </Table.Cell>
               {hasResults && result.attempts.map((attempt, attemptIndex) => (
                 <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt, eventId)}</Table.Cell>
               ))}

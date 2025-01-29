@@ -148,12 +148,13 @@ function AddResults({
               label="Competitor"
               placeholder="Competitor"
               value={registrationId}
-              search={(inputs, value) => inputs.filter((d, i) => d.text.toLowerCase().includes(value.toLowerCase()) || parseInt(value, 10) === i)}
+              search={(inputs, value) => inputs.filter((d) => d.text.toLowerCase().includes(value.toLowerCase()) || parseInt(value, 10) === d.registrationId)}
               onChange={handleRegistrationIdChange}
-              options={competitors.toSorted((a, b) => a.id - b.id).map((p, i) => ({
+              options={competitors.toSorted((a, b) => a.id - b.id).map((p) => ({
                 key: p.id,
                 value: p.id,
-                text: `${p.user.name} (${i + 1})`,
+                registrationId: p.registration_id,
+                text: `${p.user.name} (${p.registration_id})`,
               }))}
             />
             {Array.from(Array(event.recommendedFormat().expectedSolveCount).keys()).map((index) => (
@@ -173,7 +174,7 @@ function AddResults({
 
         <Grid.Column width={12}>
           <Header>Live Results</Header>
-          <ResultsTable results={results ?? []} eventId={eventId} competitors={competitors} competitionId={competitionId} />
+          <ResultsTable results={results ?? []} eventId={eventId} competitors={competitors} competitionId={competitionId} isAdmin />
         </Grid.Column>
       </Grid>
     </Segment>
