@@ -4,11 +4,9 @@ import {
 } from 'semantic-ui-react';
 import { createConsumer } from '@rails/actioncable';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { fetchJsonOrError } from '../../../lib/requests/fetchWithAuthenticityToken';
 import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 import ResultsTable from '../components/ResultsTable';
-import { liveUrls } from '../../../lib/requests/routes.js.erb';
 import AttemptResultField from '../../EditResult/WCALive/AttemptResultField/AttemptResultField';
 import getRoundResults from '../api/getRoundResults';
 import submitRoundResults from '../api/submitRoundResults';
@@ -37,6 +35,7 @@ function AddResults({
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const queryClient = useQueryClient();
+  const event = events.byId[eventId];
 
   const { data: results, isLoading } = useQuery({
     queryKey: [roundId, 'results'],
@@ -157,14 +156,13 @@ function AddResults({
                 text: `${p.user.name} (${i + 1})`,
               }))}
             />
-
-            {attempts.map((attempt, index) => (
+            {Array.from(Array(event.recommendedFormat().expectedSolveCount).keys()).map((index) => (
               <AttemptResultField
                 eventId={eventId}
                 key={index}
                 label={`Attempt ${index + 1}`}
                 placeholder="Time in milliseconds or DNF"
-                value={attempt}
+                value={attempts[index] ?? 0}
                 onChange={(value) => handleAttemptChange(index, value)}
               />
             ))}

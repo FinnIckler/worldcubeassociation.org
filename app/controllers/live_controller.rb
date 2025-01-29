@@ -56,10 +56,10 @@ class LiveController < ApplicationController
 
   def update_result
     results = params.require(:attempts)
-    round_id = params.require(:round_id)
+    round = Round.find(params.require(:round_id))
     registration_id = params.require(:registration_id)
 
-    result = LiveResult.includes(:live_attempts).find_by(round_id: round_id, registration_id: registration_id)
+    result = LiveResult.includes(:live_attempts).find_by(round: round, registration_id: registration_id)
 
     unless result.present?
       return render json: { status: "result does not exist" }, status: :unprocessable_entity
@@ -68,16 +68,14 @@ class LiveController < ApplicationController
     previous_attempts = result.live_attempts
 
     attempts = results.map.with_index do |r, i|
-      previous_attempt = previous_attempts.find_by(result: r)
-      next previous_attempt if previous_attempt.present?
-
-      replaces = previous_attempts[i]
-      next LiveAttempt.build(result: r, replaces: replaces.id) if replaces.present?
-
-      LiveAttempt.build(result: r)
+      previous_attempts.find_by(result: r) ||
+        (previous_attempts[i] ? LiveAttempt.build(result: r, replaces: previous_attempts[i].id) : LiveAttempt.build(result: r))
     end
 
-    result.update(live_attempts: attempts)
+    # TODO: What is the best way to do this?
+    r = Result.build({ value1: results[0], value2: results[1], value3: results[2], value4: results[3], value5: results[4], event_id: round.event.id, round_type_id: round.round_type_id, format_id: round.format_id })
+
+    result.update(live_attempts: attempts, average: r.compute_correct_average, best: r.compute_correct_best)
 
     render json: { status: "ok" }
   end
