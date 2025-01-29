@@ -15,8 +15,15 @@ class LiveController < ApplicationController
                                  .select { |r, registrant_id| r.competing_status == 'accepted' && r.event_ids.include?(@event_id) }
                                  .map { |r, registrant_id| r.as_json({ include: [:user => { only: [:name], methods: [], include: []}]}).merge("registration_id" => registrant_id) }
                    else
-                     previous_round = Round.find_by(competition_id: @competition_id, event_id: @event_id, number: round_number - 1)
-                     previous_round.live_results.where(advancing: true).includes(:registration).map(&:registration)
+                     previous_round = Round.joins(:competition_event).find_by(competition_event: { competition_id: @competition_id, event_id: @event_id }, number: round_number - 1)
+                     advancing = previous_round.live_results.where(advancing: true).pluck(:registration_id)
+                     Registration.where(competition_id: @competition_id)
+                                 .includes([:user])
+                                 .wcif_ordered
+                                 .to_enum
+                                 .with_index(1)
+                                 .select { |r, registrant_id| advancing.include?(r.id) }
+                                 .map { |r, registrant_id| r.as_json({ include: [:user => { only: [:name], methods: [], include: []}]}).merge("registration_id" => registrant_id) }
                    end
   end
 
@@ -33,7 +40,7 @@ class LiveController < ApplicationController
                                    registration_competition_events: { competition_event_id: @round.competition_event_id }
                                  ).includes([:user])
                    else
-                     previous_round = Round.find_by(competition_id: @competition_id, event_id: @event_id, number: round_number - 1)
+                     previous_round = Round.joins(:competition_event).find_by(competition_event: { competition_id: @competition_id, event_id: @event_id }, number: round_number - 1)
                      previous_round.live_results.where(advancing: true).includes(:registration).map(&:registration)
                    end
   end
@@ -94,5 +101,12 @@ class LiveController < ApplicationController
     @competition_id = params[:competition_id]
     @user = registration.user
     @results = registration.live_results.includes([:live_attempts])
+  end
+
+  def test_schedule
+    @competition_id = params.require(:competition_id)
+
+    @rounds = Round.joins(:competition_event).where(competition_event: { competition_id: @competition_id })
+
   end
 end

@@ -22,10 +22,6 @@ export default function ResultsTable({
   const resultsByRegistrationId = _.groupBy(results, 'registration_id');
 
   const sortedCompetitors = useMemo(() => {
-    if (results.length === 0) {
-      return [];
-    }
-
     const { sortBy } = event.recommendedFormat();
 
     return _.orderBy(

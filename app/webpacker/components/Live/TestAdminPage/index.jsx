@@ -11,6 +11,7 @@ import AttemptResultField from '../../EditResult/WCALive/AttemptResultField/Atte
 import getRoundResults from '../api/getRoundResults';
 import submitRoundResults from '../api/submitRoundResults';
 import updateRoundResults from '../api/updateRoundResults';
+import { liveUrls } from '../../../lib/requests/routes.js.erb';
 
 export default function Wrapper({
   roundId, eventId, competitionId, competitors,
@@ -93,7 +94,16 @@ function AddResults({
       { channel: 'LiveResultsChannel', round_id: roundId },
       {
         received: (data) => {
-          queryClient.setQueryData([roundId, 'results'], (oldData) => [...oldData, data]);
+          queryClient.setQueryData([roundId, 'results'], (oldData) => {
+            console.log(data);
+            const existingIndex = oldData.map((a) => a.registration_id).indexOf(data.registration_id);
+            if (existingIndex === -1) {
+              console.log('adding');
+              return [...oldData, data];
+            }
+            console.log('replacing');
+            return oldData.map((a) => (a.registration_id === data.registration_id ? data : a));
+          });
         },
       },
     );
@@ -173,6 +183,12 @@ function AddResults({
         </Grid.Column>
 
         <Grid.Column width={12}>
+          <Button.Group floated="right">
+            <a href={liveUrls.roundResults(competitionId, roundId)}><Button>Results</Button></a>
+            <a href={liveUrls.roundResults(competitionId, roundId)}><Button>Add Competitor</Button></a>
+            <a href={liveUrls.roundResults(competitionId, roundId)}><Button>PDF</Button></a>
+            <a href={liveUrls.roundResults(competitionId, roundId)}><Button>Double Check</Button></a>
+          </Button.Group>
           <Header>Live Results</Header>
           <ResultsTable
             results={results ?? []}

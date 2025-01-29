@@ -152,6 +152,7 @@ Rails.application.routes.draw do
   get 'competitions/:competition_id/live/rounds/:round_id/admin' => 'live#test_admin', as: :live_admin_round_results
   get 'competitions/:competition_id/live/rounds/:round_id' => 'live#test_results', as: :live_round_results
   get 'competitions/:competition_id/live/competitors/:registration_id' => 'live#test_persons', as: :live_person_results
+  get 'competitions/:competition_id/live' => 'live#test_schedule', as: :live_schedule
   get 'api/competitions/:competition_id/rounds/:round_id' => 'live#get_round_results', as: :live_round_results_api
   post 'api/competitions/:competition_id/rounds/:round_id' => 'live#add_result', as: :add_live_result
   patch 'api/competitions/:competition_id/rounds/:round_id' => 'live#update_result', as: :update_live_result
