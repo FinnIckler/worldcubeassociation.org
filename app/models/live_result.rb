@@ -79,25 +79,25 @@ class LiveResult < ApplicationRecord
       max_qualifying = (round_results.length * 0.75).floor
 
       if round.final_round?
-        round_results.where(ranking: [1,2,3]).update(advancing: true)
+        round_results.where(ranking: [1,2,3]).update_all advancing: true
       else
         advancement_condition = round.advancement_condition
         if advancement_condition.is_a? AdvancementConditions::RankingCondition
           qualifying_index = advancement_condition.level > max_qualifying ?  max_qualifying : advancement_condition.level
-          round_results.where(ranking: [1..qualifying_index]).update(advancing: true)
+          round_results.update_all("advancing = CASE WHEN ranking BETWEEN 1 AND #{qualifying_index} THEN TRUE ELSE FALSE END")
         end
 
         if advancement_condition.is_a? AdvancementConditions::PercentCondition
           amount_qualifying = (advancement_condition.level * round_results.length).floor
           qualifying_index = amount_qualifying > max_qualifying ?  max_qualifying : amount_qualifying
-          round_results.where(ranking: [1..qualifying_index]).update(advancing: true)
+          round_results.update_all("advancing = CASE WHEN ranking BETWEEN 1 AND #{qualifying_index} THEN TRUE ELSE FALSE END")
         end
 
         if advancement_condition.is_a? AdvancementConditions::AttemptResultCondition
           sort_by = round.format.sort_by == 'single' ? 'best' : 'average'
           people_potentially_qualifying = round_results.where("#{sort_by} > ?", advancement_condition.level)
           qualifying_index = people_potentially_qualifying.length > max_qualifying ?  max_qualifying : amount_qualifying.length
-          round_results.first(qualifying_index).update(advancing: true)
+          round_results.update_all("advancing = CASE WHEN id IN (SELECT id FROM round_results ORDER BY ranking ASC LIMIT #{qualifying_index}) THEN TRUE ELSE FALSE END")
         end
 
       end

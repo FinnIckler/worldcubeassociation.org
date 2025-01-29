@@ -9,44 +9,31 @@ import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 import ResultsTable from '../components/ResultsTable';
 import { liveUrls } from '../../../lib/requests/routes.js.erb';
+import AttemptResultField from '../../EditResult/WCALive/AttemptResultField/AttemptResultField';
+import getRoundResults from '../api/getRoundResults';
+import submitRoundResults from '../api/submitRoundResults';
+import updateRoundResults from '../api/updateRoundResults';
 
 export default function Wrapper({
   roundId, eventId, competitionId, competitors,
 }) {
   return (
     <WCAQueryClientProvider>
-      <AddResults competitionId={competitionId} roundId={roundId} eventId={eventId} competitors={competitors} />
+      <AddResults
+        competitionId={competitionId}
+        roundId={roundId}
+        eventId={eventId}
+        competitors={competitors}
+      />
     </WCAQueryClientProvider>
   );
-}
-
-async function getRoundResults(roundId, competitionId) {
-  const { data } = await fetchJsonOrError(liveUrls.api.getRoundResults(competitionId, roundId));
-  return data;
-}
-
-async function submitRoundResults({
-  roundId, competitionId, registrationId, attempts,
-}) {
-  const { data } = await fetchJsonOrError(liveUrls.api.addRoundResult(competitionId, roundId), {
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    method: 'POST',
-    body: JSON.stringify({
-      registration_id: registrationId,
-      round_id: roundId,
-      attempts,
-    }),
-  });
-  return data;
 }
 
 function AddResults({
   competitionId, roundId, eventId, competitors,
 }) {
   const [registrationId, setRegistrationId] = useState('');
-  const [attempts, setAttempts] = useState(['', '', '', '', '']);
+  const [attempts, setAttempts] = useState([0, 0, 0, 0, 0]);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const queryClient = useQueryClient();
@@ -62,18 +49,35 @@ function AddResults({
     if (alreadyEnteredResults) {
       setAttempts(alreadyEnteredResults.attempts);
     } else {
-      setAttempts(['', '', '', '', '']);
+      setAttempts([0, 0, 0, 0, 0]);
     }
   }, [results]);
 
   const {
-    mutate, isPending,
+    mutate: mutateSubmit, isPending: isPendingSubmit,
   } = useMutation({
     mutationFn: submitRoundResults,
     onSuccess: () => {
       setSuccess('Results added successfully!');
       setRegistrationId('');
-      setAttempts(['', '', '', '', '']);
+      setAttempts([0, 0, 0, 0, 0]);
+      setError('');
+
+      setTimeout(() => setSuccess(''), 3000);
+    },
+    onError: () => {
+      setError('Failed to submit results. Please try again.');
+    },
+  });
+
+  const {
+    mutate: mutateUpdate, isPending: isPendingUpdate,
+  } = useMutation({
+    mutationFn: updateRoundResults,
+    onSuccess: () => {
+      setSuccess('Results added successfully!');
+      setRegistrationId('');
+      setAttempts([0, 0, 0, 0, 0]);
       setError('');
 
       setTimeout(() => setSuccess(''), 3000);
@@ -102,7 +106,7 @@ function AddResults({
 
   const handleAttemptChange = (index, value) => {
     const newAttempts = [...attempts];
-    newAttempts[index] = value.toLowerCase() === 'dnf' ? -1 : parseFloat(value);
+    newAttempts[index] = value;
     setAttempts(newAttempts);
   };
 
@@ -112,13 +116,19 @@ function AddResults({
       return;
     }
 
-    mutate({
-      roundId, registrationId, competitionId, attempts,
-    });
+    if (results.find((r) => r.registration_id === registrationId)) {
+      mutateUpdate({
+        roundId, registrationId, competitionId, attempts,
+      });
+    } else {
+      mutateSubmit({
+        roundId, registrationId, competitionId, attempts,
+      });
+    }
   };
 
   return (
-    <Segment loading={isLoading || isPending}>
+    <Segment loading={isLoading || isPendingSubmit || isPendingUpdate}>
       <Header>
         {competitionId}
         :
@@ -149,12 +159,13 @@ function AddResults({
             />
 
             {attempts.map((attempt, index) => (
-              <Form.Input
+              <AttemptResultField
+                eventId={eventId}
                 key={index}
                 label={`Attempt ${index + 1}`}
                 placeholder="Time in milliseconds or DNF"
-                value={attempt === -1 ? 'DNF' : attempt}
-                onChange={(e) => handleAttemptChange(index, e.target.value)}
+                value={attempt}
+                onChange={(value) => handleAttemptChange(index, value)}
               />
             ))}
 

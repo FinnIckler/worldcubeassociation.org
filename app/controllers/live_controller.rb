@@ -33,7 +33,7 @@ class LiveController < ApplicationController
                                  ).includes([:user])
                    else
                      previous_round = Round.find_by(competition_id: @competition_id, event_id: @event_id, number: round_number - 1)
-                     previous_round.live_results.includes(:registration).map(&:registration)
+                     previous_round.live_results.where(advancing: true).includes(:registration).map(&:registration)
                    end
   end
 
@@ -41,10 +41,43 @@ class LiveController < ApplicationController
     results = params.require(:attempts)
     round_id = params.require(:round_id)
     registration_id = params.require(:registration_id)
+
+    if LiveResult.exists?(round_id: round_id, registration_id: registration_id)
+      return render json: { status: "result already exist" }, status: :unprocessable_entity
+    end
+
     AddLiveResultJob.perform_now({ results: results,
                                    round_id: round_id,
                                    registration_id: registration_id,
                                    entered_by: current_user })
+
+    render json: { status: "ok" }
+  end
+
+  def update_result
+    results = params.require(:attempts)
+    round_id = params.require(:round_id)
+    registration_id = params.require(:registration_id)
+
+    result = LiveResult.includes(:live_attempts).find_by(round_id: round_id, registration_id: registration_id)
+
+    unless result.present?
+      return render json: { status: "result does not exist" }, status: :unprocessable_entity
+    end
+
+    previous_attempts = result.live_attempts
+
+    attempts = results.map.with_index do |r, i|
+      previous_attempt = previous_attempts.find_by(result: r)
+      next previous_attempt if previous_attempt.present?
+
+      replaces = previous_attempts[i]
+      next LiveAttempt.build(result: r, replaces: replaces.id) if replaces.present?
+
+      LiveAttempt.build(result: r)
+    end
+
+    result.update(live_attempts: attempts)
 
     render json: { status: "ok" }
   end

@@ -62,7 +62,7 @@ function ResultPage({
         :
         {' '}
         {events.byId[eventId].name}
-        <a href={liveUrls.roundResultsAdmin(competitionId, roundId)}><Button floated="right">Admin</Button></a>
+        {canAdminResults && <a href={liveUrls.roundResultsAdmin(competitionId, roundId)}><Button floated="right">Admin</Button></a>}
       </Header>
       <Grid>
         <Grid.Column width={16}>
