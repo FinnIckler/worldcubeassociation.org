@@ -55,21 +55,24 @@ export default function ResultsTable({
 
       <Table.Body>
         {sortedCompetitors.map((competitor, index) => {
-          const result = resultsByRegistrationId[competitor.id];
+          const potentialResults = resultsByRegistrationId[competitor.id];
+
+          const hasResults = Boolean(potentialResults);
+          const result = hasResults ? potentialResults[0] : null;
 
           return (
-            <Table.Row key={competitor.user_id}>
+            <Table.Row key={competitor.user_id} positive={hasResults && result.advancing}>
               <Table.Cell>
                 {index + 1}
               </Table.Cell>
               <Table.Cell><a href={liveUrls.personResults(competitionId, competitor.id)}>{competitor.user.name}</a></Table.Cell>
-              {result && result[0].attempts.map((attempt, attemptIndex) => (
+              {hasResults && result.attempts.map((attempt, attemptIndex) => (
                 <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt, eventId)}</Table.Cell>
               ))}
-              {result && (
+              {hasResults && (
               <>
-                <Table.Cell>{formatAttemptResult(result[0].average, event.id)}</Table.Cell>
-                <Table.Cell>{formatAttemptResult(result[0].best, event.id)}</Table.Cell>
+                <Table.Cell>{formatAttemptResult(result.average, event.id)}</Table.Cell>
+                <Table.Cell>{formatAttemptResult(result.best, event.id)}</Table.Cell>
               </>
               )}
             </Table.Row>

@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import {
+  Button,
   Grid, Header, Segment,
 } from 'semantic-ui-react';
 import { createConsumer } from '@rails/actioncable';
@@ -15,7 +16,7 @@ export default function Wrapper({
 }) {
   return (
     <WCAQueryClientProvider>
-      <ResultPage competitionId={competitionId} roundId={roundId} eventId={eventId} competitors={competitors} />
+      <ResultPage competitionId={competitionId} roundId={roundId} eventId={eventId} competitors={competitors} canAdminResults />
     </WCAQueryClientProvider>
   );
 }
@@ -26,6 +27,7 @@ async function getRoundResults(roundId, competitionId) {
 }
 
 function ResultPage({
+  canAdminResults,
   competitionId, roundId, eventId, competitors,
 }) {
   const queryClient = useQueryClient();
@@ -60,6 +62,7 @@ function ResultPage({
         :
         {' '}
         {events.byId[eventId].name}
+        <a href={liveUrls.roundResultsAdmin(competitionId, roundId)}><Button floated="right">Admin</Button></a>
       </Header>
       <Grid>
         <Grid.Column width={16}>

@@ -4,7 +4,10 @@ class LiveResult < ApplicationRecord
   has_many :live_attempts, dependent: :destroy
 
   after_create :recompute_ranks
-  after_update :recompute_ranks
+  after_update :recompute_ranks, :if => :should_recompute?
+
+  after_create :recompute_advancing
+  after_update :recompute_advancing, :if => :should_recompute?
 
   after_create :notify_users
   after_update :notify_users
@@ -33,6 +36,10 @@ class LiveResult < ApplicationRecord
   end
 
   private
+
+    def should_recompute?
+      best_changed? || average_changed?
+    end
 
     def notify_users
       ActionCable.server.broadcast("results_#{round_id}", serializable_hash)
@@ -63,5 +70,36 @@ class LiveResult < ApplicationRecord
       SET r.ranking = ranked.rank
       WHERE r.round_id = #{round.id};
     SQL
+    end
+
+    def recompute_advancing
+      round_results = LiveResult.where(round: round)
+
+      # Maximum 75% as per regulations
+      max_qualifying = (round_results.length * 0.75).floor
+
+      if round.final_round?
+        round_results.where(ranking: [1,2,3]).update(advancing: true)
+      else
+        advancement_condition = round.advancement_condition
+        if advancement_condition.is_a? AdvancementConditions::RankingCondition
+          qualifying_index = advancement_condition.level > max_qualifying ?  max_qualifying : advancement_condition.level
+          round_results.where(ranking: [1..qualifying_index]).update(advancing: true)
+        end
+
+        if advancement_condition.is_a? AdvancementConditions::PercentCondition
+          amount_qualifying = (advancement_condition.level * round_results.length).floor
+          qualifying_index = amount_qualifying > max_qualifying ?  max_qualifying : amount_qualifying
+          round_results.where(ranking: [1..qualifying_index]).update(advancing: true)
+        end
+
+        if advancement_condition.is_a? AdvancementConditions::AttemptResultCondition
+          sort_by = round.format.sort_by == 'single' ? 'best' : 'average'
+          people_potentially_qualifying = round_results.where("#{sort_by} > ?", advancement_condition.level)
+          qualifying_index = people_potentially_qualifying.length > max_qualifying ?  max_qualifying : amount_qualifying.length
+          round_results.first(qualifying_index).update(advancing: true)
+        end
+
+      end
     end
 end
