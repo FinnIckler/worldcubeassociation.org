@@ -4,6 +4,7 @@ class LiveAttempt < ApplicationRecord
   include Comparable
   # Associations
   belongs_to :live_result
+  belongs_to :replaced_by, class_name: "LiveAttempt", optional: true
 
   # Validations
   validates :result, presence: true

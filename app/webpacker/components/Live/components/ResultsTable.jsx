@@ -73,7 +73,7 @@ export default function ResultsTable({
                 </a>
               </Table.Cell>
               {hasResults && result.attempts.map((attempt, attemptIndex) => (
-                <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt, eventId)}</Table.Cell>
+                <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt.result, eventId)}</Table.Cell>
               ))}
               {hasResults && (
               <>

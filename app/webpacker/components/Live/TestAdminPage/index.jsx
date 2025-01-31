@@ -47,7 +47,7 @@ function AddResults({
     setRegistrationId(value);
     const alreadyEnteredResults = results.find((r) => r.registration_id === value);
     if (alreadyEnteredResults) {
-      setAttempts(alreadyEnteredResults.attempts);
+      setAttempts(alreadyEnteredResults.attempts.map((a) => a.result));
     } else {
       setAttempts([0, 0, 0, 0, 0]);
     }

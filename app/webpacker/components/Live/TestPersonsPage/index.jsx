@@ -58,7 +58,7 @@ function PersonResults({
                     <Table.Cell>{r.ranking}</Table.Cell>
                     {attempts.map((a) => (
                       <Table.Cell>
-                        {formatAttemptResult(a, events.byId[key].id)}
+                        {formatAttemptResult(a.result, events.byId[key].id)}
                       </Table.Cell>
                     ))}
                     <Table.Cell>{formatAttemptResult(r.average, events.byId[key].id)}</Table.Cell>

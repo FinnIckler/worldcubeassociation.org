@@ -6,7 +6,8 @@ class AddLiveResultJob < ApplicationJob
 
   # params: { results, round_id, user_id, entered_by }
   def perform(params)
-    attempts = params[:results].map.with_index(1) { |r, i| LiveAttempt.build(result: r, attempt_number: i) }
+    results = params[:results]
+    attempts = results.map.with_index(1) { |r, i| LiveAttempt.build(result: r, attempt_number: i) }
     round = Round.find(params[:round_id])
     event = round.event
     format = round.format

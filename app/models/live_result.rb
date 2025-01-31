@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class LiveResult < ApplicationRecord
-  has_many :live_attempts, -> { where(replaced_by: nil) }
+  has_many :live_attempts, -> { where(replaced_by_id: nil).order(:attempt_number) }
 
   after_create :recompute_ranks
   after_update :recompute_ranks, :if => :should_recompute?
@@ -21,7 +21,8 @@ class LiveResult < ApplicationRecord
   def serializable_hash(options = nil)
     {
       ranking: ranking,
-      attempts: live_attempts.as_json,
+      # Why does this not honor the order from above??
+      attempts: live_attempts.order(:attempt_number),
       registration_id: registration_id,
       round: round,
       event_id: round.event.id,
