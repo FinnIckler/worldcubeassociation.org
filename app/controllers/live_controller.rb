@@ -31,18 +31,7 @@ class LiveController < ApplicationController
     @competition_id = params[:competition_id]
     @round = Round.find(params[:round_id])
     @event_id = @round.event.id
-    round_number = @round.number
-    @competitors = if round_number == 1
-                     Registration.joins(:registration_competition_events)
-                                 .where(
-                                   competition_id: @competition_id,
-                                   competing_status: 'accepted',
-                                   registration_competition_events: { competition_event_id: @round.competition_event_id }
-                                 ).includes([:user])
-                   else
-                     previous_round = Round.joins(:competition_event).find_by(competition_event: { competition_id: @competition_id, event_id: @event_id }, number: round_number - 1)
-                     previous_round.live_results.where(advancing: true).includes(:registration).map(&:registration)
-                   end
+    @competitors = round.registrations
   end
 
   def add_result

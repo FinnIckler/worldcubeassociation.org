@@ -33,6 +33,8 @@ class Round < ApplicationRecord
 
   has_many :live_results
 
+  #alias_method :is_open?, :open?
+
   MAX_NUMBER = 4
   validates_numericality_of :number,
                             only_integer: true,
@@ -88,6 +90,28 @@ class Round < ApplicationRecord
       # Cutoff third round/Semi Final
       cutoff ? "g" : "3"
     end
+  end
+
+  def competitors_live_results_entered
+    live_results.length
+  end
+
+  def registrations
+    if number == 1
+      Registration.joins(:registration_competition_events)
+                  .where(
+                    competition_id: competition_event.competition_id,
+                    competing_status: 'accepted',
+                    registration_competition_events: { competition_event_id: competition_event_id }
+                  ).includes([:user])
+    else
+      previous_round = Round.joins(:competition_event).find_by(competition_event: { competition_id: competition_event.competition_id, event_id: event.id }, number: number - 1)
+      previous_round.live_results.where(advancing: true).includes(:registration).map(&:registration)
+    end
+  end
+
+  def total_registrations
+    registrations.length
   end
 
   def formats_used

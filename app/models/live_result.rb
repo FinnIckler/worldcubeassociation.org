@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class LiveResult < ApplicationRecord
-  has_many :live_attempts, dependent: :destroy
+  has_many :live_attempts, -> { where(replaced_by: nil) }
 
   after_create :recompute_ranks
   after_update :recompute_ranks, :if => :should_recompute?

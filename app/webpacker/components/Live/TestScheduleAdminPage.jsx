@@ -19,6 +19,12 @@ export default function TestSchedulePage({ competitionId, rounds }) {
                 {r.map((round) => (
                   <List.Item>
                     <a href={liveUrls.roundResultsAdmin(competitionId, round.id)}>{round.name}</a>
+                    {' '}
+                    (
+                    {round.competitors_live_results_entered}
+                    /
+                    {round.total_registrations}
+                    )
                   </List.Item>
                 ))}
               </List>

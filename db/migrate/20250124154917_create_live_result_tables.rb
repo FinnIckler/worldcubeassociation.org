@@ -23,9 +23,11 @@ class CreateLiveResultTables < ActiveRecord::Migration[7.2]
     create_table :live_attempts do |t|
       t.integer :result, null: false
       t.integer :attempt_number, null: false
-      t.references :replaces, foreign_key: { to_table: :live_attempts }
+      t.references :replaced_by, foreign_key: { to_table: :live_attempts }
       t.references :live_result, foreign_key: { to_table: :live_results }
       t.timestamps
     end
+
+    add_column :rounds, :is_open, :boolean, default: false, null: false
   end
 end
