@@ -77,8 +77,8 @@ class LiveController < ApplicationController
 
     attempts = results.map.with_index do |r, i|
       # TODO: This currently destroys the replaced results
-      previous_attempts.find_by(result: r) ||
-        (previous_attempts[i] ? LiveAttempt.build(result: r, replaces: previous_attempts[i].id) : LiveAttempt.build(result: r))
+      previous_attempts.find_by(result: r, attempt_number: i) ||
+        (previous_attempts.find_by(attempt_number: i) ? LiveAttempt.build(result: r, replaces: previous_attempts.find_by(attempt_number: i).id) : LiveAttempt.build(result: r, attempt_number: i))
     end
 
     # TODO: What is the best way to do this?

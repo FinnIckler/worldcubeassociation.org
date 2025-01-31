@@ -8,9 +8,10 @@ class LiveAttempt < ApplicationRecord
   # Validations
   validates :result, presence: true
   validates :result, numericality: { only_integer: true }
+  validates :attempt_number, numericality: { only_integer: true }
 
   def serializable_hash(options = nil)
-    result
+    { attempt_number: attempt_number, result: result }
   end
 
   def <=>(other)
