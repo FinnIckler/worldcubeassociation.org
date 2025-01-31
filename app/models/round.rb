@@ -111,7 +111,7 @@ class Round < ApplicationRecord
   end
 
   def total_registrations
-    registrations.length
+    registrations.count
   end
 
   def formats_used

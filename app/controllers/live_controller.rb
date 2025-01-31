@@ -64,16 +64,21 @@ class LiveController < ApplicationController
 
     previous_attempts = result.live_attempts
 
-    attempts = results.map.with_index do |r, i|
-      # TODO: This currently destroys the replaced results
-      previous_attempts.find_by(result: r, attempt_number: i) ||
-        (previous_attempts.find_by(attempt_number: i) ? LiveAttempt.build(result: r, replaces: previous_attempts.find_by(attempt_number: i).id) : LiveAttempt.build(result: r, attempt_number: i))
+    results.each.with_index(1) do |r, i|
+      same_result = previous_attempts.find_by(result: r, attempt_number: i)
+
+      next if same_result.present?
+
+      different_result = previous_attempts.find_by(attempt_number: i)
+      new_result = LiveAttempt.create(result: r, attempt_number: i, live_result: self)
+
+      different_result&.update(replaced_by: new_result)
     end
 
     # TODO: What is the best way to do this?
     r = Result.build({ value1: results[0], value2: results[1], value3: results[2], value4: results[3], value5: results[4], event_id: round.event.id, round_type_id: round.round_type_id, format_id: round.format_id })
 
-    result.update(live_attempts: attempts, average: r.compute_correct_average, best: r.compute_correct_best)
+    result.update(average: r.compute_correct_average, best: r.compute_correct_best)
 
     render json: { status: "ok" }
   end
