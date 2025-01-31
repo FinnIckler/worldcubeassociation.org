@@ -1,3 +1,4 @@
 <% provide(:title, 'WCA Live Integration Test Page') %>
-
-<%= react_component('Live/TestAdminPage', { competitionId: @competition_id, competitors: @competitors, roundId: @round.id, eventId: @event_id }) %>
+<%= render layout: 'competitions/nav' do %>
+  <%= react_component('Live/TestAdminPage', { competitionId: @competition_id, competitors: @competitors, roundId: @round.id, eventId: @event_id }) %>
+<% end %>

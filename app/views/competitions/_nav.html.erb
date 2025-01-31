@@ -71,6 +71,31 @@
             }
           end
         end
+        if @competition.in_progress?
+          nav_items << {
+            text: t('.menu.results'),
+            path: live_schedule_path(@competition),
+            icon: "trophy",
+            label: 'Live',
+            children: [
+              { text: t('.menu.podiums'), path: competition_results_podiums_path(@competition), icon: "cubes" },
+              {
+                text: 'Rounds',
+                path: live_schedule_path(@competition),
+                icon: "list",
+                children: @competition.rounds.map do |round|
+                  event = round.event
+                  next unless round.is_open?
+                  { text: round.name, path: live_round_results_path(@competition, round), cubing_icon: event.id, title: round.name }
+                end.compact
+              },
+              { text: 'Competitors', path: competition_results_by_person_path(@competition), icon: "user" },
+            ] +
+              (current_user&.can_manage_competition?(@competition) ? [
+                { text: 'Admin', path: live_schedule_admin_path(@competition), icon: "lock" },
+              ] : []),
+          }
+        end
         if current_user&.can_create_competitions?
           nav_items << {
             text: t('.menu.clone'),
@@ -172,6 +197,11 @@
             <% if nav_item[:notification_count] %>
               <span id="pending-registrations-count" class="pull-right label <%= nav_item[:notification_count] > 0 ? "label-danger" : "label-success" %>">
                 <%= nav_item[:notification_count] %>
+              </span>
+            <% end %>
+            <% if nav_item[:label] %>
+              <span class="pull-right label label-success">
+                <%= nav_item[:label] %>
               </span>
             <% end %>
           <% end %>

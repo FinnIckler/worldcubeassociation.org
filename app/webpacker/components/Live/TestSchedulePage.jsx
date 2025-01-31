@@ -7,7 +7,7 @@ export default function TestSchedulePage({ competitionId, rounds }) {
     <Segment>
       <Card.Group>
         {rounds.map((r) => (
-          <Card link href={liveUrls.roundResults(competitionId, r.id)}>
+          <Card link={r['is_open?']} href={liveUrls.roundResults(competitionId, r.id)}>
             <Card.Header>
               {r.name}
             </Card.Header>

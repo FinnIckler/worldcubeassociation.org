@@ -3,6 +3,7 @@
 class LiveController < ApplicationController
   def test_admin
     @competition_id = params[:competition_id]
+    @competition = Competition.find(@competition_id)
     @round = Round.find(params[:round_id])
     @event_id = @round.event.id
     round_number = @round.number
@@ -29,9 +30,10 @@ class LiveController < ApplicationController
 
   def test_results
     @competition_id = params[:competition_id]
+    @competition = Competition.find(@competition_id)
     @round = Round.find(params[:round_id])
     @event_id = @round.event.id
-    @competitors = round.registrations
+    @competitors = @round.registrations
   end
 
   def add_result
