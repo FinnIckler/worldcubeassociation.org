@@ -76,6 +76,7 @@ class LiveController < ApplicationController
     previous_attempts = result.live_attempts
 
     attempts = results.map.with_index do |r, i|
+      # TODO: This currently destroys the replaced results
       previous_attempts.find_by(result: r) ||
         (previous_attempts[i] ? LiveAttempt.build(result: r, replaces: previous_attempts[i].id) : LiveAttempt.build(result: r))
     end
@@ -105,6 +106,7 @@ class LiveController < ApplicationController
 
   def test_schedule
     @competition_id = params.require(:competition_id)
+    @competition = Competition.find(@competition_id)
 
     @rounds = Round.joins(:competition_event).where(competition_event: { competition_id: @competition_id })
 

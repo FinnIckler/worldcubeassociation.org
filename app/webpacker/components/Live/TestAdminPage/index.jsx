@@ -95,13 +95,10 @@ function AddResults({
       {
         received: (data) => {
           queryClient.setQueryData([roundId, 'results'], (oldData) => {
-            console.log(data);
             const existingIndex = oldData.map((a) => a.registration_id).indexOf(data.registration_id);
             if (existingIndex === -1) {
-              console.log('adding');
               return [...oldData, data];
             }
-            console.log('replacing');
             return oldData.map((a) => (a.registration_id === data.registration_id ? data : a));
           });
         },
