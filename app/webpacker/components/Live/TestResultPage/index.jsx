@@ -57,16 +57,11 @@ function ResultPage({
   return (
     <Segment loading={isLoading}>
       <Header>
-        Results for
-        {competitionId}
-        :
-        {' '}
         {events.byId[eventId].name}
         {canAdminResults && <a href={liveUrls.roundResultsAdmin(competitionId, roundId)}><Button floated="right">Admin</Button></a>}
       </Header>
       <Grid>
         <Grid.Column width={16}>
-          <Header>Live Results</Header>
           <ResultsTable results={results ?? []} eventId={eventId} competitors={competitors} competitionId={competitionId} />
         </Grid.Column>
       </Grid>

@@ -97,6 +97,8 @@ class LiveController < ApplicationController
     registration = Registration.find(registration_id)
 
     @competition_id = params[:competition_id]
+    @competition = Competition.find(@competition_id)
+
     @user = registration.user
     @results = registration.live_results.includes([:live_attempts])
   end

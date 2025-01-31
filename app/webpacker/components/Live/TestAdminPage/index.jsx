@@ -11,7 +11,7 @@ import AttemptResultField from '../../EditResult/WCALive/AttemptResultField/Atte
 import getRoundResults from '../api/getRoundResults';
 import submitRoundResults from '../api/submitRoundResults';
 import updateRoundResults from '../api/updateRoundResults';
-import { liveUrls } from '../../../lib/requests/routes.js.erb';
+import { competitionEditRegistrationsUrl, liveUrls } from '../../../lib/requests/routes.js.erb';
 
 export default function Wrapper({
   roundId, eventId, competitionId, competitors,
@@ -135,12 +135,6 @@ function AddResults({
 
   return (
     <Segment loading={isLoading || isPendingSubmit || isPendingUpdate}>
-      <Header>
-        {competitionId}
-        :
-        {' '}
-        {events.byId[eventId].name}
-      </Header>
       <Grid>
         <Grid.Column width={4}>
           <Form error={!!error} success={!!success}>
@@ -182,7 +176,7 @@ function AddResults({
         <Grid.Column width={12}>
           <Button.Group floated="right">
             <a href={liveUrls.roundResults(competitionId, roundId)}><Button>Results</Button></a>
-            <a href={liveUrls.roundResults(competitionId, roundId)}><Button>Add Competitor</Button></a>
+            <a href={competitionEditRegistrationsUrl(competitionId)}><Button>Add Competitor</Button></a>
             <a href={liveUrls.roundResults(competitionId, roundId)}><Button>PDF</Button></a>
             <a href={liveUrls.roundResults(competitionId, roundId)}><Button>Double Check</Button></a>
           </Button.Group>

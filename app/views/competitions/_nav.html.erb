@@ -89,10 +89,18 @@
                   { text: round.name, path: live_round_results_path(@competition, round), cubing_icon: event.id, title: round.name }
                 end.compact
               },
-              { text: 'Competitors', path: competition_results_by_person_path(@competition), icon: "user" },
+              { text: 'Competitors', path: competition_results_by_person_path(@competition), icon: "user",
+                children: @competition.registrations.map do |registration|
+                  next unless registration.accepted?
+                  { text: registration.name, path: live_person_results_path(@competition, registration), title: registration.name }
+                end.compact},
             ] +
               (current_user&.can_manage_competition?(@competition) ? [
-                { text: 'Admin', path: live_schedule_admin_path(@competition), icon: "lock" },
+                { text: 'Admin', path: live_schedule_admin_path(@competition), icon: "lock", children: @competition.rounds.map do |round|
+                  event = round.event
+                  next unless round.is_open?
+                  { text: round.name, path: live_admin_round_results_path(@competition, round), cubing_icon: event.id, title: round.name }
+                end.compact },
               ] : []),
           }
         end
