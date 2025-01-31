@@ -154,8 +154,9 @@ Rails.application.routes.draw do
   get 'competitions/:competition_id/live/competitors/:registration_id' => 'live#test_persons', as: :live_person_results
   get 'competitions/:competition_id/live' => 'live#test_schedule', as: :live_schedule
   get 'competitions/:competition_id/live/admin' => 'live#test_schedule_admin', as: :live_schedule_admin
-  get 'api/competitions/:competition_id/rounds/:round_id' => 'live#get_round_results', as: :live_round_results_api
+  get 'api/competitions/:competition_id/rounds/:round_id' => 'live#round_results', as: :live_round_results_api
   post 'api/competitions/:competition_id/rounds/:round_id' => 'live#add_result', as: :add_live_result
+  get 'api/competitions/:competition_id/rounds/:round_id/open' => 'live#open_round', as: :live_open_round
   patch 'api/competitions/:competition_id/rounds/:round_id' => 'live#update_result', as: :update_live_result
 
   get 'results/rankings', to: redirect('results/rankings/333/single', status: 302)

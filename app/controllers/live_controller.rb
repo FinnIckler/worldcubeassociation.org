@@ -86,10 +86,25 @@ class LiveController < ApplicationController
     render json: { status: "ok" }
   end
 
-  def get_round_results
+  def round_results
     round_id = params.require(:round_id)
 
     render json: Round.find(round_id).live_results.includes([:live_attempts])
+  end
+
+  def open_round
+    round_id = params.require(:round_id)
+    competition_id = params.require(:competition_id)
+    round = Round.find(round_id)
+
+    if round.is_open?
+      flash[:danger] = "Round is already open"
+    end
+
+    # Is is_open! supposed to work here? undefined method `is_open!' for an instance of Round (NoMethodError)
+    round.update(is_open: true)
+    flash[:success] = "Successfully opened round"
+    redirect_to live_schedule_admin_path(competition_id: competition_id)
   end
 
   def test_persons
