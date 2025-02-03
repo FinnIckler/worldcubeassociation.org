@@ -101,7 +101,6 @@ class LiveController < ApplicationController
       flash[:danger] = "Round is already open"
     end
 
-    # Is is_open! supposed to work here? undefined method `is_open!' for an instance of Round (NoMethodError)
     round.update(is_open: true)
     flash[:success] = "Successfully opened round"
     redirect_to live_schedule_admin_path(competition_id: competition_id)

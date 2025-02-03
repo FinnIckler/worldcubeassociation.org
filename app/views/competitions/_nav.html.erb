@@ -321,19 +321,19 @@
 
 <script>
   (function() {
-    var $nav = $('#competition-nav > .list-group');
-    $nav.affix({
-      offset: {
-        top: function() {
-          var parentTop = $nav.parent().offset().top;
-          var affixTopSpacing = 20; // From .bs-affix in wca.scss
-          return parentTop - affixTopSpacing;
-        },
-        bottom: function () {
-          return (this.bottom = $('.footer').outerHeight(true));
-        },
-      },
-    });
+    // var $nav = $('#competition-nav > .list-group');
+    // $nav.affix({
+    //   offset: {
+    //     top: function() {
+    //       var parentTop = $nav.parent().offset().top;
+    //       var affixTopSpacing = 20; // From .bs-affix in wca.scss
+    //       return parentTop - affixTopSpacing;
+    //     },
+    //     bottom: function () {
+    //       return (this.bottom = $('.footer').outerHeight(true));
+    //     },
+    //   },
+    // });
 
     $('#not-bookmarked').click(function() {
       window.wca.cancelPendingAjaxAndAjax('bookmark', {
