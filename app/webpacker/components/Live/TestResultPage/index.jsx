@@ -54,15 +54,17 @@ function ResultPage({
     };
   }, [roundId, queryClient, eventId]);
 
+  const event = events.byId[eventId];
+
   return (
     <Segment loading={isLoading}>
       <Header>
-        {events.byId[eventId].name}
+        {event.name}
         {canAdminResults && <a href={liveUrls.roundResultsAdmin(competitionId, roundId)}><Button floated="right">Admin</Button></a>}
       </Header>
       <Grid>
         <Grid.Column width={16}>
-          <ResultsTable results={results ?? []} eventId={eventId} competitors={competitors} competitionId={competitionId} />
+          <ResultsTable results={results ?? []} event={event} competitors={competitors} competitionId={competitionId} />
         </Grid.Column>
       </Grid>
     </Segment>

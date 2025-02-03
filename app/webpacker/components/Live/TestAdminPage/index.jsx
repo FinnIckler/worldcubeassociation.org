@@ -28,15 +28,20 @@ export default function Wrapper({
   );
 }
 
+function zeroedArrayOfSize(size) {
+  return Array(size).fill(0);
+}
+
 function AddResults({
   competitionId, roundId, eventId, competitors,
 }) {
+  const event = events.byId[eventId];
+  const solveCount = event.recommendedFormat().expectedSolveCount;
   const [registrationId, setRegistrationId] = useState('');
-  const [attempts, setAttempts] = useState([0, 0, 0, 0, 0]);
+  const [attempts, setAttempts] = useState(zeroedArrayOfSize(solveCount));
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const queryClient = useQueryClient();
-  const event = events.byId[eventId];
 
   const { data: results, isLoading } = useQuery({
     queryKey: [roundId, 'results'],
@@ -49,7 +54,7 @@ function AddResults({
     if (alreadyEnteredResults) {
       setAttempts(alreadyEnteredResults.attempts.map((a) => a.result));
     } else {
-      setAttempts([0, 0, 0, 0, 0]);
+      setAttempts(zeroedArrayOfSize(solveCount));
     }
   }, [results]);
 
@@ -60,7 +65,7 @@ function AddResults({
     onSuccess: () => {
       setSuccess('Results added successfully!');
       setRegistrationId('');
-      setAttempts([0, 0, 0, 0, 0]);
+      setAttempts(zeroedArrayOfSize(solveCount));
       setError('');
 
       setTimeout(() => setSuccess(''), 3000);
@@ -77,7 +82,7 @@ function AddResults({
     onSuccess: () => {
       setSuccess('Results added successfully!');
       setRegistrationId('');
-      setAttempts([0, 0, 0, 0, 0]);
+      setAttempts(zeroedArrayOfSize(solveCount));
       setError('');
 
       setTimeout(() => setSuccess(''), 3000);
@@ -158,7 +163,7 @@ function AddResults({
                 text: `${p.user.name} (${p.registration_id})`,
               }))}
             />
-            {Array.from(Array(event.recommendedFormat().expectedSolveCount).keys()).map((index) => (
+            {Array.from(zeroedArrayOfSize(solveCount).keys()).map((index) => (
               <AttemptResultField
                 eventId={eventId}
                 key={index}
@@ -183,7 +188,7 @@ function AddResults({
           <Header>Live Results</Header>
           <ResultsTable
             results={results ?? []}
-            eventId={eventId}
+            event={event}
             competitors={competitors}
             competitionId={competitionId}
             isAdmin

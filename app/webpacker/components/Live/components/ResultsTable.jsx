@@ -16,9 +16,8 @@ const customOrderBy = (competitor, resultsByRegistrationId, sortBy) => {
 };
 
 export default function ResultsTable({
-  results, eventId, competitors, competitionId, isAdmin = false,
+  results, event, competitors, competitionId, isAdmin = false,
 }) {
-  const event = events.byId[eventId];
   const resultsByRegistrationId = _.groupBy(results, 'registration_id');
 
   const sortedCompetitors = useMemo(() => {
@@ -31,7 +30,10 @@ export default function ResultsTable({
         (competitor) => customOrderBy(competitor, resultsByRegistrationId, sortBy === 'single' ? 'average' : 'best')],
       ['asc', 'asc'],
     );
-  }, [competitors, event, results.length, resultsByRegistrationId]);
+  }, [competitors, event, resultsByRegistrationId]);
+
+  const solveCount = event.recommendedFormat().expectedSolveCount;
+  const attemptIndexes = [...Array(solveCount).keys()];
 
   return (
     <Table celled compact="very">
@@ -40,7 +42,7 @@ export default function ResultsTable({
           <Table.HeaderCell>Rank</Table.HeaderCell>
           { isAdmin && <Table.HeaderCell>Id</Table.HeaderCell> }
           <Table.HeaderCell>Competitor</Table.HeaderCell>
-          {[...Array(event.recommendedFormat().expectedSolveCount).keys()].map((num) => (
+          {attemptIndexes.map((num) => (
             <Table.HeaderCell key={num}>
               {num + 1}
             </Table.HeaderCell>
@@ -73,7 +75,7 @@ export default function ResultsTable({
                 </a>
               </Table.Cell>
               {hasResults && result.attempts.map((attempt, attemptIndex) => (
-                <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt.result, eventId)}</Table.Cell>
+                <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt.result, event.id)}</Table.Cell>
               ))}
               {hasResults && (
               <>

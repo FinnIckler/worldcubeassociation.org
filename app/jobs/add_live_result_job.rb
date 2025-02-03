@@ -12,7 +12,7 @@ class AddLiveResultJob < ApplicationJob
     event = round.event
     format = round.format
 
-    r = Result.build({ value1: results[0], value2: results[1], value3: results[2], value4: results[3], value5: results[4], event_id: event.id, round_type_id: round.round_type_id, format_id: format.id })
+    r = Result.build({ value1: results[0], value2: results[1] || 0, value3: results[2] || 0, value4: results[3] || 0, value5: results[4] || 0, event_id: event.id, round_type_id: round.round_type_id, format_id: format.id })
 
     LiveResult.create!(registration_id: params[:registration_id],
                        round: round,
