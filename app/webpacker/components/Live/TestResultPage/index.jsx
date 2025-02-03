@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import {
-  Button,
-  Grid, Header, Segment,
+  Button, Container,
+  Grid, Header,
 } from 'semantic-ui-react';
 import { createConsumer } from '@rails/actioncable';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
@@ -10,6 +10,7 @@ import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 import ResultsTable from '../components/ResultsTable';
 import { liveUrls } from '../../../lib/requests/routes.js.erb';
+import Loading from '../../Requests/Loading';
 
 export default function Wrapper({
   roundId, eventId, competitionId, competitors,
@@ -56,8 +57,12 @@ function ResultPage({
 
   const event = events.byId[eventId];
 
+  if (isLoading) {
+    return <Loading />;
+  }
+
   return (
-    <Segment loading={isLoading}>
+    <Container fluid>
       <Header>
         {event.name}
         {canAdminResults && <a href={liveUrls.roundResultsAdmin(competitionId, roundId)}><Button floated="right">Admin</Button></a>}
@@ -67,6 +72,6 @@ function ResultPage({
           <ResultsTable results={results ?? []} event={event} competitors={competitors} competitionId={competitionId} />
         </Grid.Column>
       </Grid>
-    </Segment>
+    </Container>
   );
 }

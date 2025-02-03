@@ -15,7 +15,7 @@ const customOrderBy = (competitor, resultsByRegistrationId, sortBy) => {
   return competitorResults[0][sortBy];
 };
 
-const rankingCellStyle = (result) => {
+export const rankingCellStyle = (result) => {
   if (!result) {
     return {};
   }
@@ -31,7 +31,7 @@ const rankingCellStyle = (result) => {
 };
 
 export default function ResultsTable({
-  results, event, competitors, competitionId, isAdmin = false,
+  results, event, competitors, competitionId, isAdmin = false, showEmpty = true,
 }) {
   const resultsByRegistrationId = _.groupBy(results, 'registration_id');
 
@@ -51,7 +51,7 @@ export default function ResultsTable({
   const attemptIndexes = [...Array(solveCount).keys()];
 
   return (
-    <Table celled compact="very">
+    <Table basic="very" compact="very">
       <Table.Header>
         <Table.Row>
           <Table.HeaderCell textAlign="right">#</Table.HeaderCell>
@@ -73,6 +73,10 @@ export default function ResultsTable({
 
           const hasResults = Boolean(potentialResults);
           const result = hasResults ? potentialResults[0] : null;
+
+          if (!showEmpty && !hasResults) {
+            return null;
+          }
 
           return (
             <Table.Row key={competitor.user_id}>

@@ -78,7 +78,7 @@
             icon: "trophy",
             label: 'Live',
             children: [
-              { text: t('.menu.podiums'), path: competition_results_podiums_path(@competition), icon: "cubes" },
+              { text: t('.menu.podiums'), path: live_podiums_path(@competition), icon: "cubes" },
               {
                 text: 'Rounds',
                 path: live_schedule_path(@competition),
@@ -89,7 +89,7 @@
                   { text: round.name, path: live_round_results_path(@competition, round), cubing_icon: event.id, title: round.name }
                 end.compact
               },
-              { text: 'Competitors', path: competition_results_by_person_path(@competition), icon: "user",
+              { text: 'Competitors', path: live_competitors_path(@competition), icon: "user",
                 children: @competition.registrations.map do |registration|
                   next unless registration.accepted?
                   { text: registration.name, path: live_person_results_path(@competition, registration), title: registration.name }

@@ -36,6 +36,17 @@ class LiveController < ApplicationController
     @competitors = @round.registrations
   end
 
+  def test_podiums
+    @competition = Competition.find(params[:competition_id])
+    @competitors = @competition.registrations.accepted
+    @results = @competition.rounds.select(&:final_round?)
+  end
+
+  def test_competitors
+    @competition = Competition.find(params[:competition_id])
+    @competitors = @competition.registrations.accepted
+  end
+
   def add_result
     results = params.require(:attempts)
     round_id = params.require(:round_id)

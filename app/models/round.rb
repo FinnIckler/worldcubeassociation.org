@@ -114,6 +114,10 @@ class Round < ApplicationRecord
     registrations.count
   end
 
+  def podium
+    live_results.where(ranking: 1..3)
+  end
+
   def formats_used
     cutoff_format = Format.c_find!(cutoff.number_of_attempts.to_s) if cutoff
     [cutoff_format, format].compact

@@ -6,6 +6,7 @@ import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
 import { formatAttemptResult } from '../../../lib/wca-live/attempts';
 import { liveUrls } from '../../../lib/requests/routes.js.erb';
+import { rankingCellStyle } from '../components/ResultsTable';
 
 export default function Wrapper({
   results, user, competitionId,
@@ -48,14 +49,14 @@ function PersonResults({
                 const { round, attempts } = r;
                 return (
                   <Table.Row>
-                    <Table.Cell>
+                    <Table.Cell width={1}>
                       <a href={liveUrls.roundResults(competitionId, round.id)}>
                         Round
                         {' '}
                         {round.number}
                       </a>
                     </Table.Cell>
-                    <Table.Cell>{r.ranking}</Table.Cell>
+                    <Table.Cell width={1} style={rankingCellStyle(r)}>{r.ranking}</Table.Cell>
                     {attempts.map((a) => (
                       <Table.Cell>
                         {formatAttemptResult(a.result, events.byId[key].id)}
