@@ -58,12 +58,12 @@ export default function ResultsTable({
           { isAdmin && <Table.HeaderCell>Id</Table.HeaderCell> }
           <Table.HeaderCell>Competitor</Table.HeaderCell>
           {attemptIndexes.map((num) => (
-            <Table.HeaderCell key={num}>
+            <Table.HeaderCell key={num} textAlign="right">
               {num + 1}
             </Table.HeaderCell>
           ))}
-          <Table.HeaderCell>Average</Table.HeaderCell>
-          <Table.HeaderCell>Best</Table.HeaderCell>
+          <Table.HeaderCell textAlign="right">Average</Table.HeaderCell>
+          <Table.HeaderCell textAlign="right">Best</Table.HeaderCell>
         </Table.Row>
       </Table.Header>
 
@@ -89,13 +89,18 @@ export default function ResultsTable({
                   {competitor.user.name}
                 </a>
               </Table.Cell>
-              {hasResults && result.attempts.map((attempt, attemptIndex) => (
-                <Table.Cell key={attemptIndex}>{formatAttemptResult(attempt.result, event.id)}</Table.Cell>
+              {hasResults && result.attempts.map((attempt) => (
+                <Table.Cell
+                  textAlign="right"
+                  key={`${competitor.user_id}-${attempt.attempt_number}`}
+                >
+                  {formatAttemptResult(attempt.result, event.id)}
+                </Table.Cell>
               ))}
               {hasResults && (
               <>
-                <Table.Cell>{formatAttemptResult(result.average, event.id)}</Table.Cell>
-                <Table.Cell>{formatAttemptResult(result.best, event.id)}</Table.Cell>
+                <Table.Cell textAlign="right">{formatAttemptResult(result.average, event.id)}</Table.Cell>
+                <Table.Cell textAlign="right">{formatAttemptResult(result.best, event.id)}</Table.Cell>
               </>
               )}
             </Table.Row>

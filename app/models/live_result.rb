@@ -9,8 +9,7 @@ class LiveResult < ApplicationRecord
   after_create :recompute_advancing
   after_update :recompute_advancing, :if => :should_recompute?
 
-  after_create :notify_users
-  after_update :notify_users
+  after_save :notify_users
 
   belongs_to :registration
 
