@@ -93,7 +93,11 @@ class Round < ApplicationRecord
   end
 
   def competitors_live_results_entered
-    live_results.length
+    live_results.count
+  end
+
+  def score_taking_done?
+    is_open && competitors_live_results_entered == total_registrations
   end
 
   def registrations
@@ -116,6 +120,12 @@ class Round < ApplicationRecord
 
   def podium
     live_results.where(ranking: 1..3)
+  end
+
+  def round_can_be_opened?
+    return !is_open if number == 1
+    previous_round = Round.joins(:competition_event).find_by(competition_event: { competition_id: competition_event.competition_id, event_id: event.id }, number: number - 1)
+    previous_round.score_taking_done?
   end
 
   def formats_used

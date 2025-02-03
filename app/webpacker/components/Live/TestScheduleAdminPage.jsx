@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  Button, ButtonGroup, Card, List, Segment,
+  Card, List, Segment,
 } from 'semantic-ui-react';
 import { liveUrls } from '../../lib/requests/routes.js.erb';
 import { events } from '../../lib/wca-data.js.erb';
@@ -31,7 +31,7 @@ export default function TestSchedulePage({ competitionId, rounds }) {
                       </>
                     ) : round.name}
                     {' '}
-                    {!round.is_open && <a href={liveUrls.api.openRound(competitionId, round.id)}>Open Round</a>}
+                    {round['round_can_be_opened?'] && <a href={liveUrls.api.openRound(competitionId, round.id)}>Open Round</a>}
                   </List.Item>
                 ))}
               </List>
