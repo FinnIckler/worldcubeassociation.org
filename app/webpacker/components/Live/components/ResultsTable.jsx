@@ -15,6 +15,21 @@ const customOrderBy = (competitor, resultsByRegistrationId, sortBy) => {
   return competitorResults[0][sortBy];
 };
 
+const rankingCellStyle = (result) => {
+  if (!result) {
+    return {};
+  }
+  if (result.advancing) {
+    return { backgroundColor: 'rgb(0, 230, 118)' };
+  }
+
+  if (result.advancing_questionable) {
+    return { backgroundColor: 'rgba(0, 230, 118, 0.5)' };
+  }
+
+  return {};
+};
+
 export default function ResultsTable({
   results, event, competitors, competitionId, isAdmin = false,
 }) {
@@ -39,7 +54,7 @@ export default function ResultsTable({
     <Table celled compact="very">
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell>Rank</Table.HeaderCell>
+          <Table.HeaderCell textAlign="right">#</Table.HeaderCell>
           { isAdmin && <Table.HeaderCell>Id</Table.HeaderCell> }
           <Table.HeaderCell>Competitor</Table.HeaderCell>
           {attemptIndexes.map((num) => (
@@ -60,8 +75,8 @@ export default function ResultsTable({
           const result = hasResults ? potentialResults[0] : null;
 
           return (
-            <Table.Row key={competitor.user_id} positive={hasResults && result.advancing}>
-              <Table.Cell>
+            <Table.Row key={competitor.user_id}>
+              <Table.Cell width={1} textAlign="right" style={rankingCellStyle(result)}>
                 {index + 1}
               </Table.Cell>
               {isAdmin && (

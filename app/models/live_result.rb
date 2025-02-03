@@ -36,7 +36,19 @@ class LiveResult < ApplicationRecord
     }
   end
 
+  def potential_score
+    rank_by = round.format.sort_by == 'single' ? 'best' : 'average'
+    complete? ? self[rank_by.to_sym] : best_possible_score
+  end
+
+  def complete?
+    live_attempts.count == round.format.expected_solve_count
+  end
+
   private
+    def best_possible_score
+      1
+    end
 
     def should_recompute?
       best_changed? || average_changed?
@@ -75,32 +87,47 @@ class LiveResult < ApplicationRecord
 
     def recompute_advancing
       round_results = LiveResult.where(round: round)
+      round_results.update_all(advancing: false)
+
+      missing_attempts = round.total_registrations - round_results.count
+      potential_results = Array.new(missing_attempts) { |i| LiveResult.build(round: round) }
+      results_with_potential = (round_results.to_a + potential_results).sort_by(&:potential_score)
 
       # Maximum 75% as per regulations
       max_qualifying = (round_results.length * 0.75).floor
+      max_clinched = max_qualifying
 
       if round.final_round?
-        round_results.where(ranking: [1,2,3]).update_all advancing: true
+        round_results.where(ranking: [1,2,3]).update_all advancing_questionable: true
+        max_clinched = 3
       else
         advancement_condition = round.advancement_condition
         if advancement_condition.is_a? AdvancementConditions::RankingCondition
           qualifying_index = [advancement_condition.level, max_qualifying].min
-          round_results.update_all("advancing = ranking BETWEEN 1 AND #{qualifying_index}")
+          round_results.update_all("advancing_questionable = ranking BETWEEN 1 AND #{qualifying_index}")
+          max_clinched = qualifying_index
         end
 
         if advancement_condition.is_a? AdvancementConditions::PercentCondition
           amount_qualifying = (advancement_condition.level * round_results.length).floor
           qualifying_index = [amount_qualifying, max_qualifying].min
-          round_results.update_all("advancing = ranking BETWEEN 1 AND #{qualifying_index}")
+          round_results.update_all("advancing_questionable = ranking BETWEEN 1 AND #{qualifying_index}")
+          max_clinched = qualifying_index
         end
 
         if advancement_condition.is_a? AdvancementConditions::AttemptResultCondition
           sort_by = round.format.sort_by == 'single' ? 'best' : 'average'
           people_potentially_qualifying = round_results.where("#{sort_by} > ?", advancement_condition.level)
           qualifying_index = [people_potentially_qualifying.length, max_qualifying].min
-          round_results.update_all("advancing = id IN (SELECT id FROM round_results ORDER BY ranking ASC LIMIT #{qualifying_index})")
+          round_results.update_all("advancing_questionable = id IN (SELECT id FROM round_results ORDER BY ranking ASC LIMIT #{qualifying_index})")
+          max_clinched = qualifying_index
         end
-
       end
+
+      # Determine which results would advance if everyone achieved their best possible attempt.
+      advancing_ids = results_with_potential.first(max_clinched).select(&:complete?).map(&:id)
+
+      round_results.update_all(advancing: false)
+      LiveResult.where(id: advancing_ids).update_all(advancing: true)
     end
 end
