@@ -123,7 +123,8 @@ class Round < ApplicationRecord
   end
 
   def round_can_be_opened?
-    return !is_open if number == 1
+    return false if is_open
+    return true if number == 1
     previous_round = Round.joins(:competition_event).find_by(competition_event: { competition_id: competition_event.competition_id, event_id: event.id }, number: number - 1)
     previous_round.score_taking_done?
   end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2025_01_24_154917) do
+ActiveRecord::Schema[7.2].define(version: 2025_02_02_154917) do
   create_table "Competitions", id: { type: :string, limit: 32, default: "" }, charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.string "name", limit: 50, default: "", null: false
     t.string "cityName", limit: 50, default: "", null: false
@@ -82,6 +82,8 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_24_154917) do
     t.boolean "forbid_newcomers", default: false, null: false
     t.string "forbid_newcomers_reason"
     t.integer "registration_version", default: 0, null: false
+    t.boolean "auto_accept_registrations", default: false, null: false
+    t.integer "auto_accept_disable_threshold", default: 0, null: false
     t.index ["cancelled_at"], name: "index_Competitions_on_cancelled_at"
     t.index ["countryId"], name: "index_Competitions_on_countryId"
     t.index ["end_date"], name: "index_Competitions_on_end_date"
@@ -787,13 +789,11 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_24_154917) do
 
   create_table "live_attempts", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
     t.integer "result", null: false
-    t.integer "attempt_number", null: false
-    t.bigint "replaced_by_id"
-    t.bigint "live_result_id"
+    t.integer "replaces"
+    t.bigint "live_result_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["live_result_id"], name: "index_live_attempts_on_live_result_id"
-    t.index ["replaced_by_id"], name: "index_live_attempts_on_replaced_by_id"
   end
 
   create_table "live_results", charset: "utf8mb4", collation: "utf8mb4_unicode_ci", force: :cascade do |t|
@@ -809,6 +809,7 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_24_154917) do
     t.boolean "advancing_questionable", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.datetime "entered_at", default: "2025-02-04 13:08:07", null: false
     t.index ["registration_id", "round_id"], name: "index_live_results_on_registration_id_and_round_id", unique: true
     t.index ["registration_id"], name: "index_live_results_on_registration_id"
     t.index ["round_id"], name: "index_live_results_on_round_id"
@@ -1113,7 +1114,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_24_154917) do
     t.text "round_results", size: :medium
     t.integer "total_number_of_rounds", null: false
     t.string "old_type", limit: 1
-    t.boolean "is_open", default: false, null: false
     t.index ["competition_event_id", "number"], name: "index_rounds_on_competition_event_id_and_number", unique: true
   end
 
@@ -1424,7 +1424,6 @@ ActiveRecord::Schema[7.2].define(version: 2025_01_24_154917) do
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "live_attempts", "live_attempts", column: "replaced_by_id"
   add_foreign_key "live_attempts", "live_results"
   add_foreign_key "microservice_registrations", "Competitions", column: "competition_id", on_update: :cascade, on_delete: :cascade
   add_foreign_key "microservice_registrations", "users"

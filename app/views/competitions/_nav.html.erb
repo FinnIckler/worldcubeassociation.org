@@ -89,11 +89,7 @@
                   { text: round.name, path: live_round_results_path(@competition, round), cubing_icon: event.id, title: round.name }
                 end.compact
               },
-              { text: 'Competitors', path: live_competitors_path(@competition), icon: "user",
-                children: @competition.registrations.map do |registration|
-                  next unless registration.accepted?
-                  { text: registration.name, path: live_person_results_path(@competition, registration), title: registration.name }
-                end.compact},
+              { text: 'Competitors', path: live_competitors_path(@competition), icon: "user" },
             ] +
               (current_user&.can_manage_competition?(@competition) ? [
                 { text: 'Admin', path: live_schedule_admin_path(@competition), icon: "lock", children: @competition.rounds.map do |round|
