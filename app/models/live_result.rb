@@ -9,6 +9,9 @@ class LiveResult < ApplicationRecord
   after_create :recompute_advancing
   after_update :recompute_advancing, :if => :should_recompute?
 
+  after_create :compute_record_tag
+  after_update :compute_record_tag, :if => :should_recompute?
+
   after_save :notify_users
 
   belongs_to :registration
@@ -61,6 +64,63 @@ class LiveResult < ApplicationRecord
 
     def notify_users
       ActionCable.server.broadcast("results_#{round_id}", serializable_hash)
+    end
+
+    def records_by_event(records)
+      records.group_by { |record| record["event_id"] }.transform_values! do |event_records|
+        event_records.group_by { |record| record["type"] }.transform_values! do |type_records|
+          type_records.map { |record| record["value"] }.min
+        end
+      end
+    end
+
+    def compute_record_tag
+      # Taken from the v0 records controlled TODO: Refactor? Or probably recompute this on CAD run
+      concise_results_date = ComputeAuxiliaryData.end_date || Date.current
+      cache_key = ["records", concise_results_date.iso8601]
+      all_records = Rails.cache.fetch(cache_key) do
+        records = ActiveRecord::Base.connection.exec_query <<-SQL
+        SELECT 'single' type, MIN(best) value, countryId country_id, eventId event_id
+        FROM ConciseSingleResults
+        GROUP BY countryId, eventId
+        UNION ALL
+        SELECT 'average' type, MIN(average) value, countryId country_id, eventId event_id
+        FROM ConciseAverageResults
+        GROUP BY countryId, eventId
+      SQL
+        records = records.to_a
+        {
+          world_records: records_by_event(records),
+          continental_records: records.group_by { |record| Country.c_find(record["country_id"]).continentId }.transform_values!(&method(:records_by_event)),
+          national_records: records.group_by { |record| record["country_id"] }.transform_values!(&method(:records_by_event)),
+        }
+      end
+
+      record_levels = {
+        WR: all_records[:world_records],
+        CR: all_records[:continental_records][registration.user.continentId.to_sym],
+        NR: all_records[:national_records][registration.user.countryId.to_sym]
+      }
+
+      record_levels.each do |tag, records|
+        if records.dig(event_id.to_sym, :single)&.<= best
+          update(single_record_tag: tag.to_s)
+          got_record = true
+        end
+        if records.dig(event_id.to_sym, :average)&.<= average
+          update(average_record_tag: tag.to_s)
+          got_record = true
+        end
+        return if got_record
+      end
+
+      personal_records = registration.user.person.personal_records[event_id.to_sym]
+      if personal_records[:single] < best
+        update(single_record_tag: 'PR')
+      end
+      if personal_records[:average] < average
+        update(average_record_tag: 'PR')
+      end
     end
 
     def recompute_ranks
