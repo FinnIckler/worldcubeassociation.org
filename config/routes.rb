@@ -149,13 +149,16 @@ Rails.application.routes.draw do
   get 'competitions/edit/nearby-competitions-json' => 'competitions#nearby_competitions_json', as: :nearby_competitions_json
   get 'competitions/edit/registration-collisions-json' => 'competitions#registration_collisions_json', as: :registration_collisions_json
   get 'competitions/edit/series-eligible-competitions-json' => 'competitions#series_eligible_competitions_json', as: :series_eligible_competitions_json
+
   get 'competitions/:competition_id/live/rounds/:round_id/admin' => 'live#test_admin', as: :live_admin_round_results
+  get 'competitions/:competition_id/live/rounds/:round_id/admin/check' => 'live#test_double_check', as: :live_admin_check_round_results
   get 'competitions/:competition_id/live/rounds/:round_id' => 'live#test_results', as: :live_round_results
   get 'competitions/:competition_id/live/competitors/:registration_id' => 'live#test_persons', as: :live_person_results
   get 'competitions/:competition_id/live' => 'live#test_schedule', as: :live_schedule
   get 'competitions/:competition_id/live/podiums' => 'live#test_podiums', as: :live_podiums
   get 'competitions/:competition_id/live/competitors' => 'live#test_competitors', as: :live_competitors
   get 'competitions/:competition_id/live/admin' => 'live#test_schedule_admin', as: :live_schedule_admin
+
   get 'api/competitions/:competition_id/rounds/:round_id' => 'live#round_results', as: :live_round_results_api
   post 'api/competitions/:competition_id/rounds/:round_id' => 'live#add_result', as: :add_live_result
   get 'api/competitions/:competition_id/rounds/:round_id/open' => 'live#open_round', as: :live_open_round

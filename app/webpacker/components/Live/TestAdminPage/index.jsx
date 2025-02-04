@@ -56,7 +56,7 @@ function AddResults({
     } else {
       setAttempts(zeroedArrayOfSize(solveCount));
     }
-  }, [results]);
+  }, [results, solveCount]);
 
   const {
     mutate: mutateSubmit, isPending: isPendingSubmit,
@@ -183,7 +183,7 @@ function AddResults({
             <a href={liveUrls.roundResults(competitionId, roundId)}><Button>Results</Button></a>
             <a href={competitionEditRegistrationsUrl(competitionId)}><Button>Add Competitor</Button></a>
             <a href={liveUrls.roundResults(competitionId, roundId)}><Button>PDF</Button></a>
-            <a href={liveUrls.roundResults(competitionId, roundId)}><Button>Double Check</Button></a>
+            <a href={liveUrls.checkRoundResultsAdmin(competitionId, roundId)}><Button>Double Check</Button></a>
           </Button.Group>
           <Header>Live Results</Header>
           <ResultsTable

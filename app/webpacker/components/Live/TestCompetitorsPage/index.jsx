@@ -1,12 +1,9 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
-  Header, Input, Segment, Table,
+  Input, Segment, Table,
 } from 'semantic-ui-react';
-import { events } from '../../../lib/wca-data.js.erb';
 import WCAQueryClientProvider from '../../../lib/providers/WCAQueryClientProvider';
-import { formatAttemptResult } from '../../../lib/wca-live/attempts';
 import { liveUrls } from '../../../lib/requests/routes.js.erb';
-import ResultsTable from '../components/ResultsTable';
 import useInputState from '../../../lib/hooks/useInputState';
 import CountryFlag from '../../wca/CountryFlag';
 

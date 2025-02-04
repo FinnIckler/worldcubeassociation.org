@@ -114,6 +114,28 @@ class Round < ApplicationRecord
     end
   end
 
+  def registrations_with_wcif_id
+    if number == 1
+      Registration.where(competition_id: competition_event.competition_id)
+                  .includes([:user])
+                  .wcif_ordered
+                  .to_enum
+                  .with_index(1)
+                  .select { |r, registrant_id| r.competing_status == 'accepted' && r.event_ids.include?(event.id) }
+                  .map { |r, registrant_id| r.as_json({ include: [:user => { only: [:name], methods: [], include: []}]}).merge("registration_id" => registrant_id) }
+    else
+      previous_round = Round.joins(:competition_event).find_by(competition_event: { competition_id: competition_event.competition_id, event_id: event.id }, number: number - 1)
+      advancing = previous_round.live_results.where(advancing: true).pluck(:registration_id)
+      Registration.where(competition_id: competition_event.competition_id)
+                  .includes([:user])
+                  .wcif_ordered
+                  .to_enum
+                  .with_index(1)
+                  .select { |r, registrant_id| advancing.include?(r.id) }
+                  .map { |r, registrant_id| r.as_json({ include: [:user => { only: [:name], methods: [], include: []}]}).merge("registration_id" => registrant_id) }
+    end
+  end
+
   def total_registrations
     registrations.count
   end

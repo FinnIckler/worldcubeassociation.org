@@ -17,22 +17,28 @@ class LiveResult < ApplicationRecord
 
   belongs_to :round
 
+  has_one :event, through: :round
+
+  DEFAULT_SERIALIZE_OPTIONS = {
+    only: %w[ranking registration_id round live_attempts round best average single_record_tag average_record_tag advancing advancing_questionable entered_at entered_by_id],
+    methods: %w[event_id attempts result_id],
+    include: %w[event live_attempts round],
+  }.freeze
+
   def serializable_hash(options = nil)
-    {
-      ranking: ranking,
-      # Why does this not honor the order from above??
-      attempts: live_attempts.order(:attempt_number),
-      registration_id: registration_id,
-      round: round,
-      event_id: round.event.id,
-      result_id: id,
-      best: best,
-      average: average,
-      single_record_tag: single_record_tag,
-      average_record_tag: average_record_tag,
-      advancing: advancing,
-      advancing_questionable: advancing_questionable,
-    }
+    super(DEFAULT_SERIALIZE_OPTIONS.merge(options || {}))
+  end
+
+  def result_id
+    id
+  end
+
+  def event_id
+    event.id
+  end
+
+  def attempts
+    live_attempts.order(:attempt_number)
   end
 
   def potential_score

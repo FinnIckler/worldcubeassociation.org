@@ -6,26 +6,7 @@ class LiveController < ApplicationController
     @competition = Competition.find(@competition_id)
     @round = Round.find(params[:round_id])
     @event_id = @round.event.id
-    round_number = @round.number
-    @competitors = if round_number == 1
-                     Registration.where(competition_id: @competition_id)
-                                 .includes([:user])
-                                 .wcif_ordered
-                                 .to_enum
-                                 .with_index(1)
-                                 .select { |r, registrant_id| r.competing_status == 'accepted' && r.event_ids.include?(@event_id) }
-                                 .map { |r, registrant_id| r.as_json({ include: [:user => { only: [:name], methods: [], include: []}]}).merge("registration_id" => registrant_id) }
-                   else
-                     previous_round = Round.joins(:competition_event).find_by(competition_event: { competition_id: @competition_id, event_id: @event_id }, number: round_number - 1)
-                     advancing = previous_round.live_results.where(advancing: true).pluck(:registration_id)
-                     Registration.where(competition_id: @competition_id)
-                                 .includes([:user])
-                                 .wcif_ordered
-                                 .to_enum
-                                 .with_index(1)
-                                 .select { |r, registrant_id| advancing.include?(r.id) }
-                                 .map { |r, registrant_id| r.as_json({ include: [:user => { only: [:name], methods: [], include: []}]}).merge("registration_id" => registrant_id) }
-                   end
+    @competitors = @round.registrations_with_wcif_id
   end
 
   def test_results
@@ -100,7 +81,9 @@ class LiveController < ApplicationController
   def round_results
     round_id = params.require(:round_id)
 
-    render json: Round.find(round_id).live_results.includes([:live_attempts])
+    # TODO: Figure out why this fires a query for every live_attempt
+    # LiveAttempt Load (0.6ms)  SELECT `live_attempts`.* FROM `live_attempts` WHERE `live_attempts`.`live_result_id` = 39 AND `live_attempts`.`replaced_by_id` IS NULL ORDER BY `live_attempts`.`attempt_number` ASC
+    render json: Round.includes(:live_results).find(round_id).live_results.includes(:live_attempts)
   end
 
   def open_round
@@ -139,6 +122,13 @@ class LiveController < ApplicationController
     @competition = Competition.find(@competition_id)
 
     @rounds = Round.joins(:competition_event).where(competition_event: { competition_id: @competition_id })
+  end
+
+  def test_double_check
+    @round = Round.find(params.require(:round_id))
+    @competition = Competition.find(params.require(:competition_id))
+
+    @competitors = @round.registrations_with_wcif_id
   end
 
   def test_schedule_admin
