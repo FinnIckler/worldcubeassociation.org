@@ -98,27 +98,29 @@ class LiveResult < ApplicationRecord
 
       record_levels = {
         WR: all_records[:world_records],
-        CR: all_records[:continental_records][registration.user.continentId.to_sym],
-        NR: all_records[:national_records][registration.user.countryId.to_sym]
+        CR: all_records[:continental_records][registration.user.country.continentId],
+        NR: all_records[:national_records][registration.user.country.id]
       }
 
+      puts(record_levels)
+
       record_levels.each do |tag, records|
-        if records.dig(event_id.to_sym, :single)&.<= best
+        if records.dig(event_id, 'single')&.<= best
           update(single_record_tag: tag.to_s)
           got_record = true
         end
-        if records.dig(event_id.to_sym, :average)&.<= average
+        if records.dig(event_id, 'average')&.<= average
           update(average_record_tag: tag.to_s)
           got_record = true
         end
         return if got_record
       end
 
-      personal_records = registration.user.person.personal_records[event_id.to_sym]
-      if personal_records[:single] < best
+      personal_records = { :single => registration.best_solve(event_id, 'single'), :average => registration.best_solve(event_id, 'average')}
+      if personal_records[:single].time_centiseconds < best
         update(single_record_tag: 'PR')
       end
-      if personal_records[:average] < average
+      if personal_records[:average].time_centiseconds < average
         update(average_record_tag: 'PR')
       end
     end

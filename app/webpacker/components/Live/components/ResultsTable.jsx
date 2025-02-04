@@ -103,8 +103,15 @@ export default function ResultsTable({
               ))}
               {hasResults && (
               <>
-                <Table.Cell textAlign="right">{formatAttemptResult(result.average, event.id)}</Table.Cell>
-                <Table.Cell textAlign="right">{formatAttemptResult(result.best, event.id)}</Table.Cell>
+                <Table.Cell textAlign="right">
+                  {formatAttemptResult(result.average, event.id)}
+                  {' '}
+                  {!isAdmin && result.average_record_tag}
+                </Table.Cell>
+                <Table.Cell textAlign="right">
+                  {formatAttemptResult(result.best, event.id)}
+                  {!isAdmin && result.single_record_tag}
+                </Table.Cell>
               </>
               )}
             </Table.Row>
