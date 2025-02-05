@@ -59,7 +59,7 @@ class LiveResult < ApplicationRecord
     end
 
     def should_recompute?
-      best_changed? || average_changed?
+      saved_change_to_best? || saved_change_to_average?
     end
 
     def notify_users
