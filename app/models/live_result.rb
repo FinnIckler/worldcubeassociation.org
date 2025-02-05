@@ -103,11 +103,12 @@ class LiveResult < ApplicationRecord
       }
 
       record_levels.each do |tag, records|
-        if records.dig(event_id, 'single')&.<= best
+        if records.dig(event_id, 'single')&.>= best
+          puts(records.dig(event_id, 'single'))
           update(single_record_tag: tag.to_s)
           got_record = true
         end
-        if records.dig(event_id, 'average')&.<= average
+        if records.dig(event_id, 'average')&.>= average
           update(average_record_tag: tag.to_s)
           got_record = true
         end
