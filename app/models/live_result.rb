@@ -50,7 +50,7 @@ class LiveResult < ApplicationRecord
   end
 
   def complete?
-    live_attempts.count == round.format.expected_solve_count
+    live_attempts.where.not(result: 0).count == round.format.expected_solve_count
   end
 
   private
@@ -101,8 +101,6 @@ class LiveResult < ApplicationRecord
         CR: all_records[:continental_records][registration.user.country.continentId],
         NR: all_records[:national_records][registration.user.country.id]
       }
-
-      puts(record_levels)
 
       record_levels.each do |tag, records|
         if records.dig(event_id, 'single')&.<= best
