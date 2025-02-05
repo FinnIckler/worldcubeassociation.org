@@ -30,6 +30,45 @@ export const rankingCellStyle = (result) => {
   return {};
 };
 
+export const recordTagStyle = (tag) => {
+  const styles = {
+    display: 'block',
+    lineHeight: 1,
+    padding: '0.3em 0.4em',
+    borderRadius: '4px',
+    fontWeight: 600,
+    fontSize: '0.6em',
+    position: 'absolute',
+    top: '0px',
+    right: '0px',
+    transform: 'translate(110%, -40%)',
+    color: 'rgb(255, 255, 255)',
+  };
+
+  switch (tag) {
+    case 'WR': {
+      styles.backgroundColor = 'rgb(244, 67, 54)';
+      break;
+    }
+    case 'CR': {
+      styles.backgroundColor = 'rgb(255, 235, 59)';
+      break;
+    }
+    case 'NR': {
+      styles.backgroundColor = 'rgb(0, 230, 118)';
+      break;
+    }
+    case 'PR': {
+      styles.backgroundColor = 'rgb(66, 66, 66)';
+      break;
+    }
+    default: {
+      return {};
+    }
+  }
+  return styles;
+};
+
 export default function ResultsTable({
   results, event, competitors, competitionId, isAdmin = false, showEmpty = true,
 }) {
@@ -103,14 +142,24 @@ export default function ResultsTable({
               ))}
               {hasResults && (
               <>
-                <Table.Cell textAlign="right">
+                <Table.Cell textAlign="right" style={{ position: 'relative' }}>
                   {formatAttemptResult(result.average, event.id)}
                   {' '}
-                  {!isAdmin && result.average_record_tag}
+                  {!isAdmin
+                    && (
+                    <span style={recordTagStyle(result.average_record_tag)}>
+                      {result.average_record_tag}
+                    </span>
+                    )}
                 </Table.Cell>
-                <Table.Cell textAlign="right">
+                <Table.Cell textAlign="right" style={{ position: 'relative' }}>
                   {formatAttemptResult(result.best, event.id)}
-                  {!isAdmin && result.single_record_tag}
+                  {!isAdmin
+                    && (
+                    <span style={recordTagStyle(result.single_record_tag)}>
+                      {result.single_record_tag}
+                    </span>
+                    )}
                 </Table.Cell>
               </>
               )}

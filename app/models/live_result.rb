@@ -75,6 +75,9 @@ class LiveResult < ApplicationRecord
     end
 
     def compute_record_tag
+      # Reset Record tag for updates
+      update(single_record_tag: nil, average_record_tag: nil)
+
       # Taken from the v0 records controlled TODO: Refactor? Or probably recompute this on CAD run
       concise_results_date = ComputeAuxiliaryData.end_date || Date.current
       cache_key = ["records", concise_results_date.iso8601]
@@ -104,7 +107,6 @@ class LiveResult < ApplicationRecord
 
       record_levels.each do |tag, records|
         if records.dig(event_id, 'single')&.>= best
-          puts(records.dig(event_id, 'single'))
           update(single_record_tag: tag.to_s)
           got_record = true
         end
