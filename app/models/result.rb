@@ -5,6 +5,7 @@ class Result < ApplicationRecord
 
   self.table_name = "Results"
 
+  has_many :attempts
   belongs_to :person, -> { current }, primary_key: :wca_id, foreign_key: :personId, optional: true
   alias_attribute :person_name, :personName
   validates :personName, presence: true
@@ -57,10 +58,6 @@ class Result < ApplicationRecord
 
   alias_attribute :name, :personName
   alias_attribute :wca_id, :personId
-
-  def attempts
-    [value1, value2, value3, value4, value5]
-  end
 
   delegate :iso2, to: :country, prefix: true
 
