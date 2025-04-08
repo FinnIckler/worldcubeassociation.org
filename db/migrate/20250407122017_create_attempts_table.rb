@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateLiveResultTables < ActiveRecord::Migration[7.2]
+class CreateAttemptsTable < ActiveRecord::Migration[7.2]
   def change
     create_table :attempts do |t|
       t.integer :value, null: false

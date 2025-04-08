@@ -241,7 +241,10 @@ class Person < ApplicationRecord
   end
 
   def completed_solves_count
-    results.pluck("value1, value2, value3, value4, value5").flatten.count { |value| value > 0 }
+    Attempt.joins(:result)
+           .where(Results: { personId: wca_id })
+           .where("value > 0")
+           .count
   end
 
   def gender_visible?

@@ -30,11 +30,12 @@ module ResultMethods
   end
 
   def solve_times
-    @solve_times ||= [SolveTime.new(eventId, :single, value1),
-                      SolveTime.new(eventId, :single, value2),
-                      SolveTime.new(eventId, :single, value3),
-                      SolveTime.new(eventId, :single, value4),
-                      SolveTime.new(eventId, :single, value5)].freeze
+    @attempts = attempts
+    @solve_times ||= [SolveTime.new(eventId, :single, @attempts[0]),
+                      SolveTime.new(eventId, :single, @attempts[1]),
+                      SolveTime.new(eventId, :single, @attempts[2]),
+                      SolveTime.new(eventId, :single, @attempts[3]),
+                      SolveTime.new(eventId, :single, @attempts[4])].freeze
   end
 
   def worst_index

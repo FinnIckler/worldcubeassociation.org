@@ -31,6 +31,10 @@ class Result < ApplicationRecord
     Country.c_find(self.countryId)
   end
 
+  def attempts
+    super.pluck(:value)
+  end
+
   # If saving changes to personId, make sure that there is no results for
   # that person yet for the round.
   validate :unique_result_per_round, if: lambda {
