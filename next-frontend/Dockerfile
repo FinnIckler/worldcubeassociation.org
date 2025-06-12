@@ -33,7 +33,7 @@ COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN corepack enable
 # Create the types and build
-RUN yarn run chakra:types && NODE_ENV=production IS_COMPILING_ASSETS=1 NEXT_PUBLIC_WCA_FRONTEND_API_URL='https://www.worldcubeassociation.org/api/v0/' yarn run build
+RUN yarn run chakra:types && NODE_ENV=production IS_COMPILING_ASSETS=1 NEXT_PUBLIC_WCA_FRONTEND_API_URL='https://www.worldcubeassociation.org/api/v0/' yarn run build:compile
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -54,6 +54,8 @@ COPY --from=builder /app/public ./public
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
 COPY --from=deps /app/global-bundle.pem /app/global-bundle.pem
+COPY --from=builder --chown=nextjs:nodejs /app/src ./src
+COPY --from=deps --chown=nextjs:nodejs /app/node_modules ./node_modules
 COPY --from=deps /usr/local/bin/vault /usr/local/bin/vault
 COPY --from=builder /app/docker-entrypoint.sh /app/docker-entrypoint.sh
 

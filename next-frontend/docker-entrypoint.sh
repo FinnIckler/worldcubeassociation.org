@@ -14,4 +14,4 @@ export OIDC_CLIENT_SECRET
 export PAYLOAD_SECRET
 export NEW_RELIC_LICENSE_KEY
 
-exec node server.js
+exec npm run build:generate && node server.js

@@ -15,8 +15,6 @@ export const metadata: Metadata = {
 };
 
 const devFont = Rubik({ subsets: ["latin"] });
-export const dynamic = "force-dynamic";
-
 export default async function RootLayout({
   children,
 }: Readonly<{

@@ -89,7 +89,6 @@ export default async function CompetitionOverView({
   if (!competitionInfo) {
     return <Text>Competition does not exist</Text>;
   }
-  console.log(competitionInfo);
 
   const refundDate = new Date(competitionInfo.refund_policy_limit_date);
   const regoOpenDate = new Date(competitionInfo.registration_open);

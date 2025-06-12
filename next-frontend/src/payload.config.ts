@@ -43,35 +43,39 @@ async function dbAdapter() {
   }
 }
 
-export default buildConfig({
-  admin: {
-    user: "users",
-    importMap: {
-      baseDir: path.resolve(dirname),
+async function config() {
+  return buildConfig({
+    admin: {
+      user: "users",
+      importMap: {
+        baseDir: path.resolve(dirname),
+      },
     },
-  },
-  routes: {
-    admin: "/payload",
-    api: "/api/payload",
-  },
-  collections: [
-    Media,
-    Testimonials,
-    Announcements,
-    FaqCategories,
-    FaqQuestions,
-  ],
-  globals: [Nav, Home],
-  editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || "",
-  typescript: {
-    outputFile: path.resolve(dirname, "payload-types.ts"),
-  },
-  db: await dbAdapter(),
-  sharp,
-  plugins: [
-    authjsPlugin({
-      authjsConfig: authConfig,
-    }),
-  ],
-});
+    routes: {
+      admin: "/payload",
+      api: "/api/payload",
+    },
+    collections: [
+      Media,
+      Testimonials,
+      Announcements,
+      FaqCategories,
+      FaqQuestions,
+    ],
+    globals: [Nav, Home],
+    editor: lexicalEditor(),
+    secret: process.env.PAYLOAD_SECRET || "",
+    typescript: {
+      outputFile: path.resolve(dirname, "payload-types.ts"),
+    },
+    db: await dbAdapter(),
+    sharp,
+    plugins: [
+      authjsPlugin({
+        authjsConfig: authConfig,
+      }),
+    ],
+  });
+}
+
+export default config();

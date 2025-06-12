@@ -9,6 +9,8 @@
     "dev": "next dev",
     "check:types": "tsc --noEmit",
     "build": "next build",
+    "build:compile": "next build --experimental-build-mode compile",
+    "build:generate": "next build --experimental-build-mode generate",
     "start": "next start",
     "build:types": "openapi-typescript public/wcaAPI.yaml -o src/lib/wca/wcaSchema.ts",
     "chakra:types": "chakra typegen ./src/theme.ts",
