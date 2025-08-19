@@ -158,20 +158,6 @@ Rails.application.routes.draw do
   get 'competitions/edit/registration-collisions-json' => 'competitions#registration_collisions_json', as: :registration_collisions_json
   get 'competitions/edit/series-eligible-competitions-json' => 'competitions#series_eligible_competitions_json', as: :series_eligible_competitions_json
 
-  if WcaLive.enabled?
-    get 'competitions/:competition_id/live/competitors/:registration_id' => 'live#by_person', as: :live_person_results
-    get 'competitions/:competition_id/live/podiums' => 'live#podiums', as: :live_podiums
-    get 'competitions/:competition_id/live/competitors' => 'live#competitors', as: :live_competitors
-    get 'competitions/:competition_id/live/rounds/:round_id/admin' => 'live#admin', as: :live_admin_round_results
-    get 'competitions/:competition_id/live/rounds/:round_id/admin/check' => 'live#double_check', as: :live_admin_check_round_results
-    get 'competitions/:competition_id/live/admin' => 'live#schedule_admin', as: :live_schedule_admin
-    get 'competitions/:competition_id/live/rounds/:round_id' => 'live#round_results', as: :live_round_results
-
-    get 'api/competitions/:competition_id/rounds/:round_id' => 'live#round_results_api', as: :live_round_results_api
-    post 'api/competitions/:competition_id/rounds/:round_id' => 'live#add_result', as: :add_live_result
-    patch 'api/competitions/:competition_id/rounds/:round_id' => 'live#update_result', as: :update_live_result
-  end
-
   get 'results/rankings', to: redirect('results/rankings/333/single', status: 302)
   get 'results/rankings/333mbf/average',
       to: redirect(status: 302) { |_params, request| URI.parse(request.original_url).query ? "results/rankings/333mbf/single?#{URI.parse(request.original_url).query}" : "results/rankings/333mbf/single" }
@@ -443,6 +429,13 @@ Rails.application.routes.draw do
         get '/scrambles/:event_id' => 'competitions#event_scrambles', as: :event_scrambles
         get '/psych-sheet/:event_id' => 'competitions#event_psych_sheet', as: :event_psych_sheet
         patch '/wcif' => 'competitions#update_wcif', as: :update_wcif
+
+        if WcaLive.enabled?
+          get '/rounds/:round_id' => 'live#round_results_api', as: :get_live_results
+          get '/podiums/' => 'live#podiums_api', as: :get_live_podiums
+          post '/rounds/:round_id' => 'live#add_result', as: :add_live_result
+          patch '/rounds/:round_id' => 'live#update_result', as: :update_live_result
+        end
       end
 
       post '/registration-data' => 'competitions#registration_data', as: :registration_data
