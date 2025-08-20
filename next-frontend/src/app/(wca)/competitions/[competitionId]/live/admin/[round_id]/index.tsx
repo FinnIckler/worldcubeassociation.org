@@ -1,11 +1,16 @@
 "use client";
 
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useCallback, useState } from "react";
 import { useParams } from "next/navigation";
 import useAPI from "@/lib/wca/useAPI";
+import Loading from "@/components/ui/loading";
+import { components } from "@/types/openapi";
+import { CurrentEventId } from "@wca/helpers";
+import events from "@/lib/wca/data/events";
+import { Container, Grid, GridItem, Heading } from "@chakra-ui/react";
 
-function zeroedArrayOfSize(size) {
+function zeroedArrayOfSize(size: number) {
   return Array(size).fill(0);
 }
 
@@ -18,25 +23,55 @@ export default function ResultPage() {
   const api = useAPI();
 
   const { data: results, isLoading } = useQuery({
-    queryKey: ["live-round", roundId],
-    queryFn: () => api.GET(""),
+    queryKey: ["live-round", roundId, competitionId],
+    queryFn: () =>
+      api.GET("/competitions/{competitionId}/rounds/{roundId}", {
+        params: { path: { roundId, competitionId } },
+      }),
+    select: (data) => data.data,
   });
+
+  if (isLoading) {
+    return <Loading />;
+  }
+
+  return (
+    <AddResults
+      results={results!}
+      eventId={results!.map((r) => r.event_id)[0] as CurrentEventId}
+      roundId={roundId}
+      competitionId={competitionId}
+    />
+  );
 }
 
-function AddResults() {
-  const [registrationId, setRegistrationId] = useState("");
-  const [attempts, setAttempts] = useState(zeroedArrayOfSize(solveCount));
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
+function AddResults({
+  results,
+  eventId,
+  roundId,
+  competitionId,
+}: {
+  results: components["schemas"]["LiveResult"][];
+  eventId: CurrentEventId;
+  roundId: string;
+  competitionId: string;
+}) {
+  const event = events.byId[eventId];
+  const solveCount = event.recommendedFormat.expected_solve_count;
+
+  const [registrationId, setRegistrationId] = useState<number | null>(null);
+  const [attempts, setAttempts] = useState<number[]>(
+    zeroedArrayOfSize(solveCount),
+  );
+  const [error, setError] = useState<string>("");
+  const [success, setSuccess] = useState<string>("");
+
   const queryClient = useQueryClient();
 
-  const { data: results, isLoading } = useQuery({
-    queryKey: ["live-round", roundId],
-    queryFn: () => getRoundResults(roundId, competitionId),
-  });
+  const api = useAPI();
 
   const handleRegistrationIdChange = useCallback(
-    (_, { value }) => {
+    (value: number) => {
       setRegistrationId(value);
       const alreadyEnteredResults = results.find(
         (r) => r.registration_id === value,
@@ -51,10 +86,20 @@ function AddResults() {
   );
 
   const { mutate: mutateSubmit, isPending: isPendingSubmit } = useMutation({
-    mutationFn: submitRoundResults,
+    mutationFn: () =>
+      api.POST("/competitions/{competitionId}/rounds/{roundId}", {
+        body: {
+          attempts: attempts.map((attempt, index) => ({
+            result: attempt,
+            attempt_number: index,
+          })),
+          registration_id: registrationId!,
+        },
+        params: { path: { competitionId, roundId } },
+      }),
     onSuccess: () => {
       setSuccess("Results added successfully!");
-      setRegistrationId("");
+      setRegistrationId(null);
       setAttempts(zeroedArrayOfSize(solveCount));
       setError("");
 
@@ -66,17 +111,27 @@ function AddResults() {
   });
 
   const { mutate: mutateUpdate, isPending: isPendingUpdate } = useMutation({
-    mutationFn: updateRoundResults,
+    mutationFn: () =>
+      api.PATCH("/competitions/{competitionId}/rounds/{roundId}", {
+        body: {
+          attempts: attempts.map((attempt, index) => ({
+            result: attempt,
+            attempt_number: index,
+          })),
+          registration_id: registrationId!,
+        },
+        params: { path: { competitionId, roundId } },
+      }),
     onSuccess: () => {
-      setSuccess("Results added successfully!");
-      setRegistrationId("");
+      setSuccess("Results updated successfully!");
+      setRegistrationId(null);
       setAttempts(zeroedArrayOfSize(solveCount));
       setError("");
 
       setTimeout(() => setSuccess(""), 3000);
     },
     onError: () => {
-      setError("Failed to submit results. Please try again.");
+      setError("Failed to update results. Please try again.");
     },
   });
 
@@ -97,33 +152,23 @@ function AddResults() {
     setAttempts(newAttempts);
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = () => {
     if (!registrationId) {
       setError("Please enter a user ID");
       return;
     }
 
     if (results.find((r) => r.registration_id === registrationId)) {
-      mutateUpdate({
-        roundId,
-        registrationId,
-        competitionId,
-        attempts,
-      });
+      mutateUpdate();
     } else {
-      mutateSubmit({
-        roundId,
-        registrationId,
-        competitionId,
-        attempts,
-      });
+      mutateSubmit();
     }
   };
 
   return (
-    <Segment loading={isLoading || isPendingSubmit || isPendingUpdate}>
-      <Grid>
-        <Grid.Column width={4}>
+    <Container>
+      <Grid templateColumns="repeat(16, 1fr)" gap="6">
+        <GridItem colSpan={4}>
           <AttemptsForm
             error={error}
             success={success}
@@ -137,10 +182,10 @@ function AddResults() {
             solveCount={solveCount}
             eventId={eventId}
           />
-        </Grid.Column>
+        </GridItem>
 
-        <Grid.Column width={12}>
-          <Button.Group floated="right">
+        <GridItem colSpan={12}>
+          <ButtonGroup float="right">
             <a href={liveUrls.roundResults(competitionId, roundId)}>
               <Button>Results</Button>
             </a>
@@ -153,17 +198,17 @@ function AddResults() {
             <a href={liveUrls.checkRoundResultsAdmin(competitionId, roundId)}>
               <Button>Double Check</Button>
             </a>
-          </Button.Group>
-          <Header>Live Results</Header>
+          </ButtonGroup>
+          <Heading size="5xl">Live Results</Heading>
           <ResultsTable
-            results={results ?? []}
+            results={results}
             event={event}
             competitors={competitors}
             competitionId={competitionId}
             isAdmin
           />
-        </Grid.Column>
+        </GridItem>
       </Grid>
-    </Segment>
+    </Container>
   );
 }

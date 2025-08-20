@@ -163,7 +163,33 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get?: never;
+        /** Gets a live result for a given round */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    competitionId: string;
+                    roundId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Returns results */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            results?: components["schemas"]["LiveResult"][];
+                            competitors?: components["schemas"]["LiveCompetitor"][];
+                        };
+                    };
+                };
+            };
+        };
         put?: never;
         /** Adds a live result for a given round */
         post: {
@@ -178,7 +204,28 @@ export interface paths {
             };
             requestBody: {
                 content: {
-                    "application/json": components["schemas"]["LiveResult"];
+                    "application/json": components["schemas"]["SubmitLiveResult"];
+                };
+            };
+            responses: never;
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        /** Updates a live result for a given round */
+        patch: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    competitionId: string;
+                    roundId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["SubmitLiveResult"];
                 };
             };
             responses: {
@@ -195,10 +242,6 @@ export interface paths {
                 };
             };
         };
-        delete?: never;
-        options?: never;
-        head?: never;
-        patch?: never;
         trace?: never;
     };
     "/competition_index": {
@@ -1015,9 +1058,33 @@ export interface components {
             regional_single_record: string | null;
             regional_average_record: string | null;
         };
+        LiveCompetitor: {
+            id: number;
+            user_id: number;
+            user: {
+                name: string;
+            };
+        };
         LiveResult: {
-            attempts?: number[];
-            registration_id?: string;
+            registration_id: number;
+            round_id: number;
+            ranking: number;
+            best: number;
+            average: number;
+            single_record_tag: string;
+            average_record_tag: string;
+            advancing: boolean;
+            advancing_questionable: boolean;
+            event_id: string;
+            attempts: components["schemas"]["LiveAttempt"][];
+        };
+        SubmitLiveResult: {
+            attempts: components["schemas"]["LiveAttempt"][];
+            registration_id: number;
+        };
+        LiveAttempt: {
+            result: number;
+            attempt_number: number;
         };
         PersonalRecord: {
             eventId?: string;
