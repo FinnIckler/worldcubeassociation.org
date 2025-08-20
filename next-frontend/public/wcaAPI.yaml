@@ -123,7 +123,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LiveResult'
+              $ref: '#/components/schemas/SubmitLiveResult'
       responses:
         '200':
           description: New Result Accepted
@@ -1355,12 +1355,54 @@ components:
     LiveResult:
       type: object
       properties:
+        registration_id:
+          type: number
+        round_id:
+          type: number
+        ranking:
+          type: number
+        best:
+          type: number
+        average:
+          type: number
+        single_record_tag:
+          type: string
+        average_record_tag:
+          type: string
+        advancing:
+          type: boolean
+        advancing_questionable:
+          type: boolean
+        event_id:
+          type: string
         attempts:
           type: array
           items:
-            type: number
+            $ref: "#/components/schemas/LiveAttempt"
+
+    SubmitLiveResult:
+      type: object
+      required:
+        - attempts
+        - registration_id
+      properties:
+        attempts:
+          type: array
+          items:
+            $ref: "#/components/schemas/LiveAttempt"
         registration_id:
           type: string
+
+    LiveAttempt:
+      type: object
+      required:
+        - result
+        - attempt_number
+      properties:
+        result:
+          type: number
+        attempt_number:
+          type: number
 
 
     PersonalRecord:
