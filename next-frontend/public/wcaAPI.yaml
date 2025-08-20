@@ -81,6 +81,59 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RegistrationData'
+  /competitions/{competitionId}/rounds/{roundId}:
+    get:
+      summary: Gets a live result for a given round
+      parameters:
+        - name: competitionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: roundId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+    post:
+      summary: Adds a live result for a given round
+      parameters:
+        - name: competitionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: roundId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LiveResult'
+      responses:
+        '200':
+          description: New Result Accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
   /competition_index:
     get:
       summary: Get a list of (upcoming) competitions for table display
@@ -1298,6 +1351,17 @@ components:
         regional_average_record:
           type: string
           nullable: true
+
+    LiveResult:
+      type: object
+      properties:
+        attempts:
+          type: array
+          items:
+            type: number
+        registration_id:
+          type: string
+
 
     PersonalRecord:
       type: object

@@ -156,6 +156,51 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/competitions/{competitionId}/rounds/{roundId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Adds a live result for a given round */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    competitionId: string;
+                    roundId: string;
+                };
+                cookie?: never;
+            };
+            requestBody: {
+                content: {
+                    "application/json": components["schemas"]["LiveResult"];
+                };
+            };
+            responses: {
+                /** @description New Result Accepted */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": {
+                            status?: string;
+                        };
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/competition_index": {
         parameters: {
             query?: never;
@@ -969,6 +1014,10 @@ export interface components {
             worst_index: number;
             regional_single_record: string | null;
             regional_average_record: string | null;
+        };
+        LiveResult: {
+            attempts?: number[];
+            registration_id?: string;
         };
         PersonalRecord: {
             eventId?: string;

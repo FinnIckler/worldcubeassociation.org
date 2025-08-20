@@ -1,10 +1,13 @@
-function Podiums({ podiums, competitionId, competitors }) {
+import { Container, Heading } from "@chakra-ui/react";
+import events from "@/lib/wca/data/events";
+
+export default function PodiumsPage() {
   return (
-    <Container fluid>
-      <Header>Podiums</Header>
+    <Container>
+      <Heading size="5xl">Podiums</Heading>
       {podiums.map((finalRound) => (
         <>
-          <Header as="h3">{events.byId[finalRound.event_id].name}</Header>
+          <Heading size="2xl">{events.byId[finalRound.event_id].name}</Heading>
           {finalRound.live_podium.length > 0 ? (
             <ResultsTable
               results={finalRound.live_podium}

@@ -1,12 +1,12 @@
 # frozen_string_literal: true
 
-class LiveController < ApplicationController
+class LiveController < Api::V0::ApiController
   def admin
-    @competition_id = params[:competition_id]
-    @competition = Competition.find(@competition_id)
-    @round = Round.find(params[:round_id])
-    @event_id = @round.event.id
-    @competitors = @round.accepted_registrations_with_wcif_id
+    competition_id = params[:competition_id]
+    competition = Competition.find(competition_id)
+    round = Round.find(params[:round_id])
+    event_id = round.event.id
+    competitors = round.accepted_registrations_with_wcif_id
   end
 
   def add_result
@@ -46,7 +46,6 @@ class LiveController < ApplicationController
       end
     end
 
-    # TODO: What is the best way to do this?
     r = Result.new(
       value1: results[0],
       value2: results[1],
@@ -65,11 +64,11 @@ class LiveController < ApplicationController
   end
 
   def round_results
-    @competition_id = params[:competition_id]
-    @competition = Competition.find(@competition_id)
-    @round = Round.find(params[:round_id])
-    @event_id = @round.event.id
-    @competitors = @round.registrations
+    competition_id = params[:competition_id]
+    competition = Competition.find(competition_id)
+    round = Round.find(params[:round_id])
+    event_id = round.event.id
+    competitors = round.registrations
   end
 
   def round_results_api
@@ -109,10 +108,11 @@ class LiveController < ApplicationController
     registration_id = params.require(:registration_id)
     registration = Registration.find(registration_id)
 
-    @competition_id = params[:competition_id]
-    @competition = Competition.find(@competition_id)
+    results = registration.live_results.includes(:live_attempts)
 
-    @user = registration.user
-    @results = registration.live_results.includes(:live_attempts)
+    render json: {
+      competitor: registration.user,
+      results: results,
+    }
   end
 end
