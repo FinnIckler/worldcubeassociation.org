@@ -1060,8 +1060,10 @@ export interface components {
         };
         LiveCompetitor: {
             id: number;
-            user_id: number;
+            registrant_id: number;
             user: {
+                id: number;
+                wca_id: string;
                 name: string;
             };
         };

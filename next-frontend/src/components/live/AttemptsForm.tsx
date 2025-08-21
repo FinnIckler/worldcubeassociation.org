@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
-import { Form, Header, Message } from 'semantic-ui-react';
-import _ from 'lodash';
-import AttemptResultField from '../../EditResult/WCALive/AttemptResultField/AttemptResultField';
+import React, { useMemo } from "react";
+import { Form, Header, Message } from "semantic-ui-react";
+import _ from "lodash";
+import AttemptResultField from "../../EditResult/WCALive/AttemptResultField/AttemptResultField";
 
 export default function AttemptsForm({
   registrationId,
@@ -16,18 +16,20 @@ export default function AttemptsForm({
   success,
   header,
 }) {
-  const options = useMemo(() => competitors.map((p) => ({
-    key: p.id,
-    value: p.id,
-    registrationId: p.registration_id,
-    text: `${p.user.name} (${p.registration_id})`,
-  })), [competitors]);
+  const options = useMemo(
+    () =>
+      competitors.map((p) => ({
+        key: p.id,
+        value: p.id,
+        registrationId: p.registration_id,
+        text: `${p.user.name} (${p.registration_id})`,
+      })),
+    [competitors],
+  );
 
   return (
     <Form error={!!error} success={!!success}>
-      <Header>
-        {header}
-      </Header>
+      <Header>{header}</Header>
 
       {error && <Message error content={error} />}
       {success && <Message success content={success} />}
@@ -36,8 +38,13 @@ export default function AttemptsForm({
         placeholder="Competitor"
         value={registrationId}
         deburr
-        search={(inputs, value) => inputs.filter((d) => d.text.includes(value)
-          || parseInt(value, 10) === d.registrationId)}
+        search={(inputs, value) =>
+          inputs.filter(
+            (d) =>
+              d.text.includes(value) ||
+              parseInt(value, 10) === d.registrationId,
+          )
+        }
         onChange={handleRegistrationIdChange}
         options={options}
       />
@@ -51,7 +58,9 @@ export default function AttemptsForm({
           onChange={(value) => handleAttemptChange(index, value)}
         />
       ))}
-      <Form.Button primary onClick={handleSubmit}>Submit Results</Form.Button>
+      <Form.Button primary onClick={handleSubmit}>
+        Submit Results
+      </Form.Button>
     </Form>
   );
 }

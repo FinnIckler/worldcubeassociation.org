@@ -1382,18 +1382,24 @@ components:
       type: object
       required:
         - id
-        - user_id
+        - registrant_id
         - user
       properties:
         id:
           type: number
-        user_id:
+        registrant_id:
           type: number
         user:
           type: object
           required:
             - name
+            - id
+            - wca_id
           properties:
+            id:
+              type: number
+            wca_id:
+              type: string
             name:
               type: string
 

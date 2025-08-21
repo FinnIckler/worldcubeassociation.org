@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import _ from "lodash";
 import { components } from "@/types/openapi";
 import events from "@/lib/wca/data/events";
+import { Table } from "@chakra-ui/react";
 
 const advancingColor = "0, 230, 118";
 
@@ -121,16 +122,16 @@ export default function ResultsTable({
     <Table.Root>
       <Table.Header>
         <Table.Row>
-          <Table.HeaderCell textAlign="right">#</Table.HeaderCell>
-          {isAdmin && <Table.HeaderCell>Id</Table.HeaderCell>}
-          <Table.HeaderCell>Competitor</Table.HeaderCell>
+          <Table.ColumnHeader textAlign="right">#</Table.ColumnHeader>
+          {isAdmin && <Table.ColumnHeader>Id</Table.ColumnHeader>}
+          <Table.ColumnHeader>Competitor</Table.ColumnHeader>
           {attemptIndexes.map((num) => (
-            <Table.HeaderCell key={num} textAlign="right">
+            <Table.ColumnHeader key={num} textAlign="right">
               {num + 1}
-            </Table.HeaderCell>
+            </Table.ColumnHeader>
           ))}
-          <Table.HeaderCell textAlign="right">Average</Table.HeaderCell>
-          <Table.HeaderCell textAlign="right">Best</Table.HeaderCell>
+          <Table.ColumnHeader textAlign="right">Average</Table.ColumnHeader>
+          <Table.ColumnHeader textAlign="right">Best</Table.ColumnHeader>
         </Table.Row>
       </Table.Header>
 
@@ -144,7 +145,7 @@ export default function ResultsTable({
           }
 
           return (
-            <Table.Row key={competitor.user_id}>
+            <Table.Row key={competitor.id}>
               <Table.Cell
                 width={1}
                 textAlign="right"
@@ -152,13 +153,13 @@ export default function ResultsTable({
               >
                 {index + 1}
               </Table.Cell>
-              {isAdmin && <Table.Cell>{competitor.registration_id}</Table.Cell>}
+              {isAdmin && <Table.Cell>{competitor.registrant_id}</Table.Cell>}
               <Table.Cell>
                 <a
                   href={
                     isAdmin
-                      ? editRegistrationUrl(competitor.id)
-                      : liveUrls.personResults(competitionId, competitor.id)
+                      ? `/registrations/${competitor.id}/edit`
+                      : `/competitions/${competitionId}/live/${competitor.id}`
                   }
                 >
                   {competitor.user.name}
@@ -168,9 +169,9 @@ export default function ResultsTable({
                 competitorResult.attempts.map((attempt) => (
                   <Table.Cell
                     textAlign="right"
-                    key={`${competitor.user_id}-${attempt.attempt_number}`}
+                    key={`${competitor.id}-${attempt.attempt_number}`}
                   >
-                    {formatAttemptResult(attempt.result, event.id)}
+                    {attempt.result}
                   </Table.Cell>
                 ))}
               {hasResult && (
@@ -179,7 +180,7 @@ export default function ResultsTable({
                     textAlign="right"
                     style={{ position: "relative" }}
                   >
-                    {formatAttemptResult(competitorResult.average, event.id)}{" "}
+                    {competitorResult.average}{" "}
                     {!isAdmin && (
                       <span
                         style={recordTagStyle(
@@ -194,7 +195,7 @@ export default function ResultsTable({
                     textAlign="right"
                     style={{ position: "relative" }}
                   >
-                    {formatAttemptResult(competitorResult.best, event.id)}
+                    {competitorResult.best}
                     {!isAdmin && (
                       <span
                         style={recordTagStyle(

@@ -8,10 +8,29 @@ import Loading from "@/components/ui/loading";
 import { components } from "@/types/openapi";
 import { CurrentEventId } from "@wca/helpers";
 import events from "@/lib/wca/data/events";
-import { Container, Grid, GridItem, Heading } from "@chakra-ui/react";
+import { Container, Grid, GridItem, Heading, VStack } from "@chakra-ui/react";
+import LiveResultsTable from "@/components/live/LiveResultsTable";
 
 function zeroedArrayOfSize(size: number) {
   return Array(size).fill(0);
+}
+
+function roundResultsKey(roundId: string, competitionId: string) {
+  return ["live-round", roundId, competitionId];
+}
+
+function insertNewResult(
+  roundResults: components["schemas"]["LiveResult"][],
+  newResult: components["schemas"]["LiveResult"],
+) {
+  const { registration_id: updatedRegistrationId } = newResult;
+
+  const untouchedResults = roundResults.filter(
+    ({ registration_id: registrationId }) =>
+      registrationId !== updatedRegistrationId,
+  );
+
+  return [...untouchedResults, newResult];
 }
 
 export default function ResultPage() {
@@ -22,8 +41,8 @@ export default function ResultPage() {
 
   const api = useAPI();
 
-  const { data: results, isLoading } = useQuery({
-    queryKey: ["live-round", roundId, competitionId],
+  const { data: resultsRequest, isLoading } = useQuery({
+    queryKey: roundResultsKey(roundId, competitionId),
     queryFn: () =>
       api.GET("/competitions/{competitionId}/rounds/{roundId}", {
         params: { path: { roundId, competitionId } },
@@ -35,13 +54,23 @@ export default function ResultPage() {
     return <Loading />;
   }
 
+  const { results, competitors } = resultsRequest!;
+
   return (
-    <AddResults
-      results={results!}
-      eventId={results!.map((r) => r.event_id)[0] as CurrentEventId}
-      roundId={roundId}
-      competitionId={competitionId}
-    />
+    <Container>
+      <VStack align="left">
+        <Heading size="5xl">Live Results</Heading>
+        <AddResults
+          results={results!}
+          eventId={
+            (results!.map((r) => r.event_id)[0] as CurrentEventId) ?? "333"
+          }
+          roundId={roundId}
+          competitionId={competitionId}
+          competitors={competitors!}
+        />
+      </VStack>
+    </Container>
   );
 }
 
@@ -50,11 +79,13 @@ function AddResults({
   eventId,
   roundId,
   competitionId,
+  competitors,
 }: {
   results: components["schemas"]["LiveResult"][];
   eventId: CurrentEventId;
   roundId: string;
   competitionId: string;
+  competitors: components["schemas"]["LiveCompetitor"][];
 }) {
   const event = events.byId[eventId];
   const solveCount = event.recommendedFormat.expected_solve_count;
@@ -136,17 +167,19 @@ function AddResults({
   });
 
   const updateResultsData = useCallback(
-    (data) => {
-      queryClient.setQueryData(roundResultsKey(roundId), (oldData) =>
-        insertNewResult(oldData, data),
+    (data: components["schemas"]["LiveResult"]) => {
+      queryClient.setQueryData(
+        roundResultsKey(roundId, competitionId),
+        (oldData: components["schemas"]["LiveResult"][]) =>
+          insertNewResult(oldData, data),
       );
     },
-    [queryClient, roundId],
+    [competitionId, queryClient, roundId],
   );
 
-  useResultsSubscription(roundId, updateResultsData);
+  // useResultsSubscription(roundId, updateResultsData);
 
-  const handleAttemptChange = (index, value) => {
+  const handleAttemptChange = (index: number, value: number) => {
     const newAttempts = [...attempts];
     newAttempts[index] = value;
     setAttempts(newAttempts);
@@ -166,49 +199,46 @@ function AddResults({
   };
 
   return (
-    <Container>
-      <Grid templateColumns="repeat(16, 1fr)" gap="6">
-        <GridItem colSpan={4}>
-          <AttemptsForm
-            error={error}
-            success={success}
-            registrationId={registrationId}
-            handleAttemptChange={handleAttemptChange}
-            handleSubmit={handleSubmit}
-            handleRegistrationIdChange={handleRegistrationIdChange}
-            header="Add Result"
-            attempts={attempts}
-            competitors={competitors}
-            solveCount={solveCount}
-            eventId={eventId}
-          />
-        </GridItem>
+    <Grid templateColumns="repeat(16, 1fr)" gap="6">
+      <GridItem colSpan={4}>
+        {/* <AttemptsForm */}
+        {/*  error={error} */}
+        {/*  success={success} */}
+        {/*  registrationId={registrationId} */}
+        {/*  handleAttemptChange={handleAttemptChange} */}
+        {/*  handleSubmit={handleSubmit} */}
+        {/*  handleRegistrationIdChange={handleRegistrationIdChange} */}
+        {/*  header="Add Result" */}
+        {/*  attempts={attempts} */}
+        {/*  competitors={competitors} */}
+        {/*  solveCount={solveCount} */}
+        {/*  eventId={eventId} */}
+        {/* /> */}
+      </GridItem>
 
-        <GridItem colSpan={12}>
-          <ButtonGroup float="right">
-            <a href={liveUrls.roundResults(competitionId, roundId)}>
-              <Button>Results</Button>
-            </a>
-            <a href={competitionEditRegistrationsUrl(competitionId)}>
-              <Button>Add Competitor</Button>
-            </a>
-            <a href={liveUrls.roundResults(competitionId, roundId)}>
-              <Button>PDF</Button>
-            </a>
-            <a href={liveUrls.checkRoundResultsAdmin(competitionId, roundId)}>
-              <Button>Double Check</Button>
-            </a>
-          </ButtonGroup>
-          <Heading size="5xl">Live Results</Heading>
-          <ResultsTable
-            results={results}
-            event={event}
-            competitors={competitors}
-            competitionId={competitionId}
-            isAdmin
-          />
-        </GridItem>
-      </Grid>
-    </Container>
+      <GridItem colSpan={12}>
+        {/* <ButtonGroup float="right"> */}
+        {/*  <a href={liveUrls.roundResults(competitionId, roundId)}> */}
+        {/*    <Button>Results</Button> */}
+        {/*  </a> */}
+        {/*  <a href={competitionEditRegistrationsUrl(competitionId)}> */}
+        {/*    <Button>Add Competitor</Button> */}
+        {/*  </a> */}
+        {/*  <a href={liveUrls.roundResults(competitionId, roundId)}> */}
+        {/*    <Button>PDF</Button> */}
+        {/*  </a> */}
+        {/*  <a href={liveUrls.checkRoundResultsAdmin(competitionId, roundId)}> */}
+        {/*    <Button>Double Check</Button> */}
+        {/*  </a> */}
+        {/* </ButtonGroup> */}
+        <LiveResultsTable
+          results={results}
+          eventId={eventId}
+          competitors={competitors}
+          competitionId={competitionId}
+          isAdmin
+        />
+      </GridItem>
+    </Grid>
   );
 }
