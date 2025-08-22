@@ -10,13 +10,13 @@ class Api::V0::LiveController < Api::V0::ApiController
   end
 
   def add_result
-    results = params.require(:attempts)
+    results = params.permit(:attempts => [:result, :attempt_number])[:attempts]
     round_id = params.require(:round_id)
     registration_id = params.require(:registration_id)
 
     return render json: { status: "result already exist" }, status: :unprocessable_entity if LiveResult.exists?(round_id: round_id, registration_id: registration_id)
 
-    AddLiveResultJob.perform_later(results, round_id, registration_id, current_user)
+    AddLiveResultJob.perform_later(results, round_id, registration_id, current_api_user)
 
     render json: { status: "ok" }
   end

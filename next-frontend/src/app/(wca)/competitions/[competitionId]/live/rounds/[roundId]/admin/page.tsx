@@ -8,7 +8,16 @@ import Loading from "@/components/ui/loading";
 import { components } from "@/types/openapi";
 import { CurrentEventId, parseActivityCode } from "@wca/helpers";
 import events from "@/lib/wca/data/events";
-import { Container, Grid, GridItem, Heading, VStack } from "@chakra-ui/react";
+import {
+  Button,
+  ButtonGroup,
+  Container,
+  Grid,
+  GridItem,
+  Heading,
+  Link,
+  VStack,
+} from "@chakra-ui/react";
 import LiveResultsTable from "@/components/live/LiveResultsTable";
 import AttemptsForm from "@/components/live/AttemptsForm";
 
@@ -121,7 +130,7 @@ function AddResults({
         body: {
           attempts: attempts.map((attempt, index) => ({
             result: attempt,
-            attempt_number: index,
+            attempt_number: index + 1,
           })),
           registration_id: registrationId!,
         },
@@ -216,20 +225,34 @@ function AddResults({
       </GridItem>
 
       <GridItem colSpan={12}>
-        {/* <ButtonGroup float="right"> */}
-        {/*  <a href={liveUrls.roundResults(competitionId, roundId)}> */}
-        {/*    <Button>Results</Button> */}
-        {/*  </a> */}
-        {/*  <a href={competitionEditRegistrationsUrl(competitionId)}> */}
-        {/*    <Button>Add Competitor</Button> */}
-        {/*  </a> */}
-        {/*  <a href={liveUrls.roundResults(competitionId, roundId)}> */}
-        {/*    <Button>PDF</Button> */}
-        {/*  </a> */}
-        {/*  <a href={liveUrls.checkRoundResultsAdmin(competitionId, roundId)}> */}
-        {/*    <Button>Double Check</Button> */}
-        {/*  </a> */}
-        {/* </ButtonGroup> */}
+        <ButtonGroup float="right">
+          <Button asChild>
+            <Link
+              href={`/competitions/${competitionId}/live/rounds/${roundId}`}
+            >
+              Results
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link href={`/competitions/${competitionId}/edit/registrations`}>
+              Add Competitor
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link
+              href={`/competitions/${competitionId}/live/rounds/${roundId}/pdf`}
+            >
+              PDF
+            </Link>
+          </Button>
+          <Button asChild>
+            <Link
+              href={`/competitions/${competitionId}/live/rounds/${roundId}/double-check`}
+            >
+              Double Check
+            </Link>
+          </Button>
+        </ButtonGroup>
         <LiveResultsTable
           results={results}
           eventId={eventId}
