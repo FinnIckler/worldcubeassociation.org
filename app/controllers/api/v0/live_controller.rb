@@ -78,7 +78,7 @@ class Api::V0::LiveController < Api::V0::ApiController
     # LiveAttempt Load (0.6ms)  SELECT `live_attempts`.* FROM `live_attempts` WHERE `live_attempts`.`live_result_id` = 39 AND `live_attempts`.`replaced_by_id` IS NULL ORDER BY `live_attempts`.`attempt_number` ASC
     round = Round.includes(live_results: %i[live_attempts round event]).find(round_id)
 
-    render json: { results: round.live_results, competitors: round.accepted_registrations_with_wcif_id }
+    render json: round.to_live_json
   end
 
   def double_check

@@ -6,7 +6,7 @@ import { useParams } from "next/navigation";
 import useAPI from "@/lib/wca/useAPI";
 import Loading from "@/components/ui/loading";
 import { components } from "@/types/openapi";
-import { CurrentEventId } from "@wca/helpers";
+import { CurrentEventId, parseActivityCode } from "@wca/helpers";
 import events from "@/lib/wca/data/events";
 import { Container, Grid, GridItem, Heading, VStack } from "@chakra-ui/react";
 import LiveResultsTable from "@/components/live/LiveResultsTable";
@@ -54,7 +54,7 @@ export default function ResultPage() {
     return <Loading />;
   }
 
-  const { results, competitors } = resultsRequest!;
+  const { results, id, competitors } = resultsRequest!;
 
   return (
     <Container>
@@ -62,9 +62,7 @@ export default function ResultPage() {
         <Heading size="5xl">Live Results</Heading>
         <AddResults
           results={results!}
-          eventId={
-            (results!.map((r) => r.event_id)[0] as CurrentEventId) ?? "333"
-          }
+          eventId={parseActivityCode(id).eventId as CurrentEventId}
           roundId={roundId}
           competitionId={competitionId}
           competitors={competitors!}

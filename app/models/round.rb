@@ -267,6 +267,20 @@ class Round < ApplicationRecord
     }
   end
 
+  def to_live_json
+    {
+      "id" => wcif_id,
+      "format" => self.format_id,
+      "timeLimit" => event.can_change_time_limit? ? time_limit&.to_wcif : nil,
+      "cutoff" => cutoff&.to_wcif,
+      "advancementCondition" => advancement_condition&.to_wcif,
+      "scrambleSetCount" => self.scramble_set_count,
+      "competitors" => accepted_registrations_with_wcif_id,
+      "results" => live_results,
+      "extensions" => wcif_extensions.map(&:to_wcif),
+    }
+  end
+
   def self.wcif_json_schema
     {
       "type" => "object",

@@ -83,7 +83,7 @@ paths:
                   $ref: '#/components/schemas/RegistrationData'
   /competitions/{competitionId}/rounds/{roundId}:
     get:
-      summary: Gets a live result for a given round
+      summary: Gets Information about the Round including the live Results
       parameters:
         - name: competitionId
           in: path
@@ -101,16 +101,7 @@ paths:
           content:
             application/json:
               schema:
-                type: object
-                properties:
-                  results:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/LiveResult"
-                  competitors:
-                    type: array
-                    items:
-                      $ref: "#/components/schemas/LiveCompetitor"
+                $ref: "#/components/schemas/LiveRound"
 
     post:
       summary: Adds a live result for a given round
@@ -1526,6 +1517,45 @@ components:
       required:
         - id
         - rounds
+        - extensions
+
+    LiveRound:
+      type: object
+      properties:
+        id:
+          type: string
+          example: "333-r1"
+        format:
+          type: string
+          enum: [ '1', '2', '3', 'a', 'm' ]
+        timeLimit:
+          $ref: '#/components/schemas/WcifTimeLimit'
+        cutoff:
+          $ref: '#/components/schemas/WcifCutoff'
+        advancementCondition:
+          $ref: '#/components/schemas/WcifAdvancementCondition'
+        results:
+          type: array
+          items:
+            $ref: '#/components/schemas/LiveResult'
+        competitors:
+          type: array
+          items:
+            $ref: "#/components/schemas/LiveCompetitor"
+        scrambleSetCount:
+          type: integer
+        scrambleSets:
+          type: array
+          items:
+            $ref: '#/components/schemas/WcifScrambleSet'
+        extensions:
+          type: array
+      required:
+        - id
+        - format
+        - results
+        - scrambleSetCount
+        - scrambleSets
         - extensions
 
     WcifRound:

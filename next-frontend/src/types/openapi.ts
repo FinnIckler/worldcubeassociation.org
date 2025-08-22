@@ -163,7 +163,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Gets a live result for a given round */
+        /** Gets Information about the Round including the live Results */
         get: {
             parameters: {
                 query?: never;
@@ -182,10 +182,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": {
-                            results?: components["schemas"]["LiveResult"][];
-                            competitors?: components["schemas"]["LiveCompetitor"][];
-                        };
+                        "application/json": components["schemas"]["LiveRound"];
                     };
                 };
             };
@@ -1111,6 +1108,20 @@ export interface components {
             rounds: components["schemas"]["WcifRound"][];
             competitorLimit?: number;
             qualification?: components["schemas"]["WcifQualification"];
+            extensions: unknown[];
+        };
+        LiveRound: {
+            /** @example 333-r1 */
+            id: string;
+            /** @enum {string} */
+            format: "1" | "2" | "3" | "a" | "m";
+            timeLimit?: components["schemas"]["WcifTimeLimit"];
+            cutoff?: components["schemas"]["WcifCutoff"];
+            advancementCondition?: components["schemas"]["WcifAdvancementCondition"];
+            results: components["schemas"]["LiveResult"][];
+            competitors?: components["schemas"]["LiveCompetitor"][];
+            scrambleSetCount: number;
+            scrambleSets: components["schemas"]["WcifScrambleSet"][];
             extensions: unknown[];
         };
         WcifRound: {

@@ -1,7 +1,25 @@
 import React, { useMemo } from "react";
-import { Form, Header, Message } from "semantic-ui-react";
 import _ from "lodash";
 import AttemptResultField from "../../EditResult/WCALive/AttemptResultField/AttemptResultField";
+import { components } from "@/types/openapi";
+import {Alert, Box, Heading} from "@chakra-ui/react";
+
+interface AttemptsFormProps {
+  registrationId: string;
+  handleRegistrationIdChange: (
+    event: React.SyntheticEvent<HTMLElement, Event>,
+    data: any,
+  ) => void;
+  competitors: components["schemas"]["LiveCompetitor"][];
+  solveCount: number;
+  eventId: string;
+  attempts: number[];
+  handleAttemptChange: (index: number, value: number) => void;
+  handleSubmit: () => void;
+  error?: string;
+  success?: string;
+  header: string;
+}
 
 export default function AttemptsForm({
   registrationId,
@@ -15,25 +33,25 @@ export default function AttemptsForm({
   error,
   success,
   header,
-}) {
+}: AttemptsFormProps) {
   const options = useMemo(
     () =>
       competitors.map((p) => ({
         key: p.id,
         value: p.id,
-        registrationId: p.registration_id,
-        text: `${p.user.name} (${p.registration_id})`,
+        registrationId: p.registrant_id,
+        text: `${p.user.name} (${p.registrant_id})`,
       })),
     [competitors],
   );
 
   return (
-    <Form error={!!error} success={!!success}>
-      <Header>{header}</Header>
+    <Box>
+      <Heading size="2xl">{header}</Heading>
 
-      {error && <Message error content={error} />}
-      {success && <Message success content={success} />}
-      <Form.Select
+      {error && <Alert.Root status="error" title={error} />}
+      {success && <Alert.Root status="success" title={success} />}
+      <Select
         label="Competitor"
         placeholder="Competitor"
         value={registrationId}
