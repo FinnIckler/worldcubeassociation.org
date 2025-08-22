@@ -2,6 +2,10 @@ import type { components } from "@/types/openapi";
 
 type AttemptResult = components["schemas"]["WcifAttemptResult"];
 
+export const SKIPPED_VALUE = 0;
+export const DNF_VALUE = -1;
+export const DNS_VALUE = -2;
+
 /**
  * Converts centiseconds to a human-friendly string.
  */

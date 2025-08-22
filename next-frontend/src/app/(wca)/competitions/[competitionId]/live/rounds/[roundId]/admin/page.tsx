@@ -10,6 +10,7 @@ import { CurrentEventId, parseActivityCode } from "@wca/helpers";
 import events from "@/lib/wca/data/events";
 import { Container, Grid, GridItem, Heading, VStack } from "@chakra-ui/react";
 import LiveResultsTable from "@/components/live/LiveResultsTable";
+import AttemptsForm from "@/components/live/AttemptsForm";
 
 function zeroedArrayOfSize(size: number) {
   return Array(size).fill(0);
@@ -57,7 +58,7 @@ export default function ResultPage() {
   const { results, id, competitors } = resultsRequest!;
 
   return (
-    <Container>
+    <Container bg="bg">
       <VStack align="left">
         <Heading size="5xl">Live Results</Heading>
         <AddResults
@@ -199,19 +200,19 @@ function AddResults({
   return (
     <Grid templateColumns="repeat(16, 1fr)" gap="6">
       <GridItem colSpan={4}>
-        {/* <AttemptsForm */}
-        {/*  error={error} */}
-        {/*  success={success} */}
-        {/*  registrationId={registrationId} */}
-        {/*  handleAttemptChange={handleAttemptChange} */}
-        {/*  handleSubmit={handleSubmit} */}
-        {/*  handleRegistrationIdChange={handleRegistrationIdChange} */}
-        {/*  header="Add Result" */}
-        {/*  attempts={attempts} */}
-        {/*  competitors={competitors} */}
-        {/*  solveCount={solveCount} */}
-        {/*  eventId={eventId} */}
-        {/* /> */}
+        <AttemptsForm
+          error={error}
+          success={success}
+          registrationId={registrationId}
+          handleAttemptChange={handleAttemptChange}
+          handleSubmit={handleSubmit}
+          handleRegistrationIdChange={handleRegistrationIdChange}
+          header="Add Result"
+          attempts={attempts}
+          competitors={competitors}
+          solveCount={solveCount}
+          eventId={eventId}
+        />
       </GridItem>
 
       <GridItem colSpan={12}>

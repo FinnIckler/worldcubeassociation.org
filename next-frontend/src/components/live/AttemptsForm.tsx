@@ -1,15 +1,18 @@
-import React, { useMemo } from "react";
-import _ from "lodash";
-import AttemptResultField from "../../EditResult/WCALive/AttemptResultField/AttemptResultField";
 import { components } from "@/types/openapi";
-import {Alert, Box, Heading} from "@chakra-ui/react";
+import {
+  Alert,
+  Box,
+  Button,
+  Combobox,
+  Heading,
+  Portal,
+  useListCollection,
+} from "@chakra-ui/react";
+import AttemptResultField from "@/components/results/AttemptResultField";
 
 interface AttemptsFormProps {
-  registrationId: string;
-  handleRegistrationIdChange: (
-    event: React.SyntheticEvent<HTMLElement, Event>,
-    data: any,
-  ) => void;
+  registrationId: number | null;
+  handleRegistrationIdChange: (value: number) => void;
   competitors: components["schemas"]["LiveCompetitor"][];
   solveCount: number;
   eventId: string;
@@ -34,38 +37,51 @@ export default function AttemptsForm({
   success,
   header,
 }: AttemptsFormProps) {
-  const options = useMemo(
-    () =>
-      competitors.map((p) => ({
-        key: p.id,
-        value: p.id,
-        registrationId: p.registrant_id,
-        text: `${p.user.name} (${p.registrant_id})`,
-      })),
-    [competitors],
-  );
+  const { collection, filter } = useListCollection({
+    initialItems: competitors.map((c) => ({
+      ...c,
+      label: `${c.user.name} (${c.registrant_id})`,
+      value: c.id,
+    })),
+    filter: (itemText, filterText, item) =>
+      filterText.includes(itemText) ||
+      parseInt(filterText, 10) === item.registrant_id,
+  });
 
   return (
-    <Box>
-      <Heading size="2xl">{header}</Heading>
-
+    <form>
       {error && <Alert.Root status="error" title={error} />}
       {success && <Alert.Root status="success" title={success} />}
-      <Select
-        label="Competitor"
-        placeholder="Competitor"
-        value={registrationId}
-        deburr
-        search={(inputs, value) =>
-          inputs.filter(
-            (d) =>
-              d.text.includes(value) ||
-              parseInt(value, 10) === d.registrationId,
-          )
-        }
-        onChange={handleRegistrationIdChange}
-        options={options}
-      />
+      <Combobox.Root
+        collection={collection}
+        onInputValueChange={(e) => filter(e.inputValue)}
+        value={[registrationId?.toString() ?? ""]}
+        onValueChange={(e) => handleRegistrationIdChange(e.value[0])}
+      >
+        <Combobox.Label>
+          <Heading size="2xl">{header}</Heading>
+        </Combobox.Label>
+        <Combobox.Control>
+          <Combobox.Input placeholder="Type to search" />
+          <Combobox.IndicatorGroup>
+            <Combobox.ClearTrigger />
+            <Combobox.Trigger />
+          </Combobox.IndicatorGroup>
+        </Combobox.Control>
+        <Portal>
+          <Combobox.Positioner>
+            <Combobox.Content>
+              <Combobox.Empty>No items found</Combobox.Empty>
+              {collection.items.map((item) => (
+                <Combobox.Item item={item} key={item.value}>
+                  {item.label}
+                  <Combobox.ItemIndicator />
+                </Combobox.Item>
+              ))}
+            </Combobox.Content>
+          </Combobox.Positioner>
+        </Portal>
+      </Combobox.Root>
       {_.times(solveCount).map((index) => (
         <AttemptResultField
           eventId={eventId}
@@ -76,9 +92,7 @@ export default function AttemptsForm({
           onChange={(value) => handleAttemptChange(index, value)}
         />
       ))}
-      <Form.Button primary onClick={handleSubmit}>
-        Submit Results
-      </Form.Button>
-    </Form>
+      <Button onClick={handleSubmit}>Submit Results</Button>
+    </form>
   );
 }
