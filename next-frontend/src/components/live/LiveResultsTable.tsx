@@ -2,7 +2,8 @@ import { useMemo } from "react";
 import _ from "lodash";
 import { components } from "@/types/openapi";
 import events from "@/lib/wca/data/events";
-import { Table } from "@chakra-ui/react";
+import { Link, Table } from "@chakra-ui/react";
+import { centisecondsToClockFormat } from "@/lib/wca/wcif/attempts";
 
 const advancingColor = "0, 230, 118";
 
@@ -155,7 +156,7 @@ export default function ResultsTable({
               </Table.Cell>
               {isAdmin && <Table.Cell>{competitor.registrant_id}</Table.Cell>}
               <Table.Cell>
-                <a
+                <Link
                   href={
                     isAdmin
                       ? `/registrations/${competitor.id}/edit`
@@ -163,7 +164,7 @@ export default function ResultsTable({
                   }
                 >
                   {competitor.user.name}
-                </a>
+                </Link>
               </Table.Cell>
               {hasResult &&
                 competitorResult.attempts.map((attempt) => (
@@ -171,7 +172,7 @@ export default function ResultsTable({
                     textAlign="right"
                     key={`${competitor.id}-${attempt.attempt_number}`}
                   >
-                    {attempt.result}
+                    {centisecondsToClockFormat(attempt.result)}
                   </Table.Cell>
                 ))}
               {hasResult && (
@@ -180,7 +181,7 @@ export default function ResultsTable({
                     textAlign="right"
                     style={{ position: "relative" }}
                   >
-                    {competitorResult.average}{" "}
+                    {centisecondsToClockFormat(competitorResult.average)}{" "}
                     {!isAdmin && (
                       <span
                         style={recordTagStyle(
@@ -195,7 +196,7 @@ export default function ResultsTable({
                     textAlign="right"
                     style={{ position: "relative" }}
                   >
-                    {competitorResult.best}
+                    {centisecondsToClockFormat(competitorResult.best)}
                     {!isAdmin && (
                       <span
                         style={recordTagStyle(
