@@ -42,7 +42,7 @@ function isValid(input: string) {
 }
 
 interface TimeFieldProps {
-  value: number;
+  value?: number;
   onChange: (value: number) => void;
   label: string;
   disabled?: boolean;
@@ -56,12 +56,12 @@ function TimeField({
   TextFieldProps = {},
 }: TimeFieldProps) {
   const [prevValue, setPrevValue] = useState(value);
-  const [draftInput, setDraftInput] = useState(attemptResultToInput(value));
+  const [draftInput, setDraftInput] = useState(attemptResultToInput(value!));
 
   // Sync draft value when the upstream value changes.
   // See AttemptResultField for detailed description.
   if (prevValue !== value) {
-    setDraftInput(attemptResultToInput(value));
+    setDraftInput(attemptResultToInput(value!));
     setPrevValue(value);
   }
 

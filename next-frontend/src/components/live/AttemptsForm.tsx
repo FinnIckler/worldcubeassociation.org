@@ -9,6 +9,7 @@ import {
   useListCollection,
 } from "@chakra-ui/react";
 import AttemptResultField from "@/components/results/AttemptResultField";
+import { EventId } from "@wca/helpers";
 
 interface AttemptsFormProps {
   registrationId: number | null;
@@ -22,6 +23,7 @@ interface AttemptsFormProps {
   error?: string;
   success?: string;
   header: string;
+  isPendingSubmit: boolean;
 }
 
 export default function AttemptsForm({
@@ -36,6 +38,7 @@ export default function AttemptsForm({
   error,
   success,
   header,
+  isPendingSubmit,
 }: AttemptsFormProps) {
   const { collection, filter } = useListCollection({
     initialItems: competitors.map((c) => ({
@@ -84,7 +87,7 @@ export default function AttemptsForm({
       </Combobox.Root>
       {_.times(solveCount).map((index) => (
         <AttemptResultField
-          eventId={eventId}
+          eventId={eventId as EventId}
           key={index}
           label={`Attempt ${index + 1}`}
           placeholder="Time in milliseconds or DNF"
@@ -92,7 +95,9 @@ export default function AttemptsForm({
           onChange={(value) => handleAttemptChange(index, value)}
         />
       ))}
-      <Button onClick={handleSubmit}>Submit Results</Button>
+      <Button onClick={handleSubmit} disabled={isPendingSubmit}>
+        Submit Results
+      </Button>
     </form>
   );
 }

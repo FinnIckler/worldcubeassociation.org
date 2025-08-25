@@ -4,6 +4,7 @@ import React from "react";
 // import MbldField from "./MbldField";
 import TimeField from "./TimeField";
 import { EventId } from "@wca/helpers";
+import { InputProps } from "@chakra-ui/react";
 
 /**
  `AttemptResultField` is an abstraction over fields specific to the given event,
@@ -35,14 +36,18 @@ import { EventId } from "@wca/helpers";
  https://reactjs.org/docs/hooks-faq.html#how-do-i-implement-getderivedstatefromprops.
  */
 
-function AttemptResultField({ eventId, ...props }: { eventId: EventId }) {
+function AttemptResultField({
+  eventId,
+  label,
+  ...props
+}: { eventId: EventId; label: string } & InputProps) {
   // if (eventId === "333fm") {
   //   return <FmField {...props} />;
   // }
   // if (eventId === "333mbf" || eventId === "333mbo") {
   //   return <MbldField {...props} />;
   // }
-  return <TimeField {...props} />;
+  return <TimeField label={label} {...props} />;
 }
 
 export default AttemptResultField;

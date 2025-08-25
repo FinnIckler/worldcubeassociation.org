@@ -221,6 +221,7 @@ function AddResults({
           competitors={competitors}
           solveCount={solveCount}
           eventId={eventId}
+          isPendingSubmit={isPendingSubmit}
         />
       </GridItem>
 
