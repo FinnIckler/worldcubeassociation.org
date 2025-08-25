@@ -10,13 +10,17 @@ class Api::V0::LiveController < Api::V0::ApiController
   end
 
   def add_result
+    current_user = require_user!
+    competition_id = params.require(:competition_id)
+    render json: { status: "not authorized" }, status: :unauthorized unless current_user.can_manage_competition?(Competition.find(competition_id))
+
     results = params.permit(:attempts => [:result, :attempt_number])[:attempts]
     round_id = params.require(:round_id)
     registration_id = params.require(:registration_id)
 
     return render json: { status: "result already exist" }, status: :unprocessable_entity if LiveResult.exists?(round_id: round_id, registration_id: registration_id)
 
-    AddLiveResultJob.perform_later(results, round_id, registration_id, current_api_user)
+    AddLiveResultJob.perform_later(results, round_id, registration_id, current_user)
 
     render json: { status: "ok" }
   end

@@ -9,6 +9,8 @@ import { components } from "@/types/openapi";
 import { CurrentEventId, parseActivityCode } from "@wca/helpers";
 import events from "@/lib/wca/data/events";
 import {
+  AbsoluteCenter,
+  Alert,
   Button,
   ButtonGroup,
   Container,
@@ -20,6 +22,10 @@ import {
 } from "@chakra-ui/react";
 import LiveResultsTable from "@/components/live/LiveResultsTable";
 import AttemptsForm from "@/components/live/AttemptsForm";
+import { signIn, useSession } from "next-auth/react";
+import { usePermissions } from "@/providers/PermissionProvider";
+import { WCA_PROVIDER_ID } from "@/auth.config";
+import LoginButton from "@/components/ui/loginButton";
 
 function zeroedArrayOfSize(size: number) {
   return Array(size).fill(0);
@@ -51,6 +57,9 @@ export default function ResultPage() {
 
   const api = useAPI();
 
+  const session = useSession();
+  const { canAdministerCompetition } = usePermissions()!;
+
   const { data: resultsRequest, isLoading } = useQuery({
     queryKey: roundResultsKey(roundId, competitionId),
     queryFn: () =>
@@ -58,7 +67,25 @@ export default function ResultPage() {
         params: { path: { roundId, competitionId } },
       }),
     select: (data) => data.data,
+    enabled: !session.data?.user,
   });
+
+  if (!isLoading && !canAdministerCompetition(competitionId)) {
+    return (
+      <AbsoluteCenter>
+        <Alert.Root status="error">
+          <Alert.Content>
+            <Alert.Title>You cannot administer this competition.</Alert.Title>
+            {!session.data?.user && (
+              <Alert.Description>
+                Click here to <LoginButton />
+              </Alert.Description>
+            )}
+          </Alert.Content>
+        </Alert.Root>
+      </AbsoluteCenter>
+    );
+  }
 
   if (isLoading) {
     return <Loading />;
@@ -221,7 +248,7 @@ function AddResults({
           competitors={competitors}
           solveCount={solveCount}
           eventId={eventId}
-          isPendingSubmit={isPendingSubmit}
+          isPending={isPendingSubmit || isPendingUpdate}
         />
       </GridItem>
 

@@ -23,7 +23,7 @@ interface AttemptsFormProps {
   error?: string;
   success?: string;
   header: string;
-  isPendingSubmit: boolean;
+  isPending: boolean;
 }
 
 export default function AttemptsForm({
@@ -38,7 +38,7 @@ export default function AttemptsForm({
   error,
   success,
   header,
-  isPendingSubmit,
+  isPending,
 }: AttemptsFormProps) {
   const { collection, filter } = useListCollection({
     initialItems: competitors.map((c) => ({
@@ -95,7 +95,7 @@ export default function AttemptsForm({
           onChange={(value) => handleAttemptChange(index, value)}
         />
       ))}
-      <Button onClick={handleSubmit} disabled={isPendingSubmit}>
+      <Button onClick={handleSubmit} disabled={isPending}>
         Submit Results
       </Button>
     </form>
