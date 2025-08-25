@@ -2,8 +2,6 @@ import React from 'react';
 import {
   Card, List, Segment,
 } from 'semantic-ui-react';
-import { events } from '../../../../lib/wca-data.js.erb';
-import { liveUrls } from '../../../../lib/requests/routes.js.erb';
 
 export default function AdminSchedulePage({ competitionId, rounds }) {
   const roundsById = _.groupBy(rounds, 'event.id');
