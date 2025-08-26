@@ -30,7 +30,10 @@ export default function useResultsSubscription(
       },
     );
 
-    return () => subscription.unsubscribe();
+    return () => {
+      subscription.unsubscribe();
+      return;
+    };
   }, [roundId, onReceived]);
 
   return connectionState;

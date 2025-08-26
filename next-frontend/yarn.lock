@@ -4094,6 +4094,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rails/actioncable@npm:^8.0.201":
+  version: 8.0.201
+  resolution: "@rails/actioncable@npm:8.0.201"
+  checksum: 10c0/422bc0ad1b2ce84365b4ab65ed7b606d07bb591fa6ac91251e24942d33c3f7202d4f4d4ae758ce91f5bc44c834067c7c7af2e572015a89705feb52c8cbdfe4d6
+  languageName: node
+  linkType: hard
+
 "@redocly/ajv@npm:^8.11.2":
   version: 8.11.2
   resolution: "@redocly/ajv@npm:8.11.2"
@@ -5884,6 +5891,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/rails__actioncable@npm:^6.1.11":
+  version: 6.1.11
+  resolution: "@types/rails__actioncable@npm:6.1.11"
+  checksum: 10c0/b326c0a3c8ea6cac90e6f7d3c1050b61528c8c3f3bdb9394e66634d778b4adb86b5400cf232949088634d2d5d42094f31d2831ed891e98ad0adc5a6202c52db3
+  languageName: node
+  linkType: hard
+
 "@types/ramda@npm:~0.30.0":
   version: 0.30.2
   resolution: "@types/ramda@npm:0.30.2"
@@ -6349,6 +6363,13 @@ __metadata:
     loupe: "npm:^3.1.4"
     tinyrainbow: "npm:^2.0.0"
   checksum: 10c0/024a9b8c8bcc12cf40183c246c244b52ecff861c6deb3477cbf487ac8781ad44c68a9c5fd69f8c1361878e55b97c10d99d511f2597f1f7244b5e5101d028ba64
+  languageName: node
+  linkType: hard
+
+"@wca/helpers@npm:^1.1.5":
+  version: 1.1.5
+  resolution: "@wca/helpers@npm:1.1.5"
+  checksum: 10c0/8a626f2213549586c4cfeb130f04dc8c63ea3f44e6804f29282e0aa973bb17b28cfb3b108b3758b2c677077413c8d9644546f97856abecab3045dc94c287c06f
   languageName: node
   linkType: hard
 
@@ -12907,6 +12928,7 @@ __metadata:
     "@payloadcms/next": "npm:^3.53.0"
     "@payloadcms/richtext-lexical": "npm:^3.53.0"
     "@payloadcms/storage-s3": "npm:^3.53.0"
+    "@rails/actioncable": "npm:^8.0.201"
     "@stylistic/eslint-plugin": "npm:^5.2.3"
     "@tanstack/eslint-plugin-query": "npm:^5.83.1"
     "@tanstack/react-query": "npm:^5.85.5"
@@ -12919,11 +12941,13 @@ __metadata:
     "@types/js-cookie": "npm:^3"
     "@types/newrelic": "npm:^9.14.8"
     "@types/node": "npm:^24"
+    "@types/rails__actioncable": "npm:^6.1.11"
     "@types/react": "npm:^19"
     "@types/react-dom": "npm:^19"
     "@types/react-world-flags": "npm:^1"
     "@types/swagger-ui-react": "npm:^5.18.0"
     "@vitejs/plugin-react": "npm:^5.0.1"
+    "@wca/helpers": "npm:^1.1.5"
     accept-language-parser: "npm:^1.5.0"
     aws4: "npm:^1.13.2"
     dompurify: "npm:^3.2.6"
