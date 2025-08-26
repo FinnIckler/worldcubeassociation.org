@@ -100,7 +100,8 @@ paths:
           description: Returns results
           content:
             application/json:
-              $ref: "#/components/schemas/LivePerson"
+              schema:
+                $ref: "#/components/schemas/LivePerson"
   /competitions/{competitionId}/rounds/{roundId}:
     get:
       summary: Gets Information about the Round including the live Results

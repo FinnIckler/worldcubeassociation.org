@@ -156,7 +156,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/competitions/{competitionId}/competitors/{registrationId}": {
+    "/competitions/{competitionId}/registrations/{registrationId}": {
         parameters: {
             query?: never;
             header?: never;
@@ -182,7 +182,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": unknown;
+                        "application/json": components["schemas"]["LivePerson"];
                     };
                 };
             };

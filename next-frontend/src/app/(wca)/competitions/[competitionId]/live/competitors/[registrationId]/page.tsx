@@ -1,79 +1,84 @@
-import React from "react";
-import { Header, Segment, Table } from "semantic-ui-react";
+import { Container, Heading, Link, Table } from "@chakra-ui/react";
+import { getResultByPerson } from "@/lib/wca/competitions/live/getResultByPerson";
 import _ from "lodash";
-import { events } from "../../../lib/wca-data.js.erb";
-import WCAQueryClientProvider from "../../../lib/providers/WCAQueryClientProvider";
-import { formatAttemptResult } from "../../../lib/wca-live/attempts";
-import { liveUrls } from "../../../lib/requests/routes.js.erb";
-import { rankingCellStyle } from "../components/ResultsTable";
+import events from "@/lib/wca/data/events";
+import { rankingCellStyle } from "@/components/live/LiveResultsTable";
+import { centisecondsToClockFormat } from "@/lib/wca/wcif/attempts";
 
-export default function Wrapper({ results, user, competitionId }) {
-  return (
-    <WCAQueryClientProvider>
-      <PersonResults
-        results={results}
-        user={user}
-        competitionId={competitionId}
-      />
-    </WCAQueryClientProvider>
+export default async function PersonResults({
+  params,
+}: {
+  params: Promise<{ registrationId: string; competitionId: string }>;
+}) {
+  const { competitionId, registrationId } = await params;
+
+  const personResultRequest = await getResultByPerson(
+    competitionId,
+    registrationId,
   );
-}
 
-function PersonResults({ results, user, competitionId }) {
+  const { name, results } = personResultRequest.data!;
+
   const resultsByEvent = _.groupBy(results, "event_id");
 
   return (
-    <Segment>
-      <Header>{user.name}</Header>
+    <Container>
+      <Heading size="5xl">{name}</Heading>
       {_.map(resultsByEvent, (eventResults, key) => (
         <>
-          <Header as="h3">{events.byId[key].name}</Header>
-          <Table>
+          <Heading size="2xl">{events.byId[key].name}</Heading>
+          <Table.Root>
             <Table.Header>
               <Table.Row>
-                <Table.HeaderCell>Round</Table.HeaderCell>
-                <Table.HeaderCell>Rank</Table.HeaderCell>
+                <Table.ColumnHeader>Round</Table.ColumnHeader>
+                <Table.ColumnHeader>Rank</Table.ColumnHeader>
                 {_.times(
-                  events.byId[key].recommendedFormat().expectedSolveCount,
+                  events.byId[key].recommendedFormat.expected_solve_count,
                 ).map((num) => (
-                  <Table.HeaderCell key={num}>{num + 1}</Table.HeaderCell>
+                  <Table.ColumnHeader key={num}>{num + 1}</Table.ColumnHeader>
                 ))}
-                <Table.HeaderCell>Average</Table.HeaderCell>
-                <Table.HeaderCell>Best</Table.HeaderCell>
+                <Table.ColumnHeader>Average</Table.ColumnHeader>
+                <Table.ColumnHeader>Best</Table.ColumnHeader>
               </Table.Row>
             </Table.Header>
             <Table.Body>
               {eventResults.map((result) => {
-                const { round, attempts, ranking, average, best } = result;
+                const {
+                  round_id: roundId,
+                  attempts,
+                  ranking,
+                  average,
+                  best,
+                } = result;
 
                 return (
-                  <Table.Row>
-                    <Table.Cell width={1}>
-                      <a href={liveUrls.roundResults(competitionId, round.id)}>
-                        Round {round.number}
-                      </a>
+                  <Table.Row key={`${roundId}-${key}`}>
+                    <Table.Cell>
+                      <Link
+                        href={`/competitions/${competitionId}/live/rounds/${roundId}`}
+                      >
+                        Round {roundId}
+                      </Link>
                     </Table.Cell>
                     <Table.Cell width={1} style={rankingCellStyle(result)}>
                       {ranking}
                     </Table.Cell>
                     {attempts.map((a) => (
-                      <Table.Cell>
-                        {formatAttemptResult(a.result, events.byId[key].id)}
+                      <Table.Cell key={`${roundId}-${key}-${a.attempt_number}`}>
+                        {centisecondsToClockFormat(a.result)}
                       </Table.Cell>
                     ))}
                     <Table.Cell>
-                      {formatAttemptResult(average, events.byId[key].id)}
+                      {centisecondsToClockFormat(average)}
                     </Table.Cell>
-                    <Table.Cell>
-                      {formatAttemptResult(best, events.byId[key].id)}
-                    </Table.Cell>
+                    <Table.Cell>{centisecondsToClockFormat(best)}</Table.Cell>
                   </Table.Row>
                 );
               })}
             </Table.Body>
-          </Table>
+          </Table.Root>
         </>
       ))}
-    </Segment>
+    </Container>
   );
 }
