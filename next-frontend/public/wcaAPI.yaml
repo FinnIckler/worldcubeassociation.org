@@ -81,6 +81,29 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RegistrationData'
+  /competitions/{competitionId}/competitors/{registrationId}:
+    get:
+      summary: Gets Information about the Competitors's live result
+      parameters:
+        - name: competitionId
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: registrationId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns results
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LiveResult"
   /competitions/{competitionId}/rounds/{roundId}:
     get:
       summary: Gets Information about the Round including the live Results
