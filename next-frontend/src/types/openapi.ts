@@ -156,6 +156,45 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/competitions/{competitionId}/competitors/{registrationId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gets Information about the Competitors's live result */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    competitionId: string;
+                    registrationId: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description Returns results */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": unknown;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/competitions/{competitionId}/rounds/{roundId}": {
         parameters: {
             query?: never;
@@ -1110,19 +1149,9 @@ export interface components {
             qualification?: components["schemas"]["WcifQualification"];
             extensions: unknown[];
         };
-        LiveRound: {
-            /** @example 333-r1 */
-            id: string;
-            /** @enum {string} */
-            format: "1" | "2" | "3" | "a" | "m";
-            timeLimit?: components["schemas"]["WcifTimeLimit"];
-            cutoff?: components["schemas"]["WcifCutoff"];
-            advancementCondition?: components["schemas"]["WcifAdvancementCondition"];
+        LiveRound: components["schemas"]["WcifRound"] & {
             results: components["schemas"]["LiveResult"][];
-            competitors?: components["schemas"]["LiveCompetitor"][];
-            scrambleSetCount: number;
-            scrambleSets: components["schemas"]["WcifScrambleSet"][];
-            extensions: unknown[];
+            competitors: components["schemas"]["LiveCompetitor"][];
         };
         WcifRound: {
             /** @example 333-r1 */
@@ -1136,6 +1165,46 @@ export interface components {
             scrambleSetCount: number;
             scrambleSets: components["schemas"]["WcifScrambleSet"][];
             extensions: unknown[];
+        };
+        LivePerson: components["schemas"]["WcifPerson"] & {
+            results: components["schemas"]["LiveResult"][];
+        };
+        WcifPerson: {
+            registrantId: number;
+            name: string;
+            wcaUserId: number;
+            countryIso2: string;
+            gender: string;
+            /** Format: date */
+            birthdate?: string;
+            /** Format: email */
+            email?: string;
+            avatar?: components["schemas"]["UserAvatar"];
+            roles: ("delegate" | "trainee-delegate" | "organizer")[];
+            registration?: components["schemas"]["WcifRegistration"];
+            assignments: components["schemas"]["WcifAssignment"][];
+            personalBests: components["schemas"]["WcifPersonalBest"][];
+            extensions: unknown[];
+        };
+        WcifRegistration: {
+            wcaRegistrationId: number;
+            eventIds: string[];
+            status: string;
+            isCompeting: boolean;
+        };
+        WcifAssignment: {
+            activityId: number;
+            stationNumber: number;
+            assignmentCode: string;
+        };
+        WcifPersonalBest: {
+            eventId: string;
+            best: number;
+            worldRanking: number;
+            continentalRanking: number;
+            nationalRanking: number;
+            /** @enum {string} */
+            type: "single" | "average";
         };
         WcifQualification: components["schemas"]["WcifQualificationAttemptResult"] | components["schemas"]["WcifQualificationRanking"] | components["schemas"]["WcifQualificationAnyResult"];
         WcifQualificationAttemptResult: {

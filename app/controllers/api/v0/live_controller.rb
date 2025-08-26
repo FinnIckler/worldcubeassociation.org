@@ -113,12 +113,13 @@ class Api::V0::LiveController < Api::V0::ApiController
   def by_person
     registration_id = params.require(:registration_id)
     registration = Registration.find(registration_id)
+    competition = Competition.find(params.require(:competition_id))
 
     results = registration.live_results.includes(:live_attempts)
 
-    render json: {
-      competitor: registration.user,
-      results: results,
-    }
+    user_wcif = registration.user.to_wcif(competition, registration)
+    user_wcif["results"] = results
+
+    render json: user_wcif
   end
 end

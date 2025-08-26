@@ -81,7 +81,7 @@ paths:
                 type: array
                 items:
                   $ref: '#/components/schemas/RegistrationData'
-  /competitions/{competitionId}/competitors/{registrationId}:
+  /competitions/{competitionId}/registrations/{registrationId}:
     get:
       summary: Gets Information about the Competitors's live result
       parameters:
@@ -100,10 +100,7 @@ paths:
           description: Returns results
           content:
             application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/LiveResult"
+              $ref: "#/components/schemas/LivePerson"
   /competitions/{competitionId}/rounds/{roundId}:
     get:
       summary: Gets Information about the Round including the live Results
@@ -1543,43 +1540,21 @@ components:
         - extensions
 
     LiveRound:
-      type: object
-      properties:
-        id:
-          type: string
-          example: "333-r1"
-        format:
-          type: string
-          enum: [ '1', '2', '3', 'a', 'm' ]
-        timeLimit:
-          $ref: '#/components/schemas/WcifTimeLimit'
-        cutoff:
-          $ref: '#/components/schemas/WcifCutoff'
-        advancementCondition:
-          $ref: '#/components/schemas/WcifAdvancementCondition'
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/LiveResult'
-        competitors:
-          type: array
-          items:
-            $ref: "#/components/schemas/LiveCompetitor"
-        scrambleSetCount:
-          type: integer
-        scrambleSets:
-          type: array
-          items:
-            $ref: '#/components/schemas/WcifScrambleSet'
-        extensions:
-          type: array
-      required:
-        - id
-        - format
-        - results
-        - scrambleSetCount
-        - scrambleSets
-        - extensions
+      allOf:
+        - $ref: '#/components/schemas/WcifRound'
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/LiveResult'
+            competitors:
+              type: array
+              items:
+                $ref: '#/components/schemas/LiveCompetitor'
+          required:
+            - results
+            - competitors
 
     WcifRound:
       type: object
@@ -1615,6 +1590,124 @@ components:
         - scrambleSetCount
         - scrambleSets
         - extensions
+
+    LivePerson:
+      allOf:
+        - $ref: "#/components/schemas/WcifPerson"
+        - type: object
+          properties:
+            results:
+              type: array
+              items:
+                $ref: '#/components/schemas/LiveResult'
+          required:
+            - results
+
+    WcifPerson:
+      type: object
+      required:
+        - registrantId
+        - name
+        - wcaUserId
+        - countryIso2
+        - gender
+        - roles
+        - assignments
+        - personalBests
+        - extensions
+      properties:
+        registrantId:
+          type: number
+        name:
+          type: string
+        wcaUserId:
+          type: number
+        countryIso2:
+          type: string
+        gender:
+          type: string
+        birthdate:
+          type: string
+          format: date
+        email:
+          type: string
+          format: email
+        avatar:
+          $ref: "#/components/schemas/UserAvatar"
+        roles:
+          type: array
+          items:
+            type: string
+            enum: ["delegate", "trainee-delegate", "organizer"]
+        registration:
+          $ref: "#/components/schemas/WcifRegistration"
+        assignments:
+          type: array
+          items:
+            $ref: "#/components/schemas/WcifAssignment"
+        personalBests:
+          type: array
+          items:
+            $ref: "#/components/schemas/WcifPersonalBest"
+        extensions:
+          type: array
+
+    WcifRegistration:
+      type: object
+      required:
+        - wcaRegistrationId
+        - eventIds
+        - status
+        - isCompeting
+      properties:
+        wcaRegistrationId:
+          type: number
+        eventIds:
+          type: array
+          items:
+            type: string
+        status:
+          type: string
+        isCompeting:
+          type: boolean
+
+    WcifAssignment:
+      type: object
+      required:
+        - activityId
+        - stationNumber
+        - assignmentCode
+      properties:
+        activityId:
+          type: number
+        stationNumber:
+          type: number
+        assignmentCode:
+          type: string
+
+    WcifPersonalBest:
+      type: object
+      required:
+        - eventId
+        - best
+        - worldRanking
+        - continentalRanking
+        - nationalRanking
+        - type
+      properties:
+        eventId:
+          type: string
+        best:
+          type: number
+        worldRanking:
+          type: number
+        continentalRanking:
+          type: number
+        nationalRanking:
+          type: number
+        type:
+          type: string
+          enum: ["single", "average"]
 
     WcifQualification:
       oneOf:

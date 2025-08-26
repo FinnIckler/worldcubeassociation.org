@@ -431,6 +431,7 @@ Rails.application.routes.draw do
         patch '/wcif' => 'competitions#update_wcif', as: :update_wcif
 
         if WcaLive.enabled?
+          get '/registrations/:registration_id' => 'live#by_person', as: :get_live_by_person
           get '/rounds/:round_id' => 'live#round_results_api', as: :get_live_results
           get '/podiums/' => 'live#podiums_api', as: :get_live_podiums
           post '/rounds/:round_id' => 'live#add_result', as: :add_live_result
