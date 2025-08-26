@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
 import {
-  Icon, Popup, Ref, Table,
+  Header,
+  Icon,
+  Popup,
+  Ref,
+  Table,
 } from 'semantic-ui-react';
+import _ from 'lodash';
 import { DragDropContext, Draggable, Droppable } from '@hello-pangea/dnd';
 
-export default function ScrambleMatch({
+export default function MatchingTableDnd({
   matchableRows = [],
   expectedNumOfRows = matchableRows.length,
   onRowDragCompleted,
   computeDefinitionName,
-  computeRowName,
-  computeRowDetails = undefined,
-  moveAwayAction = undefined,
+  computeCellName,
+  computeCellDetails = undefined,
+  cellDetailsAreData = false,
+  onClickMoveAction = undefined,
+  onClickDeleteAction = undefined,
 }) {
   const [currentDragStart, setCurrentDragStart] = useState(null);
   const [currentDragIndex, setCurrentDragIndex] = useState(null);
@@ -63,7 +70,8 @@ export default function ScrambleMatch({
         <Table.Row>
           <Table.HeaderCell />
           <Table.HeaderCell>Assigned Scrambles</Table.HeaderCell>
-          {moveAwayAction && (<Table.HeaderCell>Move</Table.HeaderCell>)}
+          {onClickMoveAction && (<Table.HeaderCell>Move</Table.HeaderCell>)}
+          {onClickDeleteAction && (<Table.HeaderCell>Delete</Table.HeaderCell>)}
         </Table.Row>
       </Table.Header>
       <DragDropContext
@@ -99,45 +107,56 @@ export default function ScrambleMatch({
                             <Table.Row
                               key={key}
                               {...providedDraggable.draggableProps}
-                              negative={hasError || isExtra}
+                              negative={hasError}
                             >
-                              <Table.Cell textAlign="right" collapsing>
-                                {isExpected
-                                  ? computeDefinitionName(definitionIndex)
-                                  : 'Extra Scramble set (unassigned)'}
+                              <Table.Cell textAlign="center" collapsing verticalAlign="middle">
+                                {isExpected && computeDefinitionName(definitionIndex)}
                                 {isExtra && (
-                                  <>
-                                    <Icon name="exclamation triangle" />
-                                    Unexpected Scramble Set
-                                  </>
+                                  <Popup
+                                    trigger={<Icon name="exclamation triangle" color="red" />}
+                                    content="This entry is unexpected"
+                                    position="top center"
+                                  />
                                 )}
                               </Table.Cell>
-                              <Table.Cell {...providedDraggable.dragHandleProps}>
-                                <Icon name={hasError ? 'exclamation triangle' : 'bars'} />
-                                {hasError
-                                  ? 'Missing scramble set'
-                                  : (
-                                    <>
-                                      {computeRowName(rowData)}
-                                      {' '}
-                                      {computeRowDetails && (
-                                        <Popup
-                                          trigger={<Icon name="info circle" />}
-                                          position="right center"
-                                          style={{ whiteSpace: 'pre-line' }}
-                                        >
-                                          {computeRowDetails(rowData)}
-                                        </Popup>
-                                      )}
-                                    </>
-                                  )}
+                              <Table.Cell {...providedDraggable.dragHandleProps} verticalAlign="middle">
+                                <Header size="small" color={hasError ? 'red' : undefined}>
+                                  <Icon name={hasError ? 'exclamation triangle' : 'bars'} />
+                                  <Header.Content>
+                                    {hasError ? 'Missing Row' : (
+                                      <>
+                                        {computeCellName(rowData)}
+                                        {computeCellDetails && (
+                                          <Header.Subheader
+                                            style={cellDetailsAreData ? { whiteSpace: 'pre-line', fontFamily: 'monospace' } : undefined}
+                                          >
+                                            {computeCellDetails(rowData)}
+                                          </Header.Subheader>
+                                        )}
+                                      </>
+                                    )}
+                                  </Header.Content>
+                                </Header>
                               </Table.Cell>
-                              {moveAwayAction && (
-                                <Table.Cell textAlign="center" collapsing icon>
+                              {onClickMoveAction && (
+                                <Table.Cell textAlign="center" verticalAlign="middle" collapsing>
                                   <Icon
                                     name="arrows alternate horizontal"
+                                    size="large"
                                     link
-                                    onClick={() => moveAwayAction(rowData)}
+                                    onClick={() => onClickMoveAction(rowData)}
+                                    disabled={hasError}
+                                  />
+                                </Table.Cell>
+                              )}
+                              {onClickDeleteAction && (
+                                <Table.Cell textAlign="center" verticalAlign="middle" collapsing>
+                                  <Icon
+                                    name="trash"
+                                    size="large"
+                                    link
+                                    onClick={() => onClickDeleteAction(rowData)}
+                                    disabled={hasError}
                                   />
                                 </Table.Cell>
                               )}
