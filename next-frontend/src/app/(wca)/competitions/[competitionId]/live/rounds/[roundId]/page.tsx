@@ -12,10 +12,8 @@ function roundResultsKey(roundId: string, competitionId: string) {
   return ["live-round", roundId, competitionId];
 }
 export default function ResultPage() {
-  const { roundId, competitionId } = useParams<{
-    roundId: string;
-    competitionId: string;
-  }>();
+  const { roundId, competitionId } =
+    useParams<"/competitions/[competitionId]/live/rounds/[roundId]">();
 
   const api = useAPI();
 
