@@ -1228,6 +1228,7 @@ export interface components {
         LiveRound: components["schemas"]["WcifRound"] & {
             results: components["schemas"]["LiveResult"][];
             competitors: components["schemas"]["LiveCompetitor"][];
+            round_id: number;
         };
         WcifRound: {
             /** @example 333-r1 */

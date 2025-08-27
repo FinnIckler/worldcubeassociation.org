@@ -1589,9 +1589,12 @@ components:
               type: array
               items:
                 $ref: '#/components/schemas/LiveCompetitor'
+            round_id:
+              type: number
           required:
             - results
             - competitors
+            - round_id
 
     WcifRound:
       type: object

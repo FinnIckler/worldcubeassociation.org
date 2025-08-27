@@ -260,6 +260,7 @@ class Round < ApplicationRecord
   def to_live_json(only_podiums: false)
     {
       "id" => wcif_id,
+      "round_id" => id,
       "format" => self.format_id,
       "timeLimit" => event.can_change_time_limit? ? time_limit&.to_wcif : nil,
       "cutoff" => cutoff&.to_wcif,
