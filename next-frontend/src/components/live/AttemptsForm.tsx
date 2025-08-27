@@ -1,7 +1,6 @@
 import { components } from "@/types/openapi";
 import {
   Alert,
-  Box,
   Button,
   Combobox,
   Heading,
