@@ -7,10 +7,9 @@ export default async function LiveCompetitors({
   params: Promise<{ competitionId: string }>;
 }) {
   const { competitionId } = await params;
-  // TODO: Redirect to /competitors
   redirect(
     route({
-      pathname: "/competitions/[competitionId]",
+      pathname: "/competitions/[competitionId]/competitors",
       query: { competitionId },
     }),
   );

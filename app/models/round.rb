@@ -176,18 +176,6 @@ class Round < ApplicationRecord
     end
   end
 
-  def total_accepted_registrations
-    accepted_registrations.count
-  end
-
-  def competitors_live_results_entered
-    live_results.count
-  end
-
-  def score_taking_done?
-    competitors_live_results_entered == total_accepted_registrations
-  end
-
   def time_limit_undefined?
     can_change_time_limit? && time_limit == TimeLimit::UNDEF_TL
   end
@@ -269,7 +257,7 @@ class Round < ApplicationRecord
     }
   end
 
-  def to_live_json
+  def to_live_json(only_podiums: false)
     {
       "id" => wcif_id,
       "format" => self.format_id,
@@ -278,7 +266,7 @@ class Round < ApplicationRecord
       "advancementCondition" => advancement_condition&.to_wcif,
       "scrambleSetCount" => self.scramble_set_count,
       "competitors" => accepted_registrations_with_wcif_id,
-      "results" => live_results,
+      "results" => only_podiums ? live_podium : live_results,
       "extensions" => wcif_extensions.map(&:to_wcif),
     }
   end

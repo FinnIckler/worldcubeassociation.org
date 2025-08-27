@@ -97,11 +97,47 @@ paths:
             type: string
       responses:
         '200':
-          description: Returns results
+          description: Returns a person and their results
           content:
             application/json:
               schema:
                 $ref: "#/components/schemas/LivePerson"
+  /competitions/{competitionId}/podiums:
+    get:
+      summary: Gets Information about the already determined podiums
+      parameters:
+        - name: competitionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns final rounds and the podium
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LiveRound"
+  /competitions/{competitionId}/rounds:
+    get:
+      summary: Gets Information about all the rounds
+      parameters:
+        - name: competitionId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Returns rounds
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/LiveRound"
   /competitions/{competitionId}/rounds/{roundId}:
     get:
       summary: Gets Information about the Round including the live Results

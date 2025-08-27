@@ -433,8 +433,9 @@ Rails.application.routes.draw do
 
         if WcaLive.enabled?
           get '/registrations/:registration_id' => 'live#by_person', as: :get_live_by_person
-          get '/rounds/:round_id' => 'live#round_results_api', as: :get_live_results
-          get '/podiums/' => 'live#podiums_api', as: :get_live_podiums
+          get '/rounds/:round_id' => 'live#round_results', as: :get_live_results
+          get '/rounds' => 'live#rounds', as: :get_rounds
+          get '/podiums' => 'live#podiums', as: :get_live_podiums
           post '/rounds/:round_id' => 'live#add_result', as: :add_live_result
           patch '/rounds/:round_id' => 'live#update_result', as: :update_live_result
         end

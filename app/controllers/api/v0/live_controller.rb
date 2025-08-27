@@ -59,20 +59,26 @@ class Api::V0::LiveController < Api::V0::ApiController
     render json: { status: "ok" }
   end
 
-  def round_results_api
+  def rounds
+    competition = Competition.find(params.require(:competition_id))
+    rounds = competition.rounds.includes(live_results: %i[live_attempts round event])
+
+    render json: rounds.map { |r| r.to_live_json }
+  end
+
+  def round_results
     round_id = params.require(:round_id)
 
-    # TODO: Figure out why this fires a query for every live_attempt
-    # LiveAttempt Load (0.6ms)  SELECT `live_attempts`.* FROM `live_attempts` WHERE `live_attempts`.`live_result_id` = 39 AND `live_attempts`.`replaced_by_id` IS NULL ORDER BY `live_attempts`.`attempt_number` ASC
     round = Round.includes(live_results: %i[live_attempts round event]).find(round_id)
 
     render json: round.to_live_json
   end
 
   def podiums
-    @competition = Competition.find(params[:competition_id])
-    @competitors = @competition.registrations.includes(:user).accepted
-    @final_rounds = @competition.rounds.select(&:final_round?)
+    competition = Competition.find(params.require(:competition_id))
+    final_rounds = competition.rounds.includes(live_results: %i[live_attempts round event]).select(&:final_round?)
+
+    render json: final_rounds.map { |r| r.to_live_json(only_podiums: true)}
   end
 
   def by_person
