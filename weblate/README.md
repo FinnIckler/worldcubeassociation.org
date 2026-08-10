@@ -73,8 +73,24 @@ and every language reports 0% translated. Stripping that root key is the whole
 point of `ruby-yaml`.
 
 The price of `ruby-yaml` is that it normalizes plurals to the target language's
-CLDR forms, and Rails' `zero:` key is not CLDR. On the first write to a file,
-Weblate drops it. Measured over the full locale set:
+CLDR forms, and Rails' `zero:` does not survive that. On the first write to a
+file, Weblate drops it.
+
+It is worth being precise about why, because "zero isn't CLDR" is wrong. CLDR
+*does* define a `zero` category — but per language, only where the grammar needs
+one, and **none of WCA's 33 locales have it** (Arabic, Welsh and Latvian do;
+English, German, Polish and the rest are `one/other` or narrower). Weblate
+builds each language's plural-form list from CLDR, so for our locales there is
+simply no slot to put the value in.
+
+Rails' `zero:` is a different mechanism altogether: the i18n Simple backend
+checks `count == 0 && entry.has_key?(:zero)` *before* any plural rule, so it is
+an exact-zero text override that works in any language. That is why translators
+were able to add it to 32 locale files whose languages have no zero form. The
+two are not interchangeable even where both exist — CLDR `zero` in Latvian
+covers 0, 10, 11-19, 20, 30 … , not just 0.
+
+Measured over the full locale set:
 
 | | count | matters? |
 |---|---|---|

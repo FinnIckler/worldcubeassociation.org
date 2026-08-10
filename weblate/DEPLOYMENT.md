@@ -607,7 +607,9 @@ which match the template, so all 33 languages report 0%. Do not "fix" it.
 
 **Before the first write to `main`**, settle two things from the README:
 
-1. The three English keys carrying a non-CLDR `zero:` form
+1. The three English keys carrying a Rails `zero:` override (an exact-zero text
+   override, not a plural form — no WCA locale has a CLDR zero category, so
+   Weblate has no slot to map it onto; see the README)
    (`competitions.messages.spots_left`,
    `competitions.registration_v2.list.spots_remaining_plural`,
    `competitions.registration_v2.update.move_to`). `ruby-yaml` drops `zero:` on
