@@ -147,19 +147,73 @@ before this instance stops reporting the error, since it translates GitHub.
 Worth weighing in the decision: these sat in the repo through the existing
 pipeline and Weblate caught them within minutes of first parse.
 
+## Payload CMS content
+
+Payload content is translated here too, as a second component:
+
+```bash
+./weblate/seed-payload.sh
+```
+
+Payload stores its content in MongoDB, so unlike `locales` there is no
+repository to point Weblate at. The component uses Weblate's own local VCS
+(`vcs: local`, `repo: local:`) and strings move over the REST API instead:
+
+```
+Payload (MongoDB)  ──push source──▶  Weblate  ──translators work here
+       ▲                                │
+       └────────pull translations───────┘
+```
+
+Both directions run from one route in next-frontend, which needs a Payload
+session with the `wst_admin` role:
+
+```bash
+POST /api/translate/sync          # push source strings, pull translations back
+POST /api/translate/sync?seed=1   # first run only, see below
+GET  /api/translate/sync          # per-language progress, straight from Weblate
+```
+
+`?seed=1` uploads translations that *already exist in Payload* before pulling.
+It is a one-time migration step: routine syncs never push translations upward,
+because that would overwrite newer work by translators with whatever Payload
+happens to hold. Run it once, then stop using it.
+
+Two design decisions worth knowing:
+
+**There is no translation UI in the app.** An earlier prototype shipped a
+`/translate` page with a hand-rolled Lexical editor; it was removed when this
+landed. Weblate is the only place translators work, which is the entire point of
+adopting it.
+
+**Rich text is split into one unit per text node**, keyed by its position in the
+tree (`home:body#0.1.0`). Translators see plain sentences, never Lexical JSON.
+On write-back the **source** document is deep-cloned and only `text` values are
+substituted, so structure, node versions and any node type the code has never
+heard of come from Payload itself — a Payload or Lexical upgrade cannot corrupt
+a write, because we never author the structure. That is what removed the need
+for the editor. A rich text field is written only when *every* one of its text
+nodes is translated; a half-German paragraph reads worse than the English
+fallback.
+
+`file_format` is flat `json`, not `json-nested` — the keys are dotted paths like
+`home#64f2:blocks(TextCard)[abc].body#0.1.0`, and nested would split them on
+every dot into a tree that no longer round-trips.
+
 ## Not configured here
 
 - **Push back to GitHub.** Weblate commits translations into its own clone; to
   get PRs you set the component's push URL and a GitHub token
   (`WEBLATE_GITHUB_TOKEN`, plus *Manage → Repository maintenance*). Worth wiring
   up against a fork before committing to this route, since that is the part
-  replacing internationalize's PR flow.
+  replacing internationalize's PR flow. Only relevant to `locales` — the Payload
+  component writes back through the API, not git.
 - **WCA SSO.** The `WEBLATE_SOCIAL_AUTH_OIDC_*` block in `environment` is
   commented out. In a real deployment this is what keeps translators on their
   WCA account instead of needing GitHub.
-- **Payload CMS content.** Not covered — that needs the JSON export/import sync
-  built on `next-frontend/src/lib/translate/registry.ts`. Evaluate the Rails half
-  first.
+- **Scheduling the Payload sync.** `/api/translate/sync` is called by hand for
+  now. A cron would need a non-session credential; that is deliberately not
+  built yet.
 
 ## Resources
 
