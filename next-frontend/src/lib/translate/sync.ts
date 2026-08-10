@@ -1,5 +1,11 @@
 import type { CollectionSlug, GlobalSlug, Payload, TypedLocale } from "payload";
-import { fallbackLng } from "@/lib/i18n/settings";
+import { fallbackLng, languages } from "@/lib/i18n/settings";
+import {
+  ensureLanguage,
+  pullTranslations,
+  pushSource,
+  pushTranslations,
+} from "./weblate";
 import {
   buildTranslationRegistry,
   resolveLeaf,
@@ -226,16 +232,28 @@ export interface ApplyResult {
   locale: string;
   documentsUpdated: number;
   stringsWritten: number;
+  /** Documents held back because a required field is still untranslated. */
+  pending: { document: string; missing: number; total: number }[];
 }
 
 /**
  * Write Weblate's translations for `locale` into Payload.
  *
  * The document sent to Payload is built from the **source** structure so that
- * arrays and blocks exist in the target locale at all, then every localized
- * leaf is filled from Weblate, falling back to whatever the target locale
- * already held, and finally to `null`. Explicitly nulling the leftovers is what
- * stops English text leaking into a locale and masking Payload's own fallback.
+ * arrays and blocks exist in the target locale at all, and every localized leaf
+ * is then filled from Weblate.
+ *
+ * A document is written only once **every required localized field** in it has
+ * a translation. Payload validates `required` per locale on write, so there are
+ * only three options for a required field with no translation yet: write null
+ * (Payload rejects it), write the English source (which then goes stale and
+ * invisible the next time English changes), or hold the document back. Holding
+ * it back is the only one that keeps Payload's own fallback working — an
+ * untranslated locale reads as English *now*, not as English from whenever the
+ * last sync ran.
+ *
+ * Optional fields have no such constraint, so they are cleared to null and fall
+ * back individually.
  */
 export async function applyLocale(
   payload: Payload,
@@ -245,9 +263,29 @@ export async function applyLocale(
 ): Promise<ApplyResult> {
   let documentsUpdated = 0;
   let stringsWritten = 0;
+  const pending: ApplyResult["pending"] = [];
 
   for (const source of docs) {
     if (source.leaves.length === 0) continue;
+
+    // Payload rejects the whole document if any required localized field is
+    // empty for this locale, so check before doing any work.
+    const missingRequired = source.leaves.filter(
+      (leaf) =>
+        leaf.field.required &&
+        translatedValue(leaf, translations) === undefined,
+    );
+    if (missingRequired.length > 0) {
+      pending.push({
+        document:
+          source.docId === null
+            ? source.slug
+            : `${source.slug}#${source.docId}`,
+        missing: missingRequired.length,
+        total: source.leaves.length,
+      });
+      continue;
+    }
 
     const existing =
       source.type === "global"
@@ -314,7 +352,7 @@ export async function applyLocale(
     stringsWritten += writes;
   }
 
-  return { locale, documentsUpdated, stringsWritten };
+  return { locale, documentsUpdated, stringsWritten, pending };
 }
 
 /** Existing Payload translations for `locale`, keyed like the source units. */
@@ -370,4 +408,55 @@ export async function collectExistingTranslations(
   }
 
   return out;
+}
+
+export interface SyncReport {
+  sourceLocale: string;
+  sourceStrings: number;
+  documents: number;
+  seeded: { locale: string; accepted: number }[];
+  applied: ApplyResult[];
+}
+
+/**
+ * One full sync: push the source strings up, then pull each language back down.
+ *
+ * Shared by the HTTP route and `scripts/weblate-sync.ts`, so the CLI and the
+ * endpoint can never drift apart on ordering or on the seeding rule.
+ */
+export async function runSync(
+  payload: Payload,
+  options: { seed?: boolean } = {},
+): Promise<SyncReport> {
+  const docs = await collectSourceDocs(payload);
+  const source = unitsFromDocs(docs);
+
+  await pushSource(source);
+
+  const seeded: { locale: string; accepted: number }[] = [];
+  const applied: ApplyResult[] = [];
+
+  for (const locale of languages.filter((code) => code !== fallbackLng)) {
+    await ensureLanguage(locale);
+
+    if (options.seed) {
+      const existing = await collectExistingTranslations(payload, locale, docs);
+      if (Object.keys(existing).length > 0) {
+        const { accepted } = await pushTranslations(locale, existing);
+        seeded.push({ locale, accepted });
+      }
+    }
+
+    applied.push(
+      await applyLocale(payload, locale, docs, await pullTranslations(locale)),
+    );
+  }
+
+  return {
+    sourceLocale: fallbackLng,
+    sourceStrings: Object.keys(source).length,
+    documents: docs.length,
+    seeded,
+    applied,
+  };
 }

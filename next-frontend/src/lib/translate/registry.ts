@@ -48,6 +48,12 @@ export interface LocalizedField {
   fieldType: "text" | "textarea" | "richText";
   widget: Widget;
   label: string;
+  /**
+   * Payload enforces `required` per locale on write, so a document cannot be
+   * saved in a target locale until every required localized field has a value.
+   * The sync uses this to decide whether a document is writable yet.
+   */
+  required: boolean;
   /** True when localization is inherited from a localized ancestor container. */
   inheritedLocalization: boolean;
 }
@@ -173,6 +179,7 @@ function walk(
             fieldType: field.type,
             widget: field.type === "richText" ? "lexical" : "plain",
             label: labelOf(field),
+            required: field.required === true,
             inheritedLocalization: !field.localized && parentIsLocalized,
           });
         }

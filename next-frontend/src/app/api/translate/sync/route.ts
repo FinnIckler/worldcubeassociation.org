@@ -1,22 +1,9 @@
 import { NextRequest } from "next/server";
 import { getPayload } from "payload";
 import config from "@payload-config";
-import { fallbackLng, languages } from "@/lib/i18n/settings";
-import {
-  applyLocale,
-  collectExistingTranslations,
-  collectSourceDocs,
-  unitsFromDocs,
-  type ApplyResult,
-} from "@/lib/translate/sync";
-import {
-  ensureLanguage,
-  listLanguages,
-  pullTranslations,
-  pushSource,
-  pushTranslations,
-  weblateConfigured,
-} from "@/lib/translate/weblate";
+import { fallbackLng } from "@/lib/i18n/settings";
+import { runSync } from "@/lib/translate/sync";
+import { listLanguages, weblateConfigured } from "@/lib/translate/weblate";
 
 /**
  * Syncs Payload CMS content with Weblate.
@@ -73,51 +60,14 @@ export async function GET(req: NextRequest): Promise<Response> {
 export async function POST(req: NextRequest): Promise<Response> {
   const auth = await authorize(req);
   if (auth instanceof Response) return auth;
-  const { payload } = auth;
 
   const seed = new URL(req.url).searchParams.get("seed") === "1";
-  const targets = languages.filter((code) => code !== fallbackLng);
-
   try {
-    const docs = await collectSourceDocs(payload);
-    const source = unitsFromDocs(docs);
-
-    await pushSource(source);
-
-    const applied: ApplyResult[] = [];
-    const seeded: { locale: string; accepted: number }[] = [];
-
-    for (const locale of targets) {
-      await ensureLanguage(locale);
-
-      if (seed) {
-        const existing = await collectExistingTranslations(
-          payload,
-          locale,
-          docs,
-        );
-        if (Object.keys(existing).length > 0) {
-          const { accepted } = await pushTranslations(locale, existing);
-          seeded.push({ locale, accepted });
-        }
-      }
-
-      applied.push(
-        await applyLocale(
-          payload,
-          locale,
-          docs,
-          await pullTranslations(locale),
-        ),
-      );
-    }
-
+    const report = await runSync(auth.payload, { seed });
     return Response.json({
-      sourceLocale: fallbackLng,
-      sourceStrings: Object.keys(source).length,
-      documents: docs.length,
-      seeded: seed ? seeded : undefined,
-      applied: applied.filter((r) => r.stringsWritten > 0),
+      ...report,
+      seeded: seed ? report.seeded : undefined,
+      applied: report.applied.filter((r) => r.stringsWritten > 0),
     });
   } catch (error) {
     return Response.json({ error: String(error) }, { status: 502 });

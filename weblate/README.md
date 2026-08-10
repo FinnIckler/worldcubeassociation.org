@@ -174,6 +174,16 @@ POST /api/translate/sync?seed=1   # first run only, see below
 GET  /api/translate/sync          # per-language progress, straight from Weblate
 ```
 
+Or from the command line, which is the practical option locally and from cron
+since there is no session to arrange. Same code path — both call `runSync`:
+
+```bash
+cd next-frontend
+yarn payload run scripts/weblate-sync.ts dry-run   # report, touch nothing
+yarn payload run scripts/weblate-sync.ts seed      # first run
+yarn payload run scripts/weblate-sync.ts           # afterwards
+```
+
 `?seed=1` uploads translations that *already exist in Payload* before pulling.
 It is a one-time migration step: routine syncs never push translations upward,
 because that would overwrite newer work by translators with whatever Payload
@@ -196,9 +206,29 @@ for the editor. A rich text field is written only when *every* one of its text
 nodes is translated; a half-German paragraph reads worse than the English
 fallback.
 
+**A document is written only when all its required strings are translated.**
+Payload validates `required` per locale on write, so for a required field with
+no translation there are three options: write `null` (Payload rejects the whole
+document), write the English source (which then silently goes stale the next
+time English changes), or hold the document back. Only the last keeps Payload's
+own fallback working, so an untranslated locale renders English *now* rather
+than English from whenever the last sync ran. The sync reports what it held back
+and why, otherwise a translator who has done most of the work sees nothing
+happen. Optional fields have no such constraint and are cleared individually.
+
 `file_format` is flat `json`, not `json-nested` — the keys are dotted paths like
 `home#64f2:blocks(TextCard)[abc].body#0.1.0`, and nested would split them on
 every dot into a tree that no longer round-trips.
+
+**Six locale codes need translating for Weblate**, which has its own language
+database: `es-ES` is plain `es` there, `zh-CN`/`zh-TW` are script-based
+(`zh_Hans`/`zh_Hant`), and `es-419`, `fr-CA`, `pt-BR` use underscores. The map
+lives in `WEBLATE_LANGUAGE_CODES` in `weblate.ts`. Two traps worth knowing if
+you extend it: the code a component *reports* is not always the code its URL
+accepts (`language_code_style: linux` displays `zh_Hans` as `zh_CN`, but only
+`zh_Hans` resolves), and Weblate answers both "language already exists" and
+"never heard of this language" with an identical 400, so `ensureLanguage`
+verifies by lookup instead of trusting the response.
 
 ## Not configured here
 

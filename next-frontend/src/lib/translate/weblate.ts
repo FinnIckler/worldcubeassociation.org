@@ -78,23 +78,66 @@ export async function listLanguages(): Promise<LanguageStats[]> {
   return out;
 }
 
-/** Create a translation for `code` if the component does not have one yet. */
-export async function ensureLanguage(code: string): Promise<void> {
+/**
+ * Payload locale -> the language code Weblate expects in an API path.
+ *
+ * Weblate has its own language database and does not know several of WCA's
+ * codes: there is no `es-ES` (it is plain `es`), and Chinese is script-based
+ * (`zh_Hans`/`zh_Hant`) rather than region-based. Everything not listed here is
+ * a plain two-letter code that both sides already agree on.
+ *
+ * Note this is NOT the same as the `language_code` the component reports:
+ * `language_code_style: linux` renders `zh_Hans` as `zh_CN` in listings, but
+ * only `zh_Hans` resolves in a URL. Always address Weblate with these codes.
+ */
+const WEBLATE_LANGUAGE_CODES: Record<string, string> = {
+  "es-ES": "es",
+  "es-419": "es_419",
+  "fr-CA": "fr_CA",
+  "pt-BR": "pt_BR",
+  "zh-CN": "zh_Hans",
+  "zh-TW": "zh_Hant",
+};
+
+export function weblateCode(locale: string): string {
+  return WEBLATE_LANGUAGE_CODES[locale] ?? locale;
+}
+
+async function translationExists(code: string): Promise<boolean> {
   const res = await fetch(
-    `${url}/api/components/${project}/${component}/translations/`,
-    {
-      method: "POST",
-      headers: { ...headers(), "Content-Type": "application/json" },
-      body: JSON.stringify({ language_code: code }),
-      cache: "no-store",
-    },
+    `${url}/api/translations/${project}/${component}/${code}/`,
+    { headers: headers(), cache: "no-store" },
   );
-  // 400 here is the "already exists" case, which is not an error for us.
-  if (!res.ok && res.status !== 400) {
+  return res.ok;
+}
+
+/**
+ * Create the translation for `locale` if the component lacks one, and return
+ * the Weblate code to address it by.
+ *
+ * Existence is checked rather than inferred from the POST, because Weblate
+ * answers "this language already exists" and "I have never heard of this
+ * language" with the same 400 and the same `Could not add 'x'!` message. An
+ * earlier version treated every 400 as benign and silently skipped six locales.
+ */
+export async function ensureLanguage(locale: string): Promise<string> {
+  const code = weblateCode(locale);
+  if (await translationExists(code)) return code;
+
+  await fetch(`${url}/api/components/${project}/${component}/translations/`, {
+    method: "POST",
+    headers: { ...headers(), "Content-Type": "application/json" },
+    body: JSON.stringify({ language_code: code }),
+    cache: "no-store",
+  });
+
+  if (!(await translationExists(code))) {
     throw new Error(
-      `Weblate could not add language ${code}: ${res.status} ${await res.text()}`,
+      `Weblate has no language for Payload locale "${locale}" (tried "${code}"). ` +
+        "Add a mapping to WEBLATE_LANGUAGE_CODES in weblate.ts.",
     );
   }
+  return code;
 }
 
 function jsonFile(strings: Record<string, string>, name: string): FormData {
@@ -125,9 +168,10 @@ export async function pushSource(
  * they would clobber newer work done by translators.
  */
 export async function pushTranslations(
-  code: string,
+  locale: string,
   strings: Record<string, string>,
 ): Promise<{ accepted: number; total: number }> {
+  const code = weblateCode(locale);
   const form = jsonFile(strings, `${code}.json`);
   form.append("method", "translate");
   const res = await call(
@@ -143,8 +187,9 @@ export async function pushTranslations(
 
 /** Download the translated file for `code` as a flat key/value map. */
 export async function pullTranslations(
-  code: string,
+  locale: string,
 ): Promise<Record<string, string>> {
+  const code = weblateCode(locale);
   const res = await call(`/translations/${project}/${component}/${code}/file/`);
   const body = (await res.json()) as Record<string, unknown>;
   const out: Record<string, string> = {};
