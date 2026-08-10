@@ -71,9 +71,11 @@ Verify these three, because each one silently breaks the deploy:
    endpoint. ECS tasks already run in that subnet and pull images, so a NAT path
    almost certainly exists — confirm it rather than assume, or the instance
    boots fine and every clone hangs.
-2. **Where WCA DNS lives.** There is no `aws_route53_*` resource anywhere in
-   `infra/`, so the zone is managed outside Terraform. You need whoever holds it
-   to add one CNAME.
+2. **DNS is in Route53, but not in Terraform.** The public zone
+   `worldcubeassociation.org` is `Z06972271NGRVXJI4XQPM` in the same account, so
+   the record is one CLI call or a small `aws_route53_record` — but nothing in
+   `infra/` manages the zone today, so adding it to Terraform means introducing
+   the first such resource. Decide which you want before applying.
 3. **The `ja.yml` / `ko.yml` control-character fix is on `main`.** Weblate
    translates GitHub, not your working copy. Until that PR lands, those two
    languages report a misleading 100% (`total=0`) because Weblate parsed nothing
@@ -95,11 +97,21 @@ At <https://www.worldcubeassociation.org/oauth/applications/new>:
 |---|---|
 | Name | `Weblate` |
 | Redirect URI | `https://translate.worldcubeassociation.org/accounts/complete/oidc/` |
-| Scopes | `openid email public` |
+| Scopes | `openid profile email public` |
 | Confidential | yes |
 
 The trailing slash on the callback is required — python-social-auth builds it as
 `/accounts/complete/<backend>/` and Doorkeeper does exact-match on redirect URIs.
+
+`profile` is easy to leave off and produces a confusing failure. python-social-auth
+requests `openid profile email` (its `DEFAULT_SCOPE`), and Doorkeeper validates
+that against the *application's* own scope list, so a missing `profile` fails the
+authorize step with "The requested scope is invalid, unknown, or malformed" —
+which reads like a Weblate misconfiguration but is the app registration. Weblate
+has no environment variable for the requested scope (`settings_docker.py` exposes
+only endpoint, key, secret, title, image and username key), so fix it on the
+application, not on Weblate. Staging's seeded `example-application-id` carries
+every scope, which is why this never shows up when testing against staging.
 
 Keep `WEBLATE_SOCIAL_AUTH_OIDC_USERNAME_KEY=sub`. python-social-auth defaults to
 `preferred_username`, which WCA maps to `wca_id`
@@ -543,6 +555,7 @@ Beyond the evaluation values, these five matter:
 ```bash
 WEBLATE_SITE_DOMAIN=translate.worldcubeassociation.org
 WEBLATE_ENABLE_HTTPS=1
+WEBLATE_SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
 WEBLATE_IP_PROXY_HEADER=HTTP_X_FORWARDED_FOR
 WEBLATE_ALLOWED_HOSTS=translate.worldcubeassociation.org,${WEBLATE_PRIVATE_IP}
 WEBLATE_REGISTRATION_OPEN=1
@@ -553,7 +566,16 @@ WEBLATE_SOCIAL_AUTH_OIDC_USERNAME_KEY=sub
 WEBLATE_WORKERS=4
 ```
 
-Two of those are load-balancer-specific and will bite you if skipped:
+Three of those are load-balancer-specific and will bite you if skipped:
+
+**`WEBLATE_SECURE_PROXY_SSL_HEADER` is not optional once `ENABLE_HTTPS` is on.**
+`ENABLE_HTTPS` switches on Django's `SECURE_SSL_REDIRECT`
+(`settings_docker.py:1143`) but leaves `SECURE_PROXY_SSL_HEADER` unset unless
+this variable is supplied (`settings_docker.py:1214`). Django then treats the
+ALB's plain-HTTP forward as insecure and 301s to `https://`, which the ALB
+terminates and forwards as HTTP again — an infinite loop that looks like
+`"GET / HTTP/1.1" 301 5` repeating in the container log. Setting the two
+together is the only correct combination.
 
 **`WEBLATE_IP_PROXY_HEADER`** — without it every request appears to originate
 from the ALB's private IP. Weblate's brute-force protection then counts all

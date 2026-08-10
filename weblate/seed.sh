@@ -15,16 +15,36 @@ BRANCH="${BRANCH:-main}"
 
 dc() { docker compose -f "$COMPOSE_FILE" "$@"; }
 
+# In production WEBLATE_ENABLE_HTTPS=1 turns on Django's SECURE_SSL_REDIRECT, so
+# a plain-HTTP request to localhost is answered with a 301 to https://localhost,
+# which has nothing listening. Asserting the same header the load balancer sends
+# makes these calls work from the box; it is a no-op when WEBLATE_URL is already
+# an https:// address.
+PROXY_HEADER="X-Forwarded-Proto: https"
+
 echo "==> Waiting for Weblate at ${WEBLATE_URL} (first boot runs migrations, can take a few minutes)"
 for _ in $(seq 1 90); do
-  if curl -fsS "${WEBLATE_URL}/healthz/" >/dev/null 2>&1; then
+  code="$(curl -sS -o /dev/null -w '%{http_code}' -H "$PROXY_HEADER" \
+    "${WEBLATE_URL}/healthz/" 2>/dev/null || true)"
+  if [ "$code" = "200" ]; then
     ok=1
     break
   fi
   sleep 5
 done
 if [ "${ok:-}" != "1" ]; then
-  echo "Weblate did not become healthy. Check: docker compose -f ${COMPOSE_FILE} logs weblate" >&2
+  case "${code:-}" in
+    3*)
+      echo "Weblate redirected the health check (HTTP ${code}) at ${WEBLATE_URL}." >&2
+      echo "It is running, but SECURE_SSL_REDIRECT is rejecting plain HTTP. Either set" >&2
+      echo "WEBLATE_SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https in the" >&2
+      echo "environment file, or re-run against the public URL:" >&2
+      echo "  WEBLATE_URL=https://translate.worldcubeassociation.org $0" >&2
+      ;;
+    *)
+      echo "Weblate did not become healthy. Check: docker compose -f ${COMPOSE_FILE} logs weblate" >&2
+      ;;
+  esac
   exit 1
 fi
 
@@ -51,12 +71,34 @@ if [ -z "${WEBLATE_TOKEN:-}" ]; then
   exit 1
 fi
 
+# Status is checked explicitly rather than relying on `curl -f`, which only fails
+# on 4xx/5xx: a 301 exits 0 with an empty body, so every call would look like it
+# succeeded while creating nothing.
+#
+#   2xx -> print the body, succeed
+#   3xx -> hard failure; this is a misconfiguration, not "already exists"
+#   4xx/5xx -> return non-zero so callers can treat it as "already exists"
 api() {
-  local method="$1" path="$2" data="${3:-}"
-  curl -fsS -X "$method" "${WEBLATE_URL}/api${path}" \
+  local method="$1" path="$2" data="${3:-}" body code
+  body="$(mktemp)"
+  code="$(curl -sS -o "$body" -w '%{http_code}' -X "$method" "${WEBLATE_URL}/api${path}" \
     -H "Authorization: Token ${WEBLATE_TOKEN}" \
     -H "Content-Type: application/json" \
-    ${data:+--data "$data"}
+    -H "$PROXY_HEADER" \
+    ${data:+--data "$data"} 2>/dev/null || echo 000)"
+
+  case "$code" in
+    2*) cat "$body"; rm -f "$body" ;;
+    3*)
+      rm -f "$body"
+      echo "Weblate redirected ${method} ${path} (HTTP ${code})." >&2
+      echo "That usually means SECURE_SSL_REDIRECT is on and this request was plain HTTP." >&2
+      echo "Re-run against the public URL instead:" >&2
+      echo "  WEBLATE_URL=https://translate.worldcubeassociation.org $0" >&2
+      exit 1
+      ;;
+    *) rm -f "$body"; return 1 ;;
+  esac
 }
 
 echo "==> Creating project 'wca'"

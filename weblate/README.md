@@ -1,7 +1,10 @@
 # Weblate evaluation instance
 
-> Deploying this for real? See [DEPLOYMENT.md](DEPLOYMENT.md) — one EC2 instance
-> behind the existing `wca-on-rails` ALB.
+> Running a translator pilot? See [PILOT.md](PILOT.md) — plain AWS CLI commands
+> for one manually-created instance, with a teardown section.
+>
+> Deploying this properly? See [DEPLOYMENT.md](DEPLOYMENT.md) — the same thing as
+> Terraform, on Spot with automatic replacement.
 
 A throwaway self-hosted [Weblate](https://weblate.org/) pointed at
 `config/locales/*.yml`, to judge whether it should replace the

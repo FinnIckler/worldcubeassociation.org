@@ -48,9 +48,6 @@ echo "render-env: reading secrets from SSM (/weblate/*) in $REGION"
 WEBLATE_ADMIN_PASSWORD="$(ssm admin_password)"
 WEBLATE_SOCIAL_AUTH_OIDC_KEY="$(ssm oidc_key)"
 WEBLATE_SOCIAL_AUTH_OIDC_SECRET="$(ssm oidc_secret)"
-WEBLATE_EMAIL_HOST_USER="$(ssm smtp_user)"
-WEBLATE_EMAIL_HOST_PASSWORD="$(ssm smtp_password)"
-WEBLATE_GITHUB_TOKEN="$(ssm github_token)"
 POSTGRES_PASSWORD="$(ssm postgres_password)"
 
 export WEBLATE_PRIVATE_IP WEBLATE_ADMIN_PASSWORD \

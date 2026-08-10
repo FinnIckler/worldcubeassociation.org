@@ -19,6 +19,20 @@ WEBLATE_WORKERS=4
 # terminated at the load balancer; Weblate itself only ever speaks plain HTTP.
 WEBLATE_ENABLE_HTTPS=1
 
+# REQUIRED whenever ENABLE_HTTPS is on behind a TLS-terminating proxy, and the
+# cause of an infinite redirect loop if it is missing.
+#
+# ENABLE_HTTPS turns on Django's SECURE_SSL_REDIRECT (settings_docker.py:1143)
+# but does NOT set SECURE_PROXY_SSL_HEADER — that is only applied if this
+# variable is present (settings_docker.py:1214). Without it Django sees the
+# ALB's plain-HTTP forward, decides the request is insecure, and 301s to
+# https://, which the ALB terminates and forwards as HTTP again, forever:
+#
+#   "GET / HTTP/1.1" 301 5    x N
+#
+# The ALB always sends X-Forwarded-Proto, so this makes Django trust it.
+WEBLATE_SECURE_PROXY_SSL_HEADER=HTTP_X_FORWARDED_PROTO,https
+
 # Without this every request looks like it came from the load balancer, so
 # Weblate's brute-force protection treats all users as one client and a handful
 # of failed logins rate-limits everybody at once.
