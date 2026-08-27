@@ -57,12 +57,7 @@ const countryOptions = (t: TFunction) =>
       key: country.id,
       label: t(`countries.${country.iso2}`),
       flag: (
-        <WcaFlag
-          code={country.iso2}
-          fallback={country.id}
-          width={32}
-          height={25}
-        />
+        <WcaFlag code={country.iso2} fallback={country.id} fontSize="2xl" />
       ),
       value: country.iso2,
     }))

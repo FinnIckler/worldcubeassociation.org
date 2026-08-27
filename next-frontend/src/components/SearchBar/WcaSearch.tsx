@@ -60,9 +60,7 @@ function ResultContent({ item, t }: { item: ComboItem; t: TFunction }) {
         <VStack align="start" gap={0}>
           <Text textStyle="bodyEmphasis">{item.name}</Text>
           <HStack gap={1} fontSize="sm">
-            {item.country_iso2 && (
-              <WcaFlag code={item.country_iso2} width={18} />
-            )}
+            {item.country_iso2 && <WcaFlag code={item.country_iso2} />}
             <Text>{`${item.city} (${item.id})`}</Text>
           </HStack>
         </VStack>

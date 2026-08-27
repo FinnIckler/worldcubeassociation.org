@@ -9,6 +9,8 @@ import { ThemeProvider } from "@wrksz/themes/next";
 import { appFont } from "@/styles/fonts";
 import NextTopLoader from "nextjs-toploader";
 
+import "flag-icons/css/flag-icons.min.css";
+
 export const metadata: Metadata = {
   title: {
     template: "%s | World Cube Association",

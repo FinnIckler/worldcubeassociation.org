@@ -38,6 +38,7 @@
     "accept-language-parser": "^1.5.0",
     "aws4": "^1.13.2",
     "culori": "^4.0.2",
+    "flag-icons": "^7.5.0",
     "graphql": "^17.0.2",
     "i18next": "^26.4.0",
     "i18next-browser-languagedetector": "^8.2.1",
@@ -61,7 +62,6 @@
     "react-icons": "^5.7.0",
     "react-intersection-observer": "^11.0.0",
     "react-markdown": "^10.1.0",
-    "react-world-flags": "^1.6.0",
     "temporal-polyfill": "^1.0.4"
   },
   "dependenciesMeta": {
@@ -100,7 +100,6 @@
     "@types/rails__actioncable": "^8",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@types/react-world-flags": "^1",
     "@types/swagger-ui-react": "^5.18.0",
     "@vitejs/plugin-react": "^6.1.0",
     "babel-plugin-react-compiler": "^1.0.0",
