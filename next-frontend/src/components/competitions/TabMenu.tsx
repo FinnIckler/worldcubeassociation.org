@@ -31,6 +31,12 @@ import { iconMap } from "@/components/icons/iconMap";
 import { route } from "nextjs-routes";
 import { Tooltip } from "@/components/ui/tooltip";
 
+// Next only prefetches a dynamic route as far as its `loading.tsx` unless a Link asks for
+//   `true`, so tab clicks otherwise always wait on a full server render. Opt-in per caller
+//   because prefetching a competition's handful of tabs is cheap, while the live menu's
+//   per-round tabs would fan out into one results request each.
+type TabPrefetch = boolean | "auto";
+
 function activityCodeFromPath(path: string) {
   // Matches the eventId out of the path
   return path.match(/^([a-z0-9_]+)(?:-|$)/)?.[1] ?? null;
@@ -42,12 +48,14 @@ export default function TabMenu({
   tabs,
   backHref,
   customTabs = [],
+  prefetch = "auto",
 }: {
   children: React.ReactNode;
   competitionInfo: components["schemas"]["CompetitionInfo"];
   tabs: CompetitionNavTab[];
   backHref?: RouteLiteral;
   customTabs?: string[];
+  prefetch?: TabPrefetch;
 }) {
   const pathName = usePathname();
   const { t } = useT();
@@ -96,6 +104,7 @@ export default function TabMenu({
           }
           customTabs={customTabs}
           competitionId={competitionInfo.id}
+          prefetch={prefetch}
         />
       </Tabs.List>
       <Box hideFrom="md" mb="4">
@@ -159,6 +168,7 @@ export default function TabMenu({
                     }
                     customTabs={customTabs}
                     competitionId={competitionInfo.id}
+                    prefetch={prefetch}
                   />
                 </Tabs.List>
               </Drawer.Body>
@@ -181,6 +191,7 @@ function TabList({
   openGroup,
   customTabs,
   competitionId,
+  prefetch,
 }: {
   tabs: CompetitionNavTab[];
   t: TFunction;
@@ -189,6 +200,7 @@ function TabList({
   onToggle: (tab: CompetitionNavTab) => void;
   customTabs: string[];
   competitionId: string;
+  prefetch: TabPrefetch;
 }) {
   return (
     <>
@@ -199,6 +211,7 @@ function TabList({
             tab={tab}
             t={t}
             isAdminRoute={isAdminRoute}
+            prefetch={prefetch}
           />
         ) : (
           <CollapsibleTabGroup
@@ -208,6 +221,7 @@ function TabList({
             isAdminRoute={isAdminRoute}
             isOpen={openGroup === tab.menuKey}
             onToggle={() => onToggle(tab)}
+            prefetch={prefetch}
           />
         ),
       )}
@@ -228,6 +242,7 @@ function TabList({
                   tabName: encodeURIComponent(tabName),
                 },
               })}
+              prefetch={prefetch}
             >
               {tabName}
             </Link>
@@ -269,10 +284,12 @@ function TabLink({
   tab,
   t,
   isAdminRoute,
+  prefetch,
 }: {
   tab: TabWithLink;
   t: TFunction;
   isAdminRoute: boolean;
+  prefetch: TabPrefetch;
 }) {
   const label = t(
     isAdminRoute && tab.i18nKeyAdmin ? tab.i18nKeyAdmin : tab.i18nKey,
@@ -288,7 +305,10 @@ function TabLink({
             {label}
           </a>
         ) : (
-          <Link href={isAdminRoute && tab.hrefAdmin ? tab.hrefAdmin : tab.href}>
+          <Link
+            href={isAdminRoute && tab.hrefAdmin ? tab.hrefAdmin : tab.href}
+            prefetch={prefetch}
+          >
             {label}
           </Link>
         )}
@@ -311,12 +331,14 @@ function CollapsibleTabGroup({
   isAdminRoute,
   isOpen,
   onToggle,
+  prefetch,
 }: {
   tab: TabWithChildren;
   t: TFunction;
   isAdminRoute: boolean;
   isOpen: boolean;
   onToggle: () => void;
+  prefetch: TabPrefetch;
 }) {
   const { i18nKey, icon, children } = tab;
   const IconComponent = iconMap[icon];
@@ -351,7 +373,10 @@ function CollapsibleTabGroup({
                   {disabled ? (
                     <Text>{t(i18nKey)}</Text>
                   ) : (
-                    <Link href={isAdminRoute && hrefAdmin ? hrefAdmin : href}>
+                    <Link
+                      href={isAdminRoute && hrefAdmin ? hrefAdmin : href}
+                      prefetch={prefetch}
+                    >
                       {t(i18nKey)} <Spacer />
                       {badgeI18nKey && <Badge>{t(badgeI18nKey)}</Badge>}
                     </Link>

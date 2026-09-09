@@ -33,6 +33,7 @@ export default function CompetitionMenu({
       competitionInfo={competitionInfo}
       tabs={tabs}
       customTabs={competitionInfo.tab_names}
+      prefetch
     >
       {children}
     </TabMenu>
