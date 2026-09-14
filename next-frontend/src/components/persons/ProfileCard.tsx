@@ -24,8 +24,11 @@ import RegulationsHistoryIcon from "@/components/icons/RegulationsHistoryIcon";
 import NationalChampionshipIcon from "@/components/icons/NationalChampionshipIcon";
 import { LuStar, LuCircleHelp } from "react-icons/lu";
 import WcaFlag from "@/components/WcaFlag";
-import CountryMap from "@/components/CountryMap";
-import { getT } from "@/lib/i18n/get18n";
+import {
+  GenderLabel,
+  RegionLabel,
+} from "@/components/persons/ProfileCardLabels";
+import { cacheLife } from "next/cache";
 
 interface ProfileData {
   name: string;
@@ -54,10 +57,13 @@ const ProfileCard: React.FC<ProfileData> = async ({
   recordCount,
   championshipPodiumCount,
 }) => {
+  "use cache";
+  // The card renders purely from its props, apart from the current year that the "competing
+  //   since" count is measured against, which is why the entry is not kept forever.
+  cacheLife("days");
+
   const startYear = Number.parseInt(wcaId.slice(0, 4));
   const currentYear = new Date().getFullYear();
-
-  const { t } = await getT();
 
   return (
     <Card.Root size="sm" position={{ base: "static", lg: "sticky" }} top={4}>
@@ -100,7 +106,7 @@ const ProfileCard: React.FC<ProfileData> = async ({
               <DataList.Item>
                 <DataList.ItemLabel>Gender</DataList.ItemLabel>
                 <DataList.ItemValue>
-                  {t(`enums.user.gender.${gender}`)}
+                  <GenderLabel gender={gender} />
                 </DataList.ItemValue>
               </DataList.Item>
             )}
@@ -113,7 +119,7 @@ const ProfileCard: React.FC<ProfileData> = async ({
             <DataList.Item>
               <DataList.ItemLabel>Region</DataList.ItemLabel>
               <DataList.ItemValue>
-                <CountryMap code={regionIso2} t={t} />
+                <RegionLabel code={regionIso2} />
               </DataList.ItemValue>
             </DataList.Item>
             <DataList.Item>

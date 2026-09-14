@@ -1,4 +1,4 @@
-import { Card, Tabs, Text, VStack } from "@chakra-ui/react";
+import { Card, Skeleton, Tabs, Text, VStack } from "@chakra-ui/react";
 import { getPersonInfo } from "@/lib/wca/persons/getPersonInfo";
 import ProfileCard from "@/components/persons/ProfileCard";
 import { GridItem, SimpleGrid } from "@chakra-ui/react";
@@ -14,6 +14,7 @@ import { StaffColor } from "@/components/RoleBadge";
 import _ from "lodash";
 import { FULL_EVENT_IDS } from "@/lib/wca/data/events";
 import { Metadata } from "next";
+import { Suspense } from "react";
 
 type TitleProps = {
   params: Promise<{ wcaId: string }>;
@@ -198,7 +199,9 @@ export default async function PersonOverview({
                       />
                     </Tabs.Content>
                     <Tabs.Content value="competitions">
-                      <CompetitionsTab wcaId={wcaId} />
+                      <Suspense fallback={<Skeleton height="md" />}>
+                        <CompetitionsTab wcaId={wcaId} />
+                      </Suspense>
                     </Tabs.Content>
                     {hasRecords && (
                       <Tabs.Content value="records">
@@ -215,7 +218,9 @@ export default async function PersonOverview({
                       )}
                     </Tabs.Content>
                     <Tabs.Content value="map">
-                      <MapTab wcaId={wcaId} />
+                      <Suspense fallback={<Skeleton height="md" />}>
+                        <MapTab wcaId={wcaId} />
+                      </Suspense>
                     </Tabs.Content>
                   </Card.Body>
                 </Tabs.Root>
