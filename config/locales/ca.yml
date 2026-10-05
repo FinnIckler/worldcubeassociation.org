@@ -236,16 +236,13 @@ ca:
     #original_hash: cf458e7
     time:
       one: '%{count} intent per obtenir < %{time}'
-      many: '%{count} intents per obtenir < %{time}'
-      other:
+      other: '%{count} intents per obtenir < %{time}'
     moves:
       one: '%{count} intent per obtenir < %{moves} moviments'
-      many: '%{count} intents per obtenir < %{moves} moviments'
-      other:
+      other: '%{count} intents per obtenir < %{moves} moviments'
     points:
       one: '%{count} intent per obtenir > %{points} punts'
-      many: '%{count} intents per obtenir > %{points} punts'
-      other:
+      other: '%{count} intents per obtenir > %{points} punts'
   time_limit:
     cumulative:
       #original_hash: 9da5a3e
@@ -334,12 +331,10 @@ ca:
     #original_hash: 49d0140
     days:
       one: 1 dia
-      many: '%{count} dies'
-      other:
+      other: '%{count} dies'
     these_events:
       one: aquesta categoria
-      many: aquestes %{count} categories
-      other:
+      other: aquestes %{count} categories
     search_site: Cerca
     #original_hash: d7decf1
     filter: Filtra
@@ -1268,8 +1263,7 @@ ca:
         #original_hash: e88f903
         form_error:
           one: 'El formulari conté un error:'
-          many: 'El formulari conté  %{count} errors:'
-          other:
+          other: 'El formulari conté  %{count} errors:'
     doorkeeper:
       applications:
         help:
@@ -1933,32 +1927,26 @@ ca:
       #original_hash: bdf1f11
       newcomer:
         one: Novell
-        many: Novells
-        other:
+        other: Novells
       returner:
         one: Repetidor
-        many: Repetidors
-        other:
+        other: Repetidors
       person:
         one: Persona
-        many: Persones
-        other:
+        other: Persones
     flash:
       #original_hash: da7ec53
       not_using_wca: Aquesta competició no utilitza el registre WCA
       #original_hash: d528030
       accepted_and_mailed:
         one: Registre acceptat! S'ha enviat la notificació per correu.
-        many: Registres acceptats! S'han enviat les notificacions per correu.
-        other:
+        other: Registres acceptats! S'han enviat les notificacions per correu.
       rejected_and_mailed:
         one: Registre desplaçat a la llista d'espera.
-        many: Registres desplaçats a la llista d'espera.
-        other:
+        other: Registres desplaçats a la llista d'espera.
       deleted_and_mailed:
         one: Registre eliminat
-        many: Registres eliminats
-        other:
+        other: Registres eliminats
       single_deletion_and_mail: 'Registre eliminat i s''ha enviat un correu %{mail}'
       #original_hash: d8f067f
       cannot_delete: No pots eliminar el teu registre.
@@ -2055,8 +2043,7 @@ ca:
       #original_hash: 0ab725c
       country_plural:
         one: 1 país
-        many: '%{count} països'
-        other:
+        other: '%{count} països'
       export_csv: Exportar a CSV
       #original_hash: 84add5b
       email: Correu electrònic
@@ -2467,14 +2454,12 @@ ca:
       #original_hash: 680567f
       organizer_plural:
         one: Organitzador
-        many: Organitzadors
-        other:
+        other: Organitzadors
       organization_team: Equip organitzador
       #original_hash: 6afa61e
       delegate:
         one: Delegat de la WCA
-        many: Delegats de la WCA
-        other:
+        other: Delegats de la WCA
       contact: Contacte
       #original_hash: 0eb5ed5
       information: Informació
@@ -3153,8 +3138,7 @@ ca:
       #original_hash: 241801a
       competitions:
         one: 1 competició
-        many: '%{count} competicions'
-        other:
+        other: '%{count} competicions'
       label: 'Competicions pròximes (entre %{days} dies i %{kms} km)'
       #original_hash: 3446062
       label_admin: 'Els últims %{days} dies'
