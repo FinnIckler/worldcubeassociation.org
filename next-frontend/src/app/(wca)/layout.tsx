@@ -41,7 +41,14 @@ export default async function RootLayout({
   return (
     <html suppressHydrationWarning>
       <body className={appFont.className}>
-        <ThemeProvider attribute="class" disableTransitionOnChange>
+        <ThemeProvider
+          attribute="class"
+          storage="hybrid"
+          cookieOptions={{
+            domain: process.env.NEXT_PUBLIC_THEME_COOKIE_DOMAIN,
+          }}
+          disableTransitionOnChange
+        >
           <WCAQueryClientProvider>
             <EmotionRegistry>
               <UiProvider>
@@ -53,7 +60,7 @@ export default async function RootLayout({
                 <Suspense fallback={<NavbarSkeleton />}>
                   <Navbar />
                 </Suspense>
-                <NextTopLoader height={5} />
+                <NextTopLoader height={5} showForHashAnchor={false} />
                 <Suspense fallback={<Loading />}>{children}</Suspense>
                 <Suspense fallback={<FooterSkeleton />}>
                   <Footer />

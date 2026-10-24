@@ -43,7 +43,7 @@ WEBLATE_IP_PROXY_HEADER=HTTP_X_FORWARDED_FOR
 # — including on /healthz/ — which leaves the target permanently unhealthy while
 # the application logs look completely normal. The IP changes with every ASG
 # replacement, so render-env.sh injects it from IMDS at boot.
-WEBLATE_ALLOWED_HOSTS=translate.worldcubeassociation.org,${WEBLATE_PRIVATE_IP}
+WEBLATE_ALLOWED_HOSTS=translate.worldcubeassociation.org,weblate.internal,${WEBLATE_PRIVATE_IP}
 # ----------------------------------------------------------------------------
 
 # Fallback superuser if SSO breaks. The password comes from SSM; see the note on
@@ -92,7 +92,7 @@ WEBLATE_SOCIAL_AUTH_OIDC_USERNAME_KEY=sub
 # --- Pushing translations back to GitHub ------------------------------------
 # Machine user that opens the translation pull requests. The username must match
 # the owner of the PAT stored at /weblate/github_token.
-WEBLATE_GITHUB_USERNAME=wca-translations-bot
+WEBLATE_GITHUB_USERNAME=thewca-bot
 WEBLATE_GITHUB_TOKEN=${WEBLATE_GITHUB_TOKEN}
 WEBLATE_GITHUB_HOST=api.github.com
 # ----------------------------------------------------------------------------
@@ -108,7 +108,7 @@ POSTGRES_PORT=
 REDIS_HOST=cache
 REDIS_PORT=6379
 
-# Leave commented until a real WCA login has been confirmed working — this
-# disables password auth for EVERY account including the admin above, so
-# enabling it before verifying SSO locks you out of the instance entirely.
-#WEBLATE_NO_EMAIL_AUTH=1
+# Disables password auth for EVERY account including the admin above. On a
+# fresh instance, comment it out until a real WCA login has been confirmed
+# working — enabling it before verifying SSO locks you out entirely.
+WEBLATE_NO_EMAIL_AUTH=1
