@@ -8,8 +8,8 @@ import {
   Collapsible,
   Drawer,
   IconButton,
+  Link as ChakraLink,
   Separator,
-  Spacer,
   Tabs,
   Text,
   TextProps,
@@ -27,7 +27,7 @@ import { useState } from "react";
 import { TFunction } from "i18next";
 import { LuAlignJustify, LuArrowLeft } from "react-icons/lu";
 import type { RouteLiteral } from "nextjs-routes";
-import { iconMap } from "@/components/icons/iconMap";
+import IconDisplay from "@/components/IconDisplay";
 import TabTarget from "@/components/ui/tabTarget";
 import { route } from "nextjs-routes";
 import { Tooltip } from "@/components/ui/tooltip";
@@ -114,9 +114,10 @@ export default function TabMenu({
           <Drawer.Trigger asChild>
             <IconButton
               aria-label="Open menu"
-              size="lg"
+              colorPalette="blue"
+              size="xl"
               position="fixed"
-              right="4"
+              insetEnd="4"
               bottom="4"
               zIndex="docked"
               rounded="full"
@@ -174,7 +175,9 @@ export default function TabMenu({
           </Drawer.Positioner>
         </Drawer.Root>
       </Box>
-      <Tabs.Content width="full" value={currentPath!}>
+      {/* Tabs.Content is a flex item, which has `min-width: auto`.
+       It will grow as wide as the table if not set to 0 so the Table scrolling will never trigger */}
+      <Tabs.Content width="full" minWidth="0" value={currentPath!}>
         {children}
       </Tabs.Content>
     </Tabs.Root>
@@ -240,7 +243,8 @@ function TabList({
                 tabKey={tabKey}
                 currentPath={currentPath}
                 href={route({
-                  pathname: "/competitions/[competitionId]/tabs/[tabName]",
+                  pathname:
+                    "/competitions/[competitionId]/custom-tabs/[tabName]",
                   query: { competitionId, tabName: tabKey },
                 })}
               >
@@ -292,9 +296,12 @@ function TabLink({
   isAdminRoute: boolean;
   currentPath?: string;
 }) {
-  const label = t(
-    isAdminRoute && tab.i18nKeyAdmin ? tab.i18nKeyAdmin : tab.i18nKey,
-  );
+  const renderLabel = (renderTab: TabWithLink) =>
+    t(
+      isAdminRoute && renderTab.i18nKeyAdmin
+        ? renderTab.i18nKeyAdmin
+        : renderTab.i18nKey,
+    );
 
   const trigger = (
     <Tabs.Trigger
@@ -302,23 +309,31 @@ function TabLink({
       asChild
       disabled={tab.disabled}
       minHeight="fit-content"
+      justifyContent="left"
     >
-      <Text asChild textStyle="bodyEmphasis" justifyContent="left">
-        {tab.externalHref && !tab.disabled ? (
-          <a href={tab.externalHref} target="_blank" rel="noopener noreferrer">
-            {label}
-          </a>
-        ) : (
-          <TabTarget
-            tabKey={tab.menuKey}
-            currentPath={currentPath}
-            href={isAdminRoute && tab.hrefAdmin ? tab.hrefAdmin : tab.href}
-            disabled={tab.disabled}
-          >
-            {label}
-          </TabTarget>
-        )}
-      </Text>
+      {tab.externalHref && !tab.disabled ? (
+        <ChakraLink
+          href={tab.externalHref}
+          target="_blank"
+          rel="noopener noreferrer"
+          color="currentColor"
+          textStyle="bodyEmphasis"
+        >
+          {tab.icon !== undefined && <IconDisplay name={tab.icon} />}
+          {renderLabel(tab)}
+        </ChakraLink>
+      ) : (
+        <TabTarget
+          tabKey={tab.menuKey}
+          currentPath={currentPath}
+          href={isAdminRoute && tab.hrefAdmin ? tab.hrefAdmin : tab.href}
+          disabled={tab.disabled}
+          textStyle="bodyEmphasis"
+        >
+          {tab.icon !== undefined && <IconDisplay name={tab.icon} />}
+          {renderLabel(tab)}
+        </TabTarget>
+      )}
     </Tabs.Trigger>
   );
 
@@ -346,28 +361,29 @@ function CollapsibleTabGroup({
   onToggle: () => void;
   currentPath?: string;
 }) {
-  const { i18nKey, icon, children } = tab;
-  const IconComponent = iconMap[icon];
+  const { children } = tab;
 
   return (
     <Collapsible.Root open={isOpen} onOpenChange={onToggle}>
       <Collapsible.Trigger
         width="full"
         display="flex"
+        alignItems="center"
+        gap="2"
         textAlign="start"
+        textStyle="bodyEmphasis"
         minHeight="fit-content"
         px="3"
         py="2"
         borderRadius="md"
         _hover={{ bg: "bg.subtle" }}
       >
-        <Text textStyle="bodyEmphasis">
-          <IconComponent /> {t(i18nKey)}
-        </Text>
+        {tab.icon !== undefined && <IconDisplay name={tab.icon} />}
+        {t(tab.i18nKey)}
       </Collapsible.Trigger>
 
       <Collapsible.Content>
-        <Box pl="3" display="flex" flexDirection="column" gap="1" pt="1">
+        <Box ps="3" display="flex" flexDirection="column" gap="1" pt="1">
           {children.map(
             ({ menuKey, disabled, i18nKey, href, hrefAdmin, badgeI18nKey }) => (
               <Tabs.Trigger
@@ -376,18 +392,17 @@ function CollapsibleTabGroup({
                 key={menuKey}
                 disabled={disabled}
               >
-                <Text asChild justifyContent="left">
-                  <TabTarget
-                    tabKey={menuKey}
-                    currentPath={currentPath}
-                    href={isAdminRoute && hrefAdmin ? hrefAdmin : href}
-                    disabled={disabled}
-                    display="flex"
-                  >
-                    {t(i18nKey)} <Spacer />
-                    {badgeI18nKey && <Badge>{t(badgeI18nKey)}</Badge>}
-                  </TabTarget>
-                </Text>
+                <TabTarget
+                  tabKey={menuKey}
+                  currentPath={currentPath}
+                  href={isAdminRoute && hrefAdmin ? hrefAdmin : href}
+                  disabled={disabled}
+                  display="flex"
+                  justifyContent="space-between"
+                >
+                  {t(i18nKey)}
+                  {badgeI18nKey && <Badge>{t(badgeI18nKey)}</Badge>}
+                </TabTarget>
               </Tabs.Trigger>
             ),
           )}

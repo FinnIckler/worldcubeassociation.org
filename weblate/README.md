@@ -44,10 +44,14 @@ Payload (MongoDB)  ──push source──▶  Weblate  ──translators work h
        └────────pull translations───────┘
 ```
 
-`runSync` is both directions at once, and it runs from two places:
+`runSync` is both directions at once, and it runs from three places:
 
 - An `afterChange` hook on every collection and global
-- `scripts/weblate-sync.ts`, which can be triggered manually
+- The "Sync now" / "Seed existing translations" buttons on the Payload dashboard
+(admins only, `src/lib/translate/endpoint.ts`). This is the only way to seed, or to
+pull in translations finished in Weblate while nobody edits Payload, in
+production: the standalone build ships no `payload` CLI.
+- `scripts/weblate-sync.ts`, for local development
 
 ```bash
 cd next-frontend
@@ -57,14 +61,16 @@ yarn payload run scripts/weblate-sync.ts           # afterwards
 ```
 
 - `seed` uploads translations that already exist in Payload before pulling. It is
-a one-time migration step.
+a one-time migration step. Run it twice: strings that are new to Weblate in the
+first run are not in the target languages yet when their translations arrive.
 - `WEBLATE_TOKEN`: a Weblate API token, from `/accounts/profile/#api` stored in Vault via `docker-entrypoint.sh`)
 
 ### Design decisions worth knowing:
 - **Rich text is split into one unit per text node**, a rich
 text field is written only when every one of its text nodes is translated.
 - **A document is written only when all its required strings are translated.**
-- `file_format` is flat `json`
+- `file_format` is `webextension`, so each string carries its Payload field's
+admin description as a hint for translators
 - **Six locale codes need remapping**, since Weblate has its own language
 database: `es-ES` is plain `es`, `zh-CN`/`zh-TW` are script-based
 (`zh_Hans`/`zh_Hant`), and `es-419`, `fr-CA`, `pt-BR` use underscores. The map
@@ -137,7 +143,8 @@ On the instance, as root
 Log in at `https://translate.worldcubeassociation.org/` with a **WCA account**;
 confirm the Weblate username is the numeric WCA user id (that is
 `USERNAME_KEY=sub` working) and that the display name came through.
-Only after a real WCA login has worked, consider setting `WEBLATE_NO_EMAIL_AUTH=1`.
+`WEBLATE_NO_EMAIL_AUTH=1` disables password login, including for the admin, so
+keep it commented out in `environment.prod.template` until a real WCA login has worked.
 
 ### Translator permissions
 
